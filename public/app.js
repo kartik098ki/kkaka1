@@ -26,10 +26,10 @@ let appState = {
   searchQuery: '',
   appliedCoupon: null,
   vegOnly: false,
-  themeMode: localStorage.getItem('theme-mode') || 'dark'
+  themeMode: 'dark'
 };
 
-let clerkInstance = null;
+let supabase = null;
 
 // ===== PRODUCTS DATABASE =====
 const PRODUCTS = [
@@ -216,11 +216,10 @@ function saveState() {
       currentPage: appState.currentPage,
       hasOnboarded: appState.hasOnboarded
     }));
-    if (appState.user && appState.user.clerkId) {
-      localStorage.setItem(`railquick_orders_${appState.user.clerkId}`, JSON.stringify(appState.orders));
-      if (appState.user.phone) {
-        localStorage.setItem(`railquick_phone_${appState.user.clerkId}`, appState.user.phone);
-      }
+    if (appState.user && appState.user.phone) {
+      const userKey = appState.user.phone.replace(/\s+/g, '');
+      localStorage.setItem(`railquick_orders_${userKey}`, JSON.stringify(appState.orders));
+      localStorage.setItem(`railquick_phone_${userKey}`, appState.user.phone);
     }
   } catch(e) {}
 }
@@ -3128,19 +3127,18 @@ function initCartPage() {
   const emptyEl = document.getElementById('cart-empty');
   const summary = document.getElementById('cart-summary');
   
-  // Set CSS variables for dark/light mode on cart page
+  // Set CSS variables for Dark Mode Only on cart page
   if (cartPage) {
-    const isDark = appState.themeMode === 'dark';
-    cartPage.style.setProperty('--cart-page-bg', isDark ? '#121212' : '#f7f9f8');
-    cartPage.style.setProperty('--cart-header-bg', isDark ? '#1D1F24' : '#ffffff');
-    cartPage.style.setProperty('--cart-card-bg', isDark ? '#1D1F24' : '#ffffff');
-    cartPage.style.setProperty('--cart-border', isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)');
-    cartPage.style.setProperty('--cart-text', isDark ? '#ffffff' : '#1f2937');
-    cartPage.style.setProperty('--cart-muted', isDark ? '#9ca3af' : '#6b7280');
-    cartPage.style.setProperty('--cart-btn-bg', isDark ? '#23262D' : '#f3f4f6');
-    cartPage.style.setProperty('--cart-input-bg', isDark ? '#23262D' : '#f3f4f6');
-    cartPage.style.setProperty('--cart-accent-bg', isDark ? 'rgba(12,131,70,0.12)' : '#ecfdf5');
-    cartPage.style.setProperty('--cart-img-bg', isDark ? '#23262D' : '#f3f4f6');
+    cartPage.style.setProperty('--cart-page-bg', '#0B0B0B');
+    cartPage.style.setProperty('--cart-header-bg', '#0B0B0B');
+    cartPage.style.setProperty('--cart-card-bg', '#181818');
+    cartPage.style.setProperty('--cart-border', 'rgba(255,255,255,0.08)');
+    cartPage.style.setProperty('--cart-text', '#ffffff');
+    cartPage.style.setProperty('--cart-muted', '#9ca3af');
+    cartPage.style.setProperty('--cart-btn-bg', '#181818');
+    cartPage.style.setProperty('--cart-input-bg', '#181818');
+    cartPage.style.setProperty('--cart-accent-bg', 'rgba(46, 204, 113, 0.15)');
+    cartPage.style.setProperty('--cart-img-bg', '#23262D');
   }
   
   if (appState.cart.length === 0) {
@@ -3161,18 +3159,21 @@ function initCartPage() {
   if (bottomTotal) {
     const { total } = getCartTotals();
     bottomTotal.textContent = `₹${total}`;
-    if (cartPage) {
-      const isDark = appState.themeMode === 'dark';
-      bottomTotal.style.color = isDark ? '#ffffff' : '#1f2937';
-    }
+    bottomTotal.style.color = '#ffffff';
   }
-  // Style the bottom bar for dark/light
+  // Style the bottom bar for dark mode
   const bottomBar = document.getElementById('cart-bottom-bar');
-  if (bottomBar && cartPage) {
-    const isDark = appState.themeMode === 'dark';
-    bottomBar.style.backgroundColor = isDark ? '#1D1F24' : '#ffffff';
-    bottomBar.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
-    bottomBar.style.boxShadow = isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(0,0,0,0.08)';
+  if (bottomBar) {
+    bottomBar.style.backgroundColor = '#181818';
+    bottomBar.style.borderColor = 'rgba(255,255,255,0.08)';
+    bottomBar.style.boxShadow = '0 8px 30px rgba(0,0,0,0.4)';
+    
+    // Style checkout button color to #2ECC71
+    const checkoutBtn = bottomBar.querySelector('button');
+    if (checkoutBtn) {
+      checkoutBtn.style.backgroundColor = '#2ECC71';
+      checkoutBtn.style.color = '#ffffff';
+    }
   }
   
   const detailEl = document.getElementById('delivery-detail');
@@ -3187,45 +3188,43 @@ function initCartPage() {
   const deliveryBtn = document.querySelector('#delivery-card button');
   if (deliveryBtn) {
     deliveryBtn.textContent = appState.isPnrConfirmed ? 'Track' : 'Change';
+    deliveryBtn.style.color = '#2ECC71';
   }
 }
 
 function renderCartItems() {
   const list = document.getElementById('cart-items-list');
   if (!list) return;
-  const isDark = appState.themeMode === 'dark';
-  const cardBg = isDark ? '#1D1F24' : '#ffffff';
-  const cardBorder = isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)';
-  const imgBg = isDark ? '#23262D' : '#f3f4f6';
-  const textColor = isDark ? '#ffffff' : '#1f2937';
-  const mutedColor = isDark ? '#9ca3af' : '#6b7280';
-  const accentColor = '#0C8346';
-  const qtyBg = isDark ? '#23262D' : '#f3f4f6';
-  const qtyBorder = isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)';
+  const cardBg = '#181818';
+  const cardBorder = '1px solid rgba(255,255,255,0.08)';
+  const imgBg = '#23262D';
+  const textColor = '#ffffff';
+  const mutedColor = '#9ca3af';
+  const accentColor = '#2ECC71';
 
   list.innerHTML = appState.cart.map(item => `
-    <div style="background:${cardBg}; border:${cardBorder}; border-radius:12px; padding:10px; display:flex; gap:10px; align-items:center;">
-      <div style="width:56px; height:56px; background:${imgBg}; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:4px; flex-shrink:0;">
+    <div style="background:${cardBg}; border:${cardBorder}; border-radius:16px; padding:12px; display:flex; gap:12px; align-items:center; transition: all 0.2s;" class="hover:bg-white/[0.02]">
+      <div style="width:64px; height:64px; background:${imgBg}; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:6px; flex-shrink:0;">
         <img style="max-width:100%; max-height:100%; object-fit:contain;" src="${item.img}" alt="${item.name}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';" />
       </div>
-      <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
-        <div style="font-size:11px; font-weight:700; color:${textColor}; font-family:'Outfit',sans-serif; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.name}</div>
-        <div style="font-size:9px; font-weight:600; color:${mutedColor}; font-family:'Outfit',sans-serif;">${item.weight || 'Standard'}</div>
-        <div style="font-size:12px; font-weight:800; color:${textColor}; font-family:'Outfit',sans-serif;">₹${item.price * item.qty}</div>
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px;">
+        <div style="font-size:12px; font-weight:700; color:${textColor}; font-family:'Outfit',sans-serif; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.name}</div>
+        <div style="font-size:10px; font-weight:600; color:${mutedColor}; font-family:'Outfit',sans-serif;">${item.weight || 'Standard'}</div>
+        <div style="font-size:13px; font-weight:800; color:${accentColor}; font-family:'Outfit',sans-serif;">₹${item.price} each</div>
       </div>
-      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0;">
-        <div style="display:flex; align-items:center; background:${accentColor}; border-radius:8px; overflow:hidden; height:28px; width:72px;">
-          <button style="width:22px; height:100%; color:#fff; font-size:14px; font-weight:800; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="updateCartItemQty(${item.id},-1)">−</button>
-          <span style="flex:1; text-align:center; font-size:11px; font-weight:800; color:#fff; font-family:'Outfit',sans-serif;">${item.qty}</span>
-          <button style="width:22px; height:100%; color:#fff; font-size:14px; font-weight:800; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="updateCartItemQty(${item.id},1)">+</button>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0;">
+        <div style="display:flex; align-items:center; background:#181818; border:1.5px solid ${accentColor}; border-radius:10px; overflow:hidden; height:30px; width:76px;">
+          <button style="width:24px; height:100%; color:${accentColor}; font-size:16px; font-weight:900; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="updateCartItemQty(${item.id},-1)">−</button>
+          <span style="flex:1; text-align:center; font-size:11px; font-weight:900; color:${textColor}; font-family:'Outfit',sans-serif;">${item.qty}</span>
+          <button style="width:24px; height:100%; color:${accentColor}; font-size:16px; font-weight:900; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="updateCartItemQty(${item.id},1)">+</button>
         </div>
-        <button style="background:none; border:none; cursor:pointer; color:${isDark ? '#6b7280' : '#9ca3af'}; padding:0;" onclick="removeCartItem(${item.id})">
+        <button style="background:none; border:none; cursor:pointer; color:${mutedColor}; padding:0; display:flex; align-items:center;" onclick="removeCartItem(${item.id})">
           <span class="material-symbols-outlined" style="font-size:16px;">delete</span>
+          <span style="font-size:9.5px; font-weight:700; margin-left:2px; font-family:'Outfit',sans-serif;">Remove</span>
         </button>
       </div>
     </div>`).join('');
 }
-
 
 function renderCartPremiumBlocks() {
   const summary = document.getElementById('cart-summary');
@@ -3236,44 +3235,102 @@ function renderCartPremiumBlocks() {
     wrap.id = 'cart-premium-blocks';
     summary.insertAdjacentElement('beforebegin', wrap);
   }
-  const isDark = appState.themeMode === 'dark';
-  const blockBg = isDark ? '#1D1F24' : '#ffffff';
-  const blockBorder = isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)';
-  const headingColor = isDark ? '#ffffff' : '#1f2937';
-  const mutedColor = isDark ? '#9ca3af' : '#6b7280';
-  const inputBg = isDark ? '#23262D' : '#f3f4f6';
-  const addonBg = isDark ? '#23262D' : '#f9fafb';
-  const addonImgBg = isDark ? '#2A2D33' : '#f3f4f6';
-  const addonBorder = isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)';
-  const hintBg = isDark ? 'rgba(12,131,70,0.12)' : '#ecfdf5';
+  
+  const blockBg = '#181818';
+  const blockBorder = '1px solid rgba(255,255,255,0.08)';
+  const headingColor = '#ffffff';
+  const mutedColor = '#9ca3af';
+  const inputBg = '#23262D';
+  const addonBg = '#23262D';
+  const addonImgBg = '#181818';
+  const addonBorder = '1px solid rgba(255,255,255,0.08)';
+  const hintBg = 'rgba(46, 204, 113, 0.15)';
+  const accentColor = '#2ECC71';
+
+  // Parse details from state
+  const d = appState.pnrData;
+  const pax = d ? (d.passengerList && d.passengerList[0]) : null;
+  const coach = pax ? pax.coach : 'B2';
+  const seat = pax ? pax.berth : '34';
+  const trainName = d ? d.trainName : 'Howrah - New Delhi Rajdhani Express';
+  const trainNo = d ? d.trainNo : '12301';
+  const station = d ? d.destination.split('(')[0].trim() : 'New Delhi';
+  const stationCode = d ? d.destination.match(/\(([^)]+)\)/)?.[1] || 'NDLS' : 'NDLS';
 
   const totals = getCartTotals();
   const addons = PRODUCTS.filter(p => !appState.cart.some(c => c.id === p.id)).slice(0, 6);
+  
   wrap.innerHTML = `
-    <div style="margin:8px 16px 0; padding:8px; border-radius:10px; background:${hintBg}; color:#0C8346; font-size:10px; font-weight:800; text-align:center;">Pull down to refresh station availability</div>
-    <div style="background:${blockBg}; border:${blockBorder}; border-radius:12px; padding:12px; margin:8px 16px;">
-      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 6px 0;">Delivery summary</h3>
-      <div style="font-size:10px; color:${mutedColor}; font-weight:600; line-height:1.5; font-family:'Outfit',sans-serif;">Seat delivery at ${appState.pnrData ? appState.pnrData.destination.split('(')[0].trim() : 'selected station'} • ETA 12-18 min • Saved ₹${totals.discount || Math.min(40, Math.round(totals.subtotal * .08))}</div>
+    <!-- Station Update hint -->
+    <div style="margin:8px 16px 0; padding:10px; border-radius:12px; background:${hintBg}; border: 1px solid rgba(46, 204, 113, 0.25); color:${accentColor}; font-size:10px; font-weight:800; text-align:center; display:flex; align-items:center; justify-content:center; gap:6px; font-family:'Outfit',sans-serif;">
+      <span class="material-symbols-outlined" style="font-size:14px; animation: pulseGlow 1.5s infinite alternate;">rss_feed</span>
+      Pull down to refresh station food availability live
     </div>
-    <div style="background:${blockBg}; border:${blockBorder}; border-radius:12px; padding:12px; margin:0 16px 8px;">
-      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 8px 0;">Coupon for this journey</h3>
-      <button style="width:100%; background:${isDark ? 'rgba(12,131,70,0.12)' : '#ecfdf5'}; border:1px solid ${isDark ? 'rgba(12,131,70,0.2)' : '#d1fae5'}; color:#0C8346; border-radius:10px; padding:10px; font-size:11px; font-weight:800; cursor:pointer;" onclick="applyCouponCode('RAILQUICK15')">Apply RAILQUICK15 and save more</button>
+
+    <!-- Train Details Card -->
+    <div style="background:${blockBg}; border:${blockBorder}; border-radius:16px; padding:14px; margin:10px 16px 0; display:flex; align-items:center; gap:12px;">
+      <div style="width:40px; height:40px; border-radius:10px; background:rgba(46, 204, 113, 0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <span class="material-symbols-outlined" style="color:${accentColor}; font-size:22px;">train</span>
+      </div>
+      <div style="flex:1; min-width:0;">
+        <h3 style="font-size:11.5px; font-weight:800; color:${headingColor}; margin:0; font-family:'Outfit',sans-serif;">${trainName}</h3>
+        <p style="font-size:9.5px; color:${mutedColor}; margin:2px 0 0 0; font-family:'Outfit',sans-serif;">Train #${trainNo} · Scheduled Journey</p>
+      </div>
     </div>
-    <div style="background:${blockBg}; border:${blockBorder}; border-radius:12px; padding:12px; margin:0 16px 8px;">
-      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 8px 0;">Recommended add-ons</h3>
-      <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;">
+
+    <!-- Seat Delivery Card -->
+    <div style="background:${blockBg}; border:${blockBorder}; border-radius:16px; padding:14px; margin:10px 16px 0;">
+      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 10px 0; display:flex; align-items:center; gap:6px; font-family:'Outfit',sans-serif;">
+        <span class="material-symbols-outlined" style="color:${accentColor}; font-size:16px;">seat</span>
+        Seat Delivery Target
+      </h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; background:#0B0B0B; border-radius:12px; padding:10px; border:1px solid rgba(255,255,255,0.06);">
+        <div>
+          <span style="font-size:8px; font-weight:850; color:${mutedColor}; text-transform:uppercase; tracking-wider; display:block;">Station Target</span>
+          <span style="font-size:11px; font-weight:800; color:${headingColor}; font-family:'Outfit',sans-serif; display:block; margin-top:2px;">${station} (${stationCode})</span>
+        </div>
+        <div>
+          <span style="font-size:8px; font-weight:850; color:${mutedColor}; text-transform:uppercase; tracking-wider; display:block;">Coach / Seat No</span>
+          <span style="font-size:11px; font-weight:800; color:${headingColor}; font-family:'Outfit',sans-serif; display:block; margin-top:2px;">Coach ${coach}, Seat ${seat}</span>
+        </div>
+        <div style="grid-column: span 2; border-top:1px solid rgba(255,255,255,0.06); pt-2; margin-top:4px; padding-top:6px;">
+          <span style="font-size:8px; font-weight:850; color:${mutedColor}; text-transform:uppercase; tracking-wider; display:block;">Estimated Arrival / Delivery</span>
+          <span style="font-size:11px; font-weight:800; color:${accentColor}; font-family:'Outfit',sans-serif; display:block; margin-top:2px; display:flex; align-items:center; gap:4px;">
+            <span class="material-symbols-outlined" style="font-size:14px;">bolt</span>
+            ETA 12-18 min after station arrival
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Coupon for this journey -->
+    <div style="background:${blockBg}; border:${blockBorder}; border-radius:16px; padding:14px; margin:10px 16px 0;">
+      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 8px 0; font-family:'Outfit',sans-serif;">Coupon for this journey</h3>
+      <button style="width:100%; background:rgba(46, 204, 113, 0.12); border:1px solid rgba(46, 204, 113, 0.2); color:${accentColor}; border-radius:10px; padding:10px; font-size:11px; font-weight:800; cursor:pointer;" onclick="applyCouponCode('RAILQUICK15')">Apply RAILQUICK15 and save more</button>
+    </div>
+
+    <!-- Recommended Add-ons -->
+    <div style="background:${blockBg}; border:${blockBorder}; border-radius:16px; padding:14px; margin:10px 16px 0;">
+      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 10px 0; font-family:'Outfit',sans-serif;">Recommended add-ons</h3>
+      <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;" class="scrollbar-none">
         ${addons.map(p => `
-          <div style="min-width:100px; border:${addonBorder}; border-radius:10px; padding:8px; background:${addonBg}; flex-shrink:0;">
-            <img src="${p.img}" style="width:100%; height:55px; object-fit:contain; border-radius:8px; background:${addonImgBg}; padding:4px;" onerror="this.style.display='none'">
-            <b style="display:block; font-size:9px; line-height:1.15; color:${headingColor}; margin-top:4px; font-family:'Outfit',sans-serif;">${p.name}</b>
-            <span style="font-size:10px; font-weight:800; color:#0C8346; display:block; margin-top:2px;">₹${p.price}</span>
-            <button style="margin-top:5px; width:100%; border-radius:8px; background:#0C8346; color:white; font-size:9px; font-weight:900; padding:6px; border:none; cursor:pointer;" onclick="addToCart(${p.id});initCartPage();">Add</button>
+          <div style="min-width:105px; border:${addonBorder}; border-radius:12px; padding:8px; background:${addonBg}; flex-shrink:0; display:flex; flex-direction:column; justify-content:space-between; height:155px;">
+            <div>
+              <img src="${p.img}" style="width:100%; height:55px; object-fit:contain; border-radius:8px; background:${addonImgBg}; padding:4px;" onerror="this.style.display='none'">
+              <b style="display:block; font-size:9.5px; line-height:1.15; color:${headingColor}; margin-top:5px; font-family:'Outfit',sans-serif; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; height:22px;">${p.name}</b>
+            </div>
+            <div>
+              <span style="font-size:10px; font-weight:800; color:${accentColor}; display:block; margin-top:2px;">₹${p.price}</span>
+              <button style="margin-top:5px; width:100%; border-radius:8px; background:${accentColor}; color:white; font-size:9px; font-weight:900; padding:6px; border:none; cursor:pointer;" onclick="addToCart(${p.id});initCartPage();">Add</button>
+            </div>
           </div>
         `).join('')}
       </div>
     </div>
-    <div style="background:${blockBg}; border:${blockBorder}; border-radius:12px; padding:12px; margin:0 16px 8px;">
-      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 8px 0;">Order notes</h3>
+
+    <!-- Order notes -->
+    <div style="background:${blockBg}; border:${blockBorder}; border-radius:16px; padding:14px; margin:10px 16px 0;">
+      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 8px 0; font-family:'Outfit',sans-serif;">Order notes</h3>
       <input style="width:100%; background:${inputBg}; border:${blockBorder}; border-radius:10px; padding:10px; font-size:11px; color:${headingColor}; font-family:'Outfit',sans-serif; box-sizing:border-box;" placeholder="Add coach instructions or delivery note" />
     </div>
   `;
@@ -3663,7 +3720,7 @@ function goToPayment() {
   if (appState.user) {
     appState.user.name = name;
     appState.user.phone = phone;
-    localStorage.setItem(`railquick_phone_${appState.user.clerkId || 'guest'}`, phone);
+    localStorage.setItem(`railquick_phone_${appState.user.phone || 'guest'}`, phone);
     saveState();
   }
   
@@ -4028,136 +4085,209 @@ function trackOrder(orderId) {
 
 // ===== ACCOUNT & AUTH =====
 
+const SUPABASE_URL = 'https://mhnfrtgoozpoiepjvmcu.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1obmZydGdvb3pwb2llcGp2bWN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjkyNjksImV4cCI6MjA5OTcwNTI2OX0.NZw0IQ7h2LyJULzfJGrLokRI5gtioHR-jitI56Ed9d8';
+
+// Temporary local state for phone authentication
+let authState = {
+  phone: '',
+  otp: '',
+  generatedOtp: '',
+  name: ''
+};
+
+function initSupabase() {
+  if (supabase) return;
+  try {
+    if (window.supabase) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('[Supabase] Initialized Client SDK');
+    }
+  } catch(e) {
+    console.error('[Supabase] Client init failed:', e);
+  }
+}
+
 function initAccountPage() {
+  initSupabase();
   const logged = document.getElementById('account-logged-section');
   const login = document.getElementById('account-login-section');
+  
   if (appState.user) {
-    if (!appState.user.phone) {
-      const savedPhone = localStorage.getItem(`railquick_phone_${appState.user.clerkId || 'guest'}`) || localStorage.getItem('railquick_global_phone');
-      if (savedPhone) {
-        appState.user.phone = savedPhone;
-        saveState();
-      }
-    }
-
     if (login) login.classList.add('hidden'); 
     if (logged) logged.classList.remove('hidden');
+    
     document.getElementById('profile-name').textContent = appState.user.name || 'User';
-    document.getElementById('profile-email').textContent = appState.user.email || '';
-    document.getElementById('profile-phone').textContent = appState.user.phone ? 'Phone: ' + appState.user.phone : 'Phone: Not Linked';
+    document.getElementById('profile-phone').textContent = appState.user.phone ? '+91 ' + appState.user.phone.replace('+91', '').trim() : '';
     
-    const completionCard = document.getElementById('profile-completion-card');
-    if (completionCard) {
-      if (!appState.user.phone) {
-        completionCard.classList.remove('hidden');
-      } else {
-        completionCard.classList.add('hidden');
-      }
-    }
-    
-    // Update Home Profile picture
-    updateHomeProfileAvatar();
-
-    const avatarEl = document.getElementById('profile-avatar');
+    const avatarEl = document.getElementById('profile-avatar-container');
     if (avatarEl) {
-      if (appState.user.avatarUrl) {
-        avatarEl.innerHTML = `<img src="${appState.user.avatarUrl}" class="w-full h-full object-cover rounded-full" />`;
-      } else {
-        avatarEl.textContent = (appState.user.name || 'U')[0].toUpperCase();
-      }
+      avatarEl.textContent = (appState.user.name || 'U')[0].toUpperCase();
     }
-    // Unmount Clerk sign-in if it was mounted
-    const mountEl = document.getElementById('clerk-sign-in-mount');
-    if (mountEl && clerkInstance) {
-      try { clerkInstance.unmountSignIn(mountEl); } catch(e) {}
-      mountEl.innerHTML = '';
-    }
+    
+    updateHomeProfileAvatar();
   } else { 
     if (login) login.classList.remove('hidden'); 
     if (logged) logged.classList.add('hidden');
-    // Mount Clerk's embedded sign-in form
-    const mountEl = document.getElementById('clerk-sign-in-mount');
-    if (mountEl && clerkInstance && clerkInitDone) {
-      if (!mountEl.querySelector('.cl-rootBox') && !mountEl.querySelector('.cl-component')) {
-        mountEl.innerHTML = '';
-        try {
-          clerkInstance.mountSignIn(mountEl, {
-            appearance: {
-              elements: {
-                rootBox: 'w-full',
-                card: 'shadow-none border-0 p-0 w-full max-w-sm mx-auto bg-transparent',
-                formButtonPrimary: 'bg-[#004D3C] hover:bg-[#006A4E]',
-              }
-            }
-          });
-        } catch(e) {
-          console.warn('[Clerk] Embedded mount failed, fallback to button:', e);
-          mountEl.innerHTML = `
-            <div class="w-full p-1 space-y-4">
-              <button onclick="triggerClerkSignIn()" class="w-full bg-[#004D3C] hover:bg-[#006A4E] text-white py-4 px-6 rounded-2xl font-headline font-bold active:scale-95 transition-all uppercase tracking-wider text-xs shadow-md flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-lg">login</span>
-                Sign In with Clerk
-              </button>
-            </div>
-          `;
-        }
-      }
-    } else if (mountEl && !clerkInstance) {
-      showClerkFallback();
-    }
+    backToPhoneScreen();
   }
 }
 
-function closeGoogleLoginModal(force = false) {
-  const modal = document.getElementById('modal-google-login');
-  if (modal) modal.classList.add('hidden');
-}
-
-function triggerClerkSignIn() {
-  const clerk = clerkInstance || window.Clerk;
-  if (clerk && clerkInitDone) {
-    try {
-      localStorage.setItem('railquick_logging_in', 'true');
-      showLoading('Redirecting to secure login...');
-      clerk.redirectToSignIn({
-        redirectUrl: window.location.origin
-      });
-    } catch(e) {
-      console.error('[Clerk] Redirect failed:', e);
-      showToast('Redirect failed. Please check internet connection.', 'error');
-      hideLoading();
-    }
-  } else {
-    showToast('Sign-in service is initializing. Please try again in a second...', 'info');
+function sendAuthOTP() {
+  const phoneInput = document.getElementById('auth-phone-input');
+  if (!phoneInput) return;
+  
+  const phoneVal = phoneInput.value.trim();
+  const phoneRegex = /^[6-9]\d{9}$/;
+  if (!phoneRegex.test(phoneVal)) {
+    showToast('Please enter a valid 10-digit mobile number', 'error');
+    return;
   }
-}
-
-function googleSignIn() {
-  triggerClerkSignIn();
-}
-
-function simulateGoogleLogin() {
-  closeGoogleLoginModal();
-  googleSignIn();
-}
-
-function simulateDemoLogin() {
-  closeGoogleLoginModal();
-  showLoading('Logging into demo account...');
+  
+  authState.phone = phoneVal;
+  showLoading('Sending security code...');
+  
+  // Generate random 4-digit code
+  const code = Math.floor(1000 + Math.random() * 9000).toString();
+  authState.generatedOtp = code;
+  
   setTimeout(() => {
+    hideLoading();
+    showToast(`OTP Code sent! Enter ${code} to verify.`, 'success', 6000);
+    
+    document.getElementById('auth-phone-screen').classList.add('hidden');
+    const otpScreen = document.getElementById('auth-otp-screen');
+    otpScreen.classList.remove('hidden');
+    document.getElementById('auth-otp-subtitle').textContent = `OTP sent to +91 ${phoneVal}`;
+    
+    const otpInput = document.getElementById('auth-otp-input');
+    if (otpInput) {
+      otpInput.value = '';
+      otpInput.focus();
+    }
+  }, 1000);
+}
+
+function backToPhoneScreen() {
+  document.getElementById('auth-phone-screen').classList.remove('hidden');
+  document.getElementById('auth-otp-screen').classList.add('hidden');
+  document.getElementById('auth-name-screen').classList.add('hidden');
+  
+  const phoneInput = document.getElementById('auth-phone-input');
+  if (phoneInput) {
+    phoneInput.value = authState.phone;
+  }
+}
+
+async function verifyAuthOTP() {
+  const otpInput = document.getElementById('auth-otp-input');
+  if (!otpInput) return;
+  
+  const otpVal = otpInput.value.trim();
+  if (otpVal !== authState.generatedOtp) {
+    showToast('Invalid verification code. Please try again.', 'error');
+    return;
+  }
+  
+  showLoading('Verifying session...');
+  initSupabase();
+  
+  let existingUser = null;
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('phone', authState.phone);
+      if (data && data.length > 0) {
+        existingUser = data[0];
+      }
+    } catch(err) {
+      console.warn('[Supabase] Failed to fetch profile, using fallback:', err);
+    }
+  }
+  
+  setTimeout(() => {
+    hideLoading();
+    if (existingUser) {
+      // User profile already exists in Supabase
+      appState.user = {
+        name: existingUser.name,
+        phone: existingUser.phone,
+        provider: 'supabase',
+        loginAt: new Date().toISOString()
+      };
+      
+      const userKey = existingUser.phone.replace(/\s+/g, '');
+      const savedOrdersStr = localStorage.getItem(`railquick_orders_${userKey}`);
+      if (savedOrdersStr) {
+        try {
+          appState.orders = JSON.parse(savedOrdersStr);
+        } catch(e) {}
+      }
+      
+      saveState();
+      showToast(`Welcome back, ${existingUser.name}!`);
+      initAccountPage();
+      
+      const returnPage = localStorage.getItem('railquick_return_after_login') || 'page-shop';
+      localStorage.removeItem('railquick_return_after_login');
+      
+      if (appState.cart.length > 0 && returnPage === 'page-cart') {
+        navigateTo('page-cart');
+      } else {
+        navigateTo('page-shop');
+      }
+    } else {
+      // New user, collect their name
+      document.getElementById('auth-otp-screen').classList.add('hidden');
+      document.getElementById('auth-name-screen').classList.remove('hidden');
+      const nameInput = document.getElementById('auth-name-input');
+      if (nameInput) {
+        nameInput.value = '';
+        nameInput.focus();
+      }
+    }
+  }, 800);
+}
+
+async function completeAuthProfile() {
+  const nameInput = document.getElementById('auth-name-input');
+  if (!nameInput) return;
+  
+  const nameVal = nameInput.value.trim();
+  if (nameVal.length < 2) {
+    showToast('Please enter your full name', 'error');
+    return;
+  }
+  
+  showLoading('Saving profile...');
+  initSupabase();
+  
+  const newProfile = {
+    phone: authState.phone,
+    name: nameVal,
+    created_at: new Date().toISOString()
+  };
+  
+  if (supabase) {
+    try {
+      await supabase.from('profiles').insert([newProfile]);
+    } catch(err) {
+      console.warn('[Supabase] Failed to insert profile, saved locally:', err);
+    }
+  }
+  
+  setTimeout(() => {
+    hideLoading();
     appState.user = {
-      name: "Kartik Guleria",
-      email: "kartik@example.com",
-      phone: localStorage.getItem('railquick_global_phone') || "+91 98765 43210",
-      avatarUrl: "",
-      avatar: "K",
-      provider: "demo",
-      clerkId: "demo_user_123",
-      loginAt: new Date().toISOString()
+      name: newProfile.name,
+      phone: newProfile.phone,
+      provider: 'supabase',
+      loginAt: newProfile.created_at
     };
     saveState();
-    hideLoading();
-    showToast("Logged in successfully (Demo Session)!");
+    showToast(`Profile set up successfully! Welcome, ${nameVal}!`);
     initAccountPage();
     
     const returnPage = localStorage.getItem('railquick_return_after_login') || 'page-shop';
@@ -4171,74 +4301,17 @@ function simulateDemoLogin() {
   }, 1000);
 }
 
-function showPhoneLogin() { showPhoneLoginPrompt(); }
-
-
-
-function syncClerkUser() {
-  if (!clerkInstance) return;
-  const user = clerkInstance.user;
-  
-  // Clear logging in flag and spinner since Clerk loaded the session
-  localStorage.removeItem('railquick_logging_in');
-  hideLoading();
-
-  if (user) {
-    const savedPhone = localStorage.getItem(`railquick_phone_${user.id}`) || user.primaryPhoneNumber?.phoneNumber || localStorage.getItem('railquick_last_phone') || '';
-    const savedOrdersStr = localStorage.getItem(`railquick_orders_${user.id}`);
-    if (savedOrdersStr) {
-      try {
-        appState.orders = JSON.parse(savedOrdersStr);
-      } catch(e) {}
-    }
-    appState.user = {
-      name: user.fullName || user.firstName || user.username || 'User',
-      email: user.primaryEmailAddress?.emailAddress || '',
-      phone: savedPhone,
-      avatarUrl: user.imageUrl || '',
-      avatar: (user.fullName || user.firstName || 'U')[0].toUpperCase(),
-      provider: 'clerk',
-      clerkId: user.id,
-      loginAt: new Date().toISOString()
-    };
-    if (savedPhone) {
-      localStorage.setItem(`railquick_phone_${user.id}`, savedPhone);
-    }
-    
-    // Auto redirect if currently stuck on page-splash or page-pnr
-    if (appState.currentPage === 'page-splash' || appState.currentPage === 'page-pnr') {
-      if (!savedPhone) {
-        navigateTo('page-account');
-        showToast('Please add your mobile number to complete profile', 'warning');
-      } else {
-        navigateTo('page-shop');
-      }
-    }
-  } else {
-    appState.user = null;
-  }
-  saveState();
-  initAccountPage();
-  updateHomeProfileAvatar();
-}
-
 function signOut() {
-  const clerk = clerkInstance || window.Clerk;
-  if (clerk) {
-    clerk.signOut().then(() => {
-      appState.user = null;
-      appState.orders = [];
-      saveState();
-      initAccountPage();
-      showToast('Signed out', 'info');
-    });
-  } else {
+  showLoading('Logging out...');
+  setTimeout(() => {
     appState.user = null;
     appState.orders = [];
     saveState();
     initAccountPage();
-    showToast('Signed out', 'info');
-  }
+    hideLoading();
+    showToast('Signed out successfully', 'info');
+    navigateTo('page-shop');
+  }, 600);
 }
 
 // ===== PRODUCT MODAL DETAILS =====
@@ -4780,7 +4853,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (localStorage.getItem('railquick_logging_in') === 'true') {
       showLoading('Completing secure login...');
-      // Safety timeout: if Clerk doesn't load/respond in 6 seconds, redirect to page-pnr
+      // Safety timeout: if auth doesn't complete in 6 seconds, redirect to page-pnr
       setTimeout(() => {
         if (localStorage.getItem('railquick_logging_in') === 'true') {
           localStorage.removeItem('railquick_logging_in');
@@ -4792,7 +4865,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   startSearchTypewriter();
-  initClerk();
+  initAuth();
   
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProductModal(); });
 });
@@ -5126,9 +5199,8 @@ function startCustomerMarquee() {
         // Loop at the exact half-point because testimonials are duplicated
         const maxScroll = marquee.scrollWidth - marquee.clientWidth;
         const halfScroll = maxScroll / 2;
-        
         if (marquee.scrollLeft >= halfScroll) {
-          marquee.scrollLeft = 0; // Wrap around seamlessly
+          marquee.scrollLeft = 0;
         } else {
           marquee.scrollLeft += move;
         }
@@ -5136,283 +5208,16 @@ function startCustomerMarquee() {
     }
     requestAnimationFrame(step);
   }
-  
   requestAnimationFrame(step);
 }
 
-// ===== CLERK AUTHENTICATION =====
-// Robust initialization with script load detection and error recovery.
-
-let clerkInitDone = false;
-
-function setupClerkListeners(clerk) {
-  if (!clerk || clerkInitDone) return;
-  clerkInitDone = true;
-  clerkInstance = clerk;
-  console.log('[Clerk] Ready. Signed in:', clerk.user?.fullName || 'Not signed in');
-
-  // Sync the current session state immediately
-  syncClerkUser();
-
-  // React to sign-in / sign-out events
-  clerk.addListener(({ user }) => {
-    // Clear logging in flag and spinner since Clerk loaded the session
-    localStorage.removeItem('railquick_logging_in');
-    hideLoading();
-
-    const wasSignedIn = !!appState.user;
-    const isNowSignedIn = !!user;
-
-    if (isNowSignedIn) {
-      const savedPhone = localStorage.getItem(`railquick_phone_${user.id}`) || user.primaryPhoneNumber?.phoneNumber || localStorage.getItem('railquick_last_phone') || '';
-      const savedOrdersStr = localStorage.getItem(`railquick_orders_${user.id}`);
-      if (savedOrdersStr) {
-        try {
-          appState.orders = JSON.parse(savedOrdersStr);
-        } catch(e) {}
-      }
-      appState.user = {
-        name: user.fullName || user.firstName || user.username || 'User',
-        email: user.primaryEmailAddress?.emailAddress || '',
-        phone: savedPhone,
-        avatarUrl: user.imageUrl || '',
-        avatar: (user.fullName || user.firstName || 'U')[0].toUpperCase(),
-        provider: 'clerk',
-        clerkId: user.id,
-        loginAt: new Date().toISOString()
-      };
-      if (savedPhone) {
-        localStorage.setItem(`railquick_phone_${user.id}`, savedPhone);
-      }
-    } else {
-      appState.user = null;
-      appState.orders = [];
-    }
-    saveState();
-
-    if (!wasSignedIn && isNowSignedIn) {
-      closeGoogleLoginModal();
-      showToast(`Welcome, ${appState.user.name}!`);
-      initAccountPage();
-      
-      // If phone number is missing, auto-open profile page to mandate verification
-      if (!appState.user.phone) {
-        setTimeout(() => {
-          navigateTo('page-account');
-          showToast('Please add your mobile number to complete profile', 'warning');
-        }, 800);
-      } else if (appState.cart.length > 0) {
-        setTimeout(() => { navigateTo('page-checkout'); initCheckoutPage(); }, 800);
-      } else {
-        setTimeout(() => navigateTo('page-shop'), 800);
-      }
-    } else if (wasSignedIn && !isNowSignedIn) {
-      showToast('Signed out', 'info');
-      initAccountPage();
-    } else {
-      initAccountPage();
-    }
-  });
-
-  // Remove loading state from mount area
-  const mountEl = document.getElementById('clerk-sign-in-mount');
-  if (mountEl) {
-    const loadingEl = mountEl.querySelector('.clerk-loading-state');
-    if (loadingEl) loadingEl.remove();
-  }
-
-  // If we're currently on the account page, re-init it now that Clerk is ready
-  if (appState.currentPage === 'page-account') {
+// ===== SUPABASE AUTHENTICATION CHECK =====
+function initAuth() {
+  initSupabase();
+  if (appState.user) {
+    console.log('[Supabase] Restored user session:', appState.user.name);
     initAccountPage();
   }
-}
-
-const CLERK_PUBLISHABLE_KEY = 'pk_test_c21vb3RoLWphY2thbC0xOC5jbGVyay5hY2NvdW50cy5kZXYk';
-
-// Initialize Clerk: wait for the script, call .load() to boot SDK, then set up listeners
-async function initClerk() {
-  if (clerkInstance && clerkInitDone) return;
-
-  let clerk = window.Clerk;
-  
-  // Wait up to 10 seconds for the Clerk script to load from the CDN
-  let attempts = 0;
-  while (!clerk && attempts < 50) {
-    await new Promise(r => setTimeout(r, 200));
-    clerk = window.Clerk;
-    attempts++;
-  }
-
-  if (!clerk) {
-    console.error('[Clerk] Failed to load Clerk script from CDN.');
-    showClerkFallback();
-    return;
-  }
-
-  // Check if window.Clerk is the class constructor (common in NPM build environments) or an instance
-  if (typeof clerk === 'function') {
-    console.log('[Clerk] Instantiating Clerk class...');
-    try {
-      clerk = new clerk(CLERK_PUBLISHABLE_KEY);
-      window.Clerk = clerk;
-    } catch (e) {
-      console.error('[Clerk] Failed to instantiate Clerk class:', e);
-      showClerkFallback();
-      return;
-    }
-  }
-
-  try {
-    if (!clerkInitDone) {
-      console.log('[Clerk] Calling clerk.load()...');
-      await clerk.load({
-        publishableKey: CLERK_PUBLISHABLE_KEY,
-        appearance: {
-          elements: {
-            rootBox: 'w-full',
-            card: 'shadow-none border-0 p-0 w-full max-w-sm mx-auto bg-transparent',
-            formButtonPrimary: 'bg-[#004D3C] hover:bg-[#006A4E]',
-          }
-        }
-      });
-    }
-    clerkInstance = clerk;
-    console.log('[Clerk] Loaded successfully. User:', clerk.user?.fullName || 'Not signed in');
-    setupClerkListeners(clerk);
-  } catch (err) {
-    console.error('[Clerk] load() failed:', err);
-    showClerkFallback();
-  }
-}
-
-
-
-function showClerkFallback() {
-  const mountEl = document.getElementById('clerk-sign-in-mount');
-  if (mountEl) {
-    mountEl.innerHTML = `
-      <div style="background:#16220f; border:1px solid rgba(255,255,255,0.06); border-radius:24px; padding:24px; box-shadow:0 12px 40px rgba(0,0,0,0.4); display:flex; flex-direction:column; gap:18px; text-align:left;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
-          <div style="width:34px; height:34px; border-radius:10px; background:rgba(34,197,94,0.12); display:flex; align-items:center; justify-content:center;">
-            <span class="material-symbols-outlined" style="color:#22c55e; font-size:18px; font-weight:bold;">lock</span>
-          </div>
-          <div>
-            <h4 style="font-size:14px; font-weight:800; color:#ffffff; margin:0; font-family:'Outfit',sans-serif;">Member Sign-In</h4>
-            <p style="font-size:10px; color:rgba(255,255,255,0.45); margin:2px 0 0 0; font-family:'Outfit',sans-serif;">Enter your details to access your account</p>
-          </div>
-        </div>
-        
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <div>
-            <label style="display:block; font-size:9.5px; font-weight:800; color:rgba(255,255,255,0.5); text-transform:uppercase; tracking-wider; margin-bottom:6px; font-family:'Outfit',sans-serif;">Full Name</label>
-            <input type="text" id="fallback-login-name" style="width:100%; background:#0b1107; border:1px solid rgba(255,255,255,0.1; border-radius:12px; padding:10px 14px; color:#ffffff; font-size:12.5px; focus:outline-none; font-family:'Outfit',sans-serif;" placeholder="e.g. Kartik Guleria" value="Kartik Guleria">
-          </div>
-          <div>
-            <label style="display:block; font-size:9.5px; font-weight:800; color:rgba(255,255,255,0.5); text-transform:uppercase; tracking-wider; margin-bottom:6px; font-family:'Outfit',sans-serif;">Email Address</label>
-            <input type="email" id="fallback-login-email" style="width:100%; background:#0b1107; border:1px solid rgba(255,255,255,0.1; border-radius:12px; padding:10px 14px; color:#ffffff; font-size:12.5px; focus:outline-none; font-family:'Outfit',sans-serif;" placeholder="e.g. name@example.com" value="kartik@example.com">
-          </div>
-          <div>
-            <label style="display:block; font-size:9.5px; font-weight:800; color:rgba(255,255,255,0.5); text-transform:uppercase; tracking-wider; margin-bottom:6px; font-family:'Outfit',sans-serif;">Mobile Number</label>
-            <input type="tel" id="fallback-login-phone" style="width:100%; background:#0b1107; border:1px solid rgba(255,255,255,0.1; border-radius:12px; padding:10px 14px; color:#ffffff; font-size:12.5px; font-family:monospace; focus:outline-none;" placeholder="10-digit mobile number" maxlength="10" value="9876543210">
-          </div>
-        </div>
-        
-        <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
-          <button onclick="handleFallbackLoginSubmit()" style="width:100%; background:#22c55e; color:#ffffff; border:none; border-radius:12px; padding:12px 0; font-size:12.5px; font-weight:800; text-transform:uppercase; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-            <span class="material-symbols-outlined" style="font-size:16px;">login</span>
-            Sign In / Log In
-          </button>
-          
-          <button onclick="handleFallbackLoginSubmit()" style="width:100%; background:transparent; border:1.5px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.85); border-radius:12px; padding:11px 0; font-size:12.5px; font-weight:800; text-transform:uppercase; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-            <span class="material-symbols-outlined" style="font-size:16px;">person_add</span>
-            Create New Account
-          </button>
-        </div>
-      </div>
-    `;
-  }
-}
-
-function handleFallbackLoginSubmit() {
-  const nameInput = document.getElementById('fallback-login-name');
-  const emailInput = document.getElementById('fallback-login-email');
-  const phoneInput = document.getElementById('fallback-login-phone');
-  
-  const name = nameInput ? nameInput.value.trim() : '';
-  const email = emailInput ? emailInput.value.trim() : '';
-  const phone = phoneInput ? phoneInput.value.trim() : '';
-  
-  if (!name || !email || !phone) {
-    showToast('Please fill all fields to sign in securely', 'error');
-    return;
-  }
-  
-  if (phone.length !== 10 || isNaN(phone)) {
-    showToast('Please enter a valid 10-digit mobile number', 'error');
-    return;
-  }
-  
-  showLoading('Connecting to secure auth...');
-  setTimeout(() => {
-    appState.user = {
-      name: name,
-      email: email,
-      phone: '+91 ' + phone,
-      avatarUrl: "",
-      avatar: name[0].toUpperCase(),
-      provider: "clerk",
-      clerkId: "clerk_usr_" + Math.random().toString(36).substr(2, 9),
-      loginAt: new Date().toISOString()
-    };
-    
-    localStorage.setItem(`railquick_phone_${appState.user.clerkId}`, appState.user.phone);
-    saveState();
-    hideLoading();
-    showToast(`Signed in successfully as ${name}!`);
-    initAccountPage();
-    
-    const returnPage = localStorage.getItem('railquick_return_after_login') || 'page-shop';
-    localStorage.removeItem('railquick_return_after_login');
-    
-    if (appState.cart.length > 0 && returnPage === 'page-cart') {
-      navigateTo('page-cart');
-    } else {
-      navigateTo('page-shop');
-    }
-  }, 1200);
-}
-
-function retryClerkInit() {
-  const mountEl = document.getElementById('clerk-sign-in-mount');
-  if (mountEl) {
-    mountEl.innerHTML = `
-      <div class="clerk-loading-state flex flex-col items-center justify-center py-8 gap-4">
-        <div class="w-10 h-10 border-[3px] border-primary border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-xs text-gray-400 font-medium">Reconnecting...</p>
-      </div>
-    `;
-  }
-  
-  // Reset flags for retry
-  clerkInitDone = false;
-  window.__clerkScriptFailed = false;
-  window.Clerk = null;
-  
-  // Remove existing scripts to allow clean reload
-  const oldScripts = document.querySelectorAll('script[src*="clerk"]');
-  oldScripts.forEach(s => s.remove());
-  
-  // Re-inject primary CDN script
-  const script = document.createElement('script');
-  script.async = true;
-script.crossOrigin = 'anonymous';
-  script.setAttribute('data-clerk-publishable-key', CLERK_PUBLISHABLE_KEY);
-  script.src = 'https://smooth-jackal-18.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js';
-  script.onload = () => { window.__clerkScriptLoaded = true; };
-  script.onerror = () => { window.__clerkScriptFailed = true; };
-  document.head.appendChild(script);
-  
-  initClerk();
 }
 
 // ===== TRAVEL UTILITY MODALS HANDLERS =====
@@ -6350,7 +6155,7 @@ function saveCompulsoryPhone() {
   
   if (appState.user) {
     appState.user.phone = phoneVal;
-    localStorage.setItem(`railquick_phone_${appState.user.clerkId || 'guest'}`, phoneVal);
+    localStorage.setItem(`railquick_phone_${appState.user.phone || 'guest'}`, phoneVal);
     localStorage.setItem('railquick_global_phone', phoneVal);
     saveState();
     initAccountPage();

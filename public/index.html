@@ -2279,42 +2279,51 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       /* Brand row */
       .rq-hero-label {
         font-family: 'Outfit', sans-serif;
-        font-size: 16px;
-        font-weight: 500;
+        font-size: 12px;
+        font-weight: 700;
         color: #FFFFFF;
-        opacity: 0.9;
+        opacity: 0.85;
         line-height: 1;
         margin: 0 0 5px 0;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
       }
       .rq-hero-info-row {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-between;
       }
       .rq-hero-train-name {
         font-family: 'Outfit', sans-serif;
-        font-size: 40px;
-        font-weight: 900;
+        font-size: 24px;
+        font-weight: 800;
         color: #FFFFFF;
-        line-height: 1.0;
-        letter-spacing: -0.02em;
-        text-shadow: 0 2px 16px rgba(0,0,0,0.55);
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.55);
         margin: 0;
       }
       .rq-hero-seat {
         font-family: 'Outfit', sans-serif;
-        font-size: 16px;
-        font-weight: 600;
+        font-size: 12px;
+        font-weight: 500;
         color: #FFFFFF;
-        opacity: 0.9;
-        margin: 6px 0 0 0;
+        opacity: 0.85;
+        margin: 4px 0 0 0;
         text-shadow: 0 1px 6px rgba(0,0,0,0.4);
       }
       /* Profile avatar */
       .rq-hero-avatar {
-        width: 46px; height: 46px;
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1.5px solid rgba(255, 255, 255, 0.35);
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; flex-shrink: 0; margin-top: 2px;
+        transition: background 0.2s;
+      }
+      .rq-hero-avatar:hover {
+        background: rgba(255, 255, 255, 0.22);
       }
 
       /* Search bar */
@@ -2363,7 +2372,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       }
       .rq-hero-tagline-sub {
         font-family: 'Outfit', sans-serif;
-        font-size: 13px; font-weight: 600;
+        font-size: 11px; font-weight: 600;
         color: rgba(255,255,255,0.88);
         text-shadow: 0 1px 10px rgba(0,0,0,0.7);
         margin: 0 0 2px 0;
@@ -2371,7 +2380,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       }
       .rq-hero-tagline-main {
         font-family: 'Outfit', sans-serif;
-        font-size: 30px; font-weight: 900;
+        font-size: 24px; font-weight: 800;
         color: #FFFFFF;
         text-shadow: 0 2px 16px rgba(0,0,0,0.70);
         line-height: 1.1;
@@ -3207,10 +3216,6 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       <span class="material-symbols-outlined nav-icon">inventory_2</span>
       <span class="nav-label">Orders</span>
       <span class="nav-badge" id="nav-orders-badge" style="display:none;">0</span>
-    </div>
-    <div class="nav-item" data-page="page-games" onclick="navTo('page-games')">
-      <span class="material-symbols-outlined nav-icon">casino</span>
-      <span class="nav-label">Games</span>
     </div>
   </nav>
 

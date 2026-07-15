@@ -1649,7 +1649,6 @@ async function checkLiveStatusDirectly(trainNo, dateStr) {
     };
     appState.pnrLiveData = d;
     appState.isPnrConfirmed = false;
-    appState.hasOnboarded = true;
     saveState();
     hideLoading();
     
@@ -1681,7 +1680,6 @@ async function checkLiveStatusDirectly(trainNo, dateStr) {
     };
     appState.pnrLiveData = mock;
     appState.isPnrConfirmed = false;
-    appState.hasOnboarded = true;
     saveState();
     hideLoading();
     
@@ -2127,6 +2125,8 @@ function resetAppStateAndLogin() {
   showToast('Session reset. Please enter PNR or Train.', 'info');
 }
 
+
+
 function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
   const weightText = p.weight ? p.weight : 'Standard Size';
   const mrp = p.mrp || Math.round(p.price * 1.25);
@@ -2136,11 +2136,6 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
          <span style="width:7px;height:7px;background:#16a34a;border-radius:50%;display:block;"></span>
        </span>` : '';
 
-  let optionsLabel = '';
-  if (p.id === 101) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">3 options</div>';
-  else if (p.id === 105) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">2 options</div>';
-  else if (p.id === 401) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">2 options</div>';
-
   const buttonHTML = qty > 0
     ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:32px;min-width:68px;z-index:10;">
          <button style="width:22px;height:100%;color:#16a34a;font-size:16px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
@@ -2149,43 +2144,39 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
        </div>`
     : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
          <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:32px;width:100%;font-size:11px;font-weight:800;letter-spacing:0.02em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;" onclick="event.stopPropagation();${addClickCode}">ADD</button>
-         ${optionsLabel}
        </div>`;
 
   return `
-    <div style="cursor:pointer;" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
-      <!-- Card Container -->
-      <div style="background:#f3f4f6; border:1px solid #e5e7eb; border-radius:16px; padding:6px; display:flex; flex-direction:column; gap:6px;">
+    <div style="cursor:pointer; background:#ffffff; border:1px solid #e5e7eb; border-radius:16px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; height:100%; box-shadow:0 1px 4px rgba(0,0,0,0.03);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
+      <div>
         <!-- Image Container -->
-        <div style="position:relative; width:100%; aspect-ratio:1; background:#ffffff; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-          <img src="${p.img}" alt="${p.name}" style="max-width:92%; max-height:92%; object-fit:contain; padding:4px;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
-          <!-- Heart icon -->
-          <span class="material-symbols-outlined" style="position:absolute; top:6px; right:6px; color:#cbd5e1; font-size:18px;">favorite</span>
+        <div style="position:relative; width:100%; aspect-ratio:1; background:#ffffff; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px;">
+          <img src="${p.img}" alt="${p.name}" style="max-width:95%; max-height:95%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
           <!-- Veg dot -->
           ${vegDot}
-          <!-- Slider dots -->
-          <div style="position:absolute; bottom:6px; left:8px; display:flex; gap:3px; align-items:center;">
-            <span style="width:4.5px; height:4.5px; border-radius:50%; background:#94a3b8; display:block;"></span>
-            <span style="width:4px; height:4px; border-radius:50%; background:#cbd5e1; display:block;"></span>
-            <span style="width:4px; height:4px; border-radius:50%; background:#cbd5e1; display:block;"></span>
+          <!-- Slider dots (bottom left) -->
+          <div style="position:absolute; bottom:4px; left:4px; display:flex; gap:2.5px; align-items:center;">
+            <span style="width:4px; height:4px; border-radius:50%; background:#94a3b8; display:block;"></span>
+            <span style="width:3.5px; height:3.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
+            <span style="width:3.5px; height:3.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
           </div>
         </div>
-        <!-- Weight and ADD Row -->
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:2px 2px 4px; min-height:36px;">
-          <span style="font-size:12px; font-weight:700; color:#4b5563;">${weightText}</span>
-          <div class="qty-btn-wrapper" data-product-id="${p.id}" onclick="event.stopPropagation();">
-            ${buttonHTML}
-          </div>
-        </div>
+        <!-- Product Details -->
+        <h4 style="font-size:12px; font-weight:600; color:#1f2937; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0 0 3px 0; font-family:'Outfit',sans-serif; min-height:34px;">${p.name}</h4>
+        <div style="font-size:11px; font-weight:500; color:#6b7280; margin-bottom:8px; font-family:'Outfit',sans-serif;">${weightText}</div>
       </div>
-      <!-- Outside Content -->
-      <div style="padding:6px 2px 2px;">
-        <div style="display:flex; align-items:baseline; gap:5px; margin-bottom:2px;">
-          <span style="font-size:18px; font-weight:800; color:#111827; font-family:'Outfit',sans-serif;">₹${p.price}</span>
-          <span style="font-size:12px; font-weight:500; color:#9ca3af; text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
+      <!-- Price & Button Row -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:4px;">
+        <div style="display:flex; flex-direction:column; min-width:0; flex-shrink:1;">
+          <div style="display:flex; align-items:baseline; gap:4px; flex-wrap:wrap;">
+            <span style="font-size:15px; font-weight:800; color:#111827; font-family:'Outfit',sans-serif;">₹${p.price}</span>
+            <span style="font-size:10px; font-weight:500; color:#9ca3af; text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
+          </div>
+          <span style="font-size:8.5px; font-weight:700; color:#2563eb; font-family:'Outfit',sans-serif; margin-top:1px;">${discPct}% OFF</span>
         </div>
-        <div style="font-size:10.5px; font-weight:700; color:#2563eb; margin-bottom:4px; font-family:'Outfit',sans-serif;">${discPct}% OFF on MRP</div>
-        <h4 style="font-size:12px; font-weight:600; color:#374151; line-height:1.4; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:34px;">${p.name}</h4>
+        <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();" style="flex-shrink:0;">
+          ${buttonHTML}
+        </div>
       </div>
     </div>
   `;
@@ -4240,40 +4231,49 @@ async function initClerk() {
   }
 }
 
+
+
 function showClerkFallback() {
   const mountEl = document.getElementById('clerk-sign-in-mount');
   if (mountEl) {
     mountEl.innerHTML = `
-      <div style="background:#1e2a14; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.3); display:flex; flex-direction:column; gap:16px; text-align:left;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div style="width:28px; height:28px; border-radius:8px; background:rgba(34,197,94,0.15); display:flex; align-items:center; justify-content:center;">
-            <span class="material-symbols-outlined" style="color:#22c55e; font-size:16px; font-weight:bold;">shield</span>
+      <div style="background:#16220f; border:1px solid rgba(255,255,255,0.06); border-radius:24px; padding:24px; box-shadow:0 12px 40px rgba(0,0,0,0.4); display:flex; flex-direction:column; gap:18px; text-align:left;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
+          <div style="width:34px; height:34px; border-radius:10px; background:rgba(34,197,94,0.12); display:flex; align-items:center; justify-content:center;">
+            <span class="material-symbols-outlined" style="color:#22c55e; font-size:18px; font-weight:bold;">lock</span>
           </div>
           <div>
-            <h4 style="font-size:12px; font-weight:800; color:#ffffff; margin:0;">Secure Sign-In</h4>
-            <p style="font-size:9.5px; color:rgba(255,255,255,0.4); margin:0;">Powered by Clerk</p>
+            <h4 style="font-size:14px; font-weight:800; color:#ffffff; margin:0; font-family:'Outfit',sans-serif;">Member Sign-In</h4>
+            <p style="font-size:10px; color:rgba(255,255,255,0.45); margin:2px 0 0 0; font-family:'Outfit',sans-serif;">Enter your details to access your account</p>
           </div>
         </div>
         
-        <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; flex-direction:column; gap:14px;">
           <div>
-            <label style="display:block; font-size:9px; font-weight:800; color:rgba(255,255,255,0.55); text-transform:uppercase; tracking-wider; margin-bottom:4px;">Full Name</label>
-            <input type="text" id="fallback-login-name" style="width:100%; background:#131c0e; border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:8px 12px; color:#ffffff; font-size:12px; focus:outline-none;" placeholder="e.g. Kartik Guleria" value="Kartik Guleria">
+            <label style="display:block; font-size:9.5px; font-weight:800; color:rgba(255,255,255,0.5); text-transform:uppercase; tracking-wider; margin-bottom:6px; font-family:'Outfit',sans-serif;">Full Name</label>
+            <input type="text" id="fallback-login-name" style="width:100%; background:#0b1107; border:1px solid rgba(255,255,255,0.1; border-radius:12px; padding:10px 14px; color:#ffffff; font-size:12.5px; focus:outline-none; font-family:'Outfit',sans-serif;" placeholder="e.g. Kartik Guleria" value="Kartik Guleria">
           </div>
           <div>
-            <label style="display:block; font-size:9px; font-weight:800; color:rgba(255,255,255,0.55); text-transform:uppercase; tracking-wider; margin-bottom:4px;">Email Address</label>
-            <input type="email" id="fallback-login-email" style="width:100%; background:#131c0e; border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:8px 12px; color:#ffffff; font-size:12px; focus:outline-none;" placeholder="e.g. name@example.com" value="kartik@example.com">
+            <label style="display:block; font-size:9.5px; font-weight:800; color:rgba(255,255,255,0.5); text-transform:uppercase; tracking-wider; margin-bottom:6px; font-family:'Outfit',sans-serif;">Email Address</label>
+            <input type="email" id="fallback-login-email" style="width:100%; background:#0b1107; border:1px solid rgba(255,255,255,0.1; border-radius:12px; padding:10px 14px; color:#ffffff; font-size:12.5px; focus:outline-none; font-family:'Outfit',sans-serif;" placeholder="e.g. name@example.com" value="kartik@example.com">
           </div>
           <div>
-            <label style="display:block; font-size:9px; font-weight:800; color:rgba(255,255,255,0.55); text-transform:uppercase; tracking-wider; margin-bottom:4px;">Mobile Number</label>
-            <input type="tel" id="fallback-login-phone" style="width:100%; background:#131c0e; border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:8px 12px; color:#ffffff; font-size:12px; font-family:monospace; focus:outline-none;" placeholder="10-digit mobile number" maxlength="10" value="9876543210">
+            <label style="display:block; font-size:9.5px; font-weight:800; color:rgba(255,255,255,0.5); text-transform:uppercase; tracking-wider; margin-bottom:6px; font-family:'Outfit',sans-serif;">Mobile Number</label>
+            <input type="tel" id="fallback-login-phone" style="width:100%; background:#0b1107; border:1px solid rgba(255,255,255,0.1; border-radius:12px; padding:10px 14px; color:#ffffff; font-size:12.5px; font-family:monospace; focus:outline-none;" placeholder="10-digit mobile number" maxlength="10" value="9876543210">
           </div>
         </div>
         
-        <button onclick="handleFallbackLoginSubmit()" style="width:100%; background:#22c55e; color:#ffffff; border:none; border-radius:10px; padding:10px 0; font-size:12px; font-weight:800; text-transform:uppercase; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
-          <span class="material-symbols-outlined" style="font-size:14px;">lock</span>
-          Secure Log In
-        </button>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+          <button onclick="handleFallbackLoginSubmit()" style="width:100%; background:#22c55e; color:#ffffff; border:none; border-radius:12px; padding:12px 0; font-size:12.5px; font-weight:800; text-transform:uppercase; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+            <span class="material-symbols-outlined" style="font-size:16px;">login</span>
+            Sign In / Log In
+          </button>
+          
+          <button onclick="handleFallbackLoginSubmit()" style="width:100%; background:transparent; border:1.5px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.85); border-radius:12px; padding:11px 0; font-size:12.5px; font-weight:800; text-transform:uppercase; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+            <span class="material-symbols-outlined" style="font-size:16px;">person_add</span>
+            Create New Account
+          </button>
+        </div>
       </div>
     `;
   }

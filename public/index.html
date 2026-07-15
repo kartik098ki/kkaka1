@@ -2235,10 +2235,10 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         width: 100%;
         height: 510px;
         background-color: #02071d;
-        background-image: url('hero_rain_train.png'), url('hero_rain_train.png');
-        background-size: 100% auto, 100% auto;
-        background-position: center top, center bottom;
-        background-repeat: no-repeat, no-repeat;
+        background-image: url('hero_rain_train.png');
+        background-size: cover;          /* fill the container without repeating */
+        background-position: right bottom; /* align the train (on the right) to the right viewport edge */
+        background-repeat: no-repeat;
         overflow: hidden;
         flex-shrink: 0;
       }
@@ -2344,13 +2344,16 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         flex-shrink: 0;
       }
 
-      /* Tagline — LEFT-ALIGNED, 55% from top, matches reference photo pixel-perfect */
+      /* Tagline — centered, matches second reference photo exactly */
       .rq-hero-tagline {
         position: absolute;
-        top: 55%;
-        left: 18px;
+        top: 52%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         z-index: 10;
-        text-align: left;
+        text-align: center;
+        width: 100%;
+        padding: 0 20px;
       }
       .rq-hero-tagline-sub {
         font-family: 'Outfit', sans-serif;
@@ -2359,16 +2362,14 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         text-shadow: 0 1px 8px rgba(0,0,0,0.65);
         margin: 0 0 2px 0;
         display: block;
-        letter-spacing: 0.01em;
       }
       .rq-hero-tagline-main {
         font-family: 'Outfit', sans-serif;
         font-size: 44px; font-weight: 900;
         color: #FFFFFF;
         text-shadow: 0 2px 16px rgba(0,0,0,0.7);
-        line-height: 1.0;
+        line-height: 1.1;
         display: block;
-        letter-spacing: -0.01em;
       }
       /* ── Category nav ── */
       .rq-cat-row-dark {

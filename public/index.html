@@ -2319,7 +2319,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         background: rgba(255, 255, 255, 0.12);
         border: 1.5px solid rgba(255, 255, 255, 0.35);
         display: flex; align-items: center; justify-content: center;
-        cursor: pointer; flex-shrink: 0; margin-top: 2px;
+        cursor: pointer; flex-shrink: 0; margin-top: -6px;
         transition: background 0.2s;
       }
       .rq-hero-avatar:hover {
@@ -2365,14 +2365,14 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       .rq-hero-tagline {
         position: absolute;
         top: 65%;
-        left: 20px;
+        left: 36px;
         z-index: 10;
         text-align: left;
-        max-width: 240px;
+        max-width: 260px;
       }
       .rq-hero-tagline-sub {
         font-family: 'Outfit', sans-serif;
-        font-size: 11px; font-weight: 600;
+        font-size: 12.5px; font-weight: 600;
         color: rgba(255,255,255,0.88);
         text-shadow: 0 1px 10px rgba(0,0,0,0.7);
         margin: 0 0 2px 0;
@@ -2380,7 +2380,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       }
       .rq-hero-tagline-main {
         font-family: 'Outfit', sans-serif;
-        font-size: 24px; font-weight: 800;
+        font-size: 28px; font-weight: 800;
         color: #FFFFFF;
         text-shadow: 0 2px 16px rgba(0,0,0,0.70);
         line-height: 1.1;
@@ -2490,39 +2490,33 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
     <!-- ── Category nav (outside and below the hero) ── -->
     <div class="rq-cat-row-dark">
-      <div class="rq-cdt active" onclick="filterCategory('all',null);setRQCat(this)">
+      <div class="rq-cdt active" onclick="filterCategory('all',this)">
         <span class="material-symbols-outlined rq-cdt-ms">shopping_bag</span>
         <span class="rq-cdt-label">All</span>
       </div>
-      <div class="rq-cdt" onclick="filterCategory('monsoon',null);setRQCat(this)">
+      <div class="rq-cdt" onclick="filterCategory('monsoon',this)">
         <span class="material-symbols-outlined rq-cdt-ms">umbrella</span>
         <span class="rq-cdt-label">Monsoon</span>
       </div>
-      <div class="rq-cdt" onclick="filterCategory('tech',null);setRQCat(this)">
+      <div class="rq-cdt" onclick="filterCategory('tech',this)">
         <span class="material-symbols-outlined rq-cdt-ms">headphones</span>
         <span class="rq-cdt-label">Electronics</span>
       </div>
-      <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
+      <div class="rq-cdt" onclick="filterCategory('hygiene',this)">
         <span class="material-symbols-outlined rq-cdt-ms">face_retouching_natural</span>
         <span class="rq-cdt-label">Beauty</span>
       </div>
-      <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
+      <div class="rq-cdt" onclick="filterCategory('hygiene',this)">
         <span class="material-symbols-outlined rq-cdt-ms">medication</span>
         <span class="rq-cdt-label">Pharmacy</span>
       </div>
-      <div class="rq-cdt" onclick="filterCategory('comfort',null);setRQCat(this)">
+      <div class="rq-cdt" onclick="filterCategory('comfort',this)">
         <span class="material-symbols-outlined rq-cdt-ms">child_care</span>
         <span class="rq-cdt-label">Baby Care</span>
       </div>
     </div>
 
     <script>
-      /* Category active state */
-      function setRQCat(el){
-        document.querySelectorAll('.rq-cdt').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-      }
-
       /* Cycling tagline words — workable, clean, no emojis */
       const rqWords = ['Travel', 'Monsoon', 'Comfort', 'Snacks', 'Your Journey'];
       let rqWordIdx = 0;
@@ -2544,10 +2538,121 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
           }, 280);
         }, 3000);
       }
+
+      function setRQCatByLabel(label) {
+        document.querySelectorAll('.rq-cdt').forEach(t => {
+          const text = t.querySelector('.rq-cdt-label')?.textContent?.trim() || '';
+          if (text.toLowerCase() === label.toLowerCase()) {
+            document.querySelectorAll('.rq-cdt').forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+          }
+        });
+      }
     </script>
 
+    <!-- Snacks & Drinks Category Grid (First Photo) -->
+    <div id="home-snacks-drinks-container" style="background:#ffffff; padding:18px 14px; border-bottom:1px solid #ededed;">
+      <h3 style="font-size:16px; font-weight:800; color:#111827; margin:0 0 16px 0; font-family:'Outfit',sans-serif;">Snacks & Drinks</h3>
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px 8px;">
+        <!-- Card 1: Chips & Namkeen -->
+        <div onclick="filterCategory('beverages', null); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
+          <div style="width:100%; aspect-ratio:1; background:#f4f5f7; border-radius:14px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=120&h=120&fit=crop" style="max-width:95%; max-height:95%; object-fit:contain; border-radius:8px;">
+          </div>
+          <span style="font-size:10px; font-weight:700; color:#1f2937; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Chips &<br>Namkeen</span>
+        </div>
+        <!-- Card 2: Sweets & Chocolates -->
+        <div onclick="filterCategory('beverages', null); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
+          <div style="width:100%; aspect-ratio:1; background:#f4f5f7; border-radius:14px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1581798459219-318e76aecc7b?w=120&h=120&fit=crop" style="max-width:95%; max-height:95%; object-fit:contain; border-radius:8px;">
+          </div>
+          <span style="font-size:10px; font-weight:700; color:#1f2937; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Sweets &<br>Chocolates</span>
+        </div>
+        <!-- Card 3: Drinks & Juices -->
+        <div onclick="filterCategory('beverages', null); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
+          <div style="width:100%; aspect-ratio:1; background:#f4f5f7; border-radius:14px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=120&h=120&fit=crop" style="max-width:95%; max-height:95%; object-fit:contain; border-radius:8px;">
+          </div>
+          <span style="font-size:10px; font-weight:700; color:#1f2937; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Drinks &<br>Juices</span>
+        </div>
+        <!-- Card 4: Tea, Coffee & Milk Drinks -->
+        <div onclick="filterCategory('beverages', null); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
+          <div style="width:100%; aspect-ratio:1; background:#f4f5f7; border-radius:14px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=120&h=120&fit=crop" style="max-width:95%; max-height:95%; object-fit:contain; border-radius:8px;">
+          </div>
+          <span style="font-size:10px; font-weight:700; color:#1f2937; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Tea, Coffee<br>& Milk Drin...</span>
+        </div>
+        <!-- Card 5: Instant Food -->
+        <div onclick="filterCategory('beverages', null); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
+          <div style="width:100%; aspect-ratio:1; background:#f4f5f7; border-radius:14px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1612966608967-312ba59f574e?w=120&h=120&fit=crop" style="max-width:95%; max-height:95%; object-fit:contain; border-radius:8px;">
+          </div>
+          <span style="font-size:10px; font-weight:700; color:#1f2937; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Instant<br>Food</span>
+        </div>
+        <!-- Card 6: Sauces & Spreads -->
+        <div onclick="filterCategory('beverages', null); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
+          <div style="width:100%; aspect-ratio:1; background:#f4f5f7; border-radius:14px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1596701062351-df5f8af54b85?w=120&h=120&fit=crop" style="max-width:95%; max-height:95%; object-fit:contain; border-radius:8px;">
+          </div>
+          <span style="font-size:10px; font-weight:700; color:#1f2937; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Sauces &<br>Spreads</span>
+        </div>
+        <!-- Card 7: Paan Corner -->
+        <div onclick="filterCategory('beverages', null); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
+          <div style="width:100%; aspect-ratio:1; background:#f4f5f7; border-radius:14px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1600857062241-98e5dba7f214?w=120&h=120&fit=crop" style="max-width:95%; max-height:95%; object-fit:contain; border-radius:8px;">
+          </div>
+          <span style="font-size:10px; font-weight:700; color:#1f2937; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Paan<br>Corner</span>
+        </div>
+        <!-- Card 8: Ice Creams & More -->
+        <div onclick="filterCategory('beverages', null); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
+          <div style="width:100%; aspect-ratio:1; background:#f4f5f7; border-radius:14px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=120&h=120&fit=crop" style="max-width:95%; max-height:95%; object-fit:contain; border-radius:8px;">
+          </div>
+          <span style="font-size:10px; font-weight:700; color:#1f2937; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Ice Creams<br>& More</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured This Week (Second Photo) -->
+    <div id="home-featured-container" style="background:#ffffff; padding:18px 14px; border-bottom:1px solid #ededed; overflow:hidden;">
+      <h3 style="font-size:16px; font-weight:800; color:#111827; margin:0 0 14px 0; font-family:'Outfit',sans-serif;">Featured this week</h3>
+      <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:6px;" class="scrollbar-none">
+        
+        <!-- Banner 1: Rainy Day Essentials -->
+        <div onclick="filterCategory('monsoon', null); setRQCatByLabel('Monsoon')" style="flex:0 0 200px; height:150px; background:linear-gradient(180deg, rgba(16,28,21,0.9) 0%, rgba(5,15,9,0.95) 100%), url('https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&fit=crop'); background-size:cover; border-radius:18px; border:2px solid #2563eb; position:relative; overflow:hidden; cursor:pointer; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
+          <span style="background:#ffffff; color:#dc2626; font-size:9px; font-weight:900; padding:3px 8px; border-radius:6px; max-width:fit-content; text-transform:uppercase; font-family:'Outfit',sans-serif;">Featured</span>
+          <div>
+            <h4 style="font-size:15px; font-weight:900; color:#ffffff; margin:0; line-height:1.25; font-family:'Outfit',sans-serif;">Rainy Day<br>Essentials</h4>
+            <p style="font-size:8px; color:rgba(255,255,255,0.65); margin:2px 0 0 0; font-family:'Outfit',sans-serif;">Everything you need</p>
+          </div>
+        </div>
+
+        <!-- Banner 2: Newly Launched -->
+        <div onclick="filterCategory('tech', null); setRQCatByLabel('Electronics')" style="flex:0 0 200px; height:150px; background:linear-gradient(180deg, #f59e0b 0%, #d97706 100%); border-radius:18px; border:2px solid #fbbf24; position:relative; overflow:hidden; cursor:pointer; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
+          <span style="background:#ffffff; color:#d97706; font-size:9px; font-weight:900; padding:3px 8px; border-radius:6px; max-width:fit-content; text-transform:uppercase; font-family:'Outfit',sans-serif;">Newly Launched</span>
+          <div>
+            <h4 style="font-size:15px; font-weight:900; color:#ffffff; margin:0; line-height:1.25; font-family:'Outfit',sans-serif;">For You</h4>
+            <p style="font-size:8px; color:rgba(255,255,255,0.8); margin:2px 0 0 0; font-family:'Outfit',sans-serif;">Hot Wheels & more</p>
+          </div>
+        </div>
+
+        <!-- Banner 3: Magazine Corner -->
+        <div onclick="filterCategory('tech', null); setRQCatByLabel('Electronics')" style="flex:0 0 200px; height:150px; background:linear-gradient(180deg, #4b5563 0%, #1f2937 100%); border-radius:18px; border:2px solid #2563eb; position:relative; overflow:hidden; cursor:pointer; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
+          <span style="background:#ffffff; color:#2563eb; font-size:9px; font-weight:900; padding:3px 8px; border-radius:6px; max-width:fit-content; text-transform:uppercase; font-family:'Outfit',sans-serif;">Featured</span>
+          <div>
+            <h4 style="font-size:15px; font-weight:900; color:#ffffff; margin:0; line-height:1.25; font-family:'Outfit',sans-serif;">Magazine<br>Corner</h4>
+            <p style="font-size:8px; color:rgba(255,255,255,0.65); margin:2px 0 0 0; font-family:'Outfit',sans-serif;">GQ, LifeRaksha & more</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Custom Category Content Zone (Third, Fourth, Fifth, Sixth Photos render here) -->
+    <div id="custom-category-content-container" class="hidden"></div>
+
     <!-- Products List Section -->
-    <section style="background:#f4f4f4;padding:16px 14px 0;">
+    <section style="background:#f4f4f4;padding:16px 14px 0;" id="products-list-section">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
         <h3 style="font-size:15px;font-weight:800;color:#1a1a1a;margin:0;" id="products-section">Trending Essentials</h3>
         <button style="font-size:11px;font-weight:700;color:#118A4E;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:2px;" onclick="filterCategory('all', null)">

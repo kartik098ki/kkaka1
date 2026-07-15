@@ -53,11 +53,38 @@ const PRODUCTS = [
   { id: 304, name: 'PeeSafe Toilet Seat Sanitizer Spray', price: 110, mrp: 149, category: 'hygiene', weight: '75 ml Spray', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', rating: 4.9, reviews: 1120, description: 'Fast-drying sanitizing spray for clean and worry-free train restroom use.', tags: ['Hygiene', 'Travel'] },
   { id: 305, name: 'Whisper Ultra Clean Sanitary Pads Pack', price: 85, mrp: 110, category: 'hygiene', weight: '7 Pads', img: 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=400&h=400&fit=crop', rating: 4.8, reviews: 650, description: 'Reliable feminine hygiene essential for long-duration train travels.', tags: ['Hygiene', 'Feminine'] },
 
+
+
   // Tech / Electronics category
   { id: 401, name: 'boAt BassHeads Wired Earphones Mic', price: 349, mrp: 499, category: 'tech', weight: 'Wired HD Mic', img: 'product_earphones.png', rating: 4.8, reviews: 5200, description: 'In-ear wired earphones with dynamic bass and mic for handsfree calling.', tags: ['Audio', 'boAt'] },
   { id: 402, name: '10,000mAh Slim Fast Power Bank', price: 799, mrp: 1099, category: 'tech', weight: '12W Dual Output', img: 'product_powerbank.png', rating: 4.8, reviews: 6100, description: 'Compact power bank to keep your phone charged throughout the long journey.', tags: ['Power', 'Fast Charger'] },
   { id: 403, name: '20W Dual Port Fast Charger Adapter', price: 299, mrp: 399, category: 'tech', weight: 'Type-C + USB', img: 'https://images.unsplash.com/photo-1616440347437-b1c73416efc2?w=400&h=400&fit=crop', rating: 4.7, reviews: 1840, description: 'Fast wall charger supporting dual ports for train cabin sockets.', tags: ['Charger', 'Fast'] },
-  { id: 404, name: 'Tough Braided Type-C Charging Cable', price: 149, mrp: 199, category: 'tech', weight: '1.2 Meter', img: 'https://images.unsplash.com/photo-1585250481062-878848f07fcb?w=400&h=400&fit=crop', rating: 4.6, reviews: 980, description: 'Durable fast-charging data cable, built to withstand rough travel use.', tags: ['Cable', 'USB-C'] }
+  { id: 404, name: 'Tough Braided Type-C Charging Cable', price: 149, mrp: 199, category: 'tech', weight: '1.2 Meter', img: 'https://images.unsplash.com/photo-1585250481062-878848f07fcb?w=400&h=400&fit=crop', rating: 4.6, reviews: 980, description: 'Durable fast-charging data cable, built to withstand rough travel use.', tags: ['Cable', 'USB-C'] },
+  { id: 405, name: 'Halonix LED Bulb 9W (Pack of 2)', price: 120, mrp: 199, category: 'tech', weight: '9 Watt', img: 'https://images.unsplash.com/photo-1550985616-10810253b84d?w=200&h=200&fit=crop', rating: 4.8, reviews: 1400 },
+  { id: 406, name: 'Digitek LED Ring Light with Stand', price: 999, mrp: 1999, category: 'tech', weight: '1 Unit', img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop', rating: 4.7, reviews: 1280 },
+  { id: 407, name: 'Portable Mini Desk Table Fan', price: 450, mrp: 799, category: 'tech', weight: '1 Unit', img: 'https://images.unsplash.com/photo-1618944847023-38aa001235f0?w=200&h=200&fit=crop', rating: 4.6, reviews: 920 },
+
+  // Monsoon category (Photo 3)
+  { id: 501, name: 'KK 2 Fold Travel Umbrella (Black)', price: 199, mrp: 289, category: 'monsoon', subcategory: 'umbrella', weight: '2 Fold', img: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop', rating: 4.8, reviews: 2900 },
+  { id: 502, name: 'Unigen 21\" 2-Fold Umbrella (Grey)', price: 249, mrp: 999, category: 'monsoon', subcategory: 'umbrella', weight: '2 Fold', img: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop', rating: 4.6, reviews: 1420 },
+  { id: 503, name: 'KK 2-Fold Classic Umbrella (Blue)', price: 179, mrp: 269, category: 'monsoon', subcategory: 'umbrella', weight: '2 Fold', img: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop', rating: 4.5, reviews: 890 },
+  { id: 504, name: 'Premium Raincoat Jacket (Pink)', price: 349, mrp: 499, category: 'monsoon', subcategory: 'raincoat', weight: '1 Unit', img: 'https://images.unsplash.com/photo-1548883354-7622d03aca27?w=200&h=200&fit=crop', rating: 4.7, reviews: 650 },
+  { id: 505, name: 'Plastic Clothes Clips (Pack of 12)', price: 59, mrp: 99, category: 'monsoon', subcategory: 'clips', weight: '12 Pcs', img: 'https://images.unsplash.com/photo-1517436073-3b111827fcb?w=200&h=200&fit=crop', rating: 4.4, reviews: 180 },
+  { id: 506, name: 'Hot Veg Tomato Soup Cup', price: 40, mrp: 60, category: 'monsoon', subcategory: 'soups', weight: '1 Cup', img: 'https://images.unsplash.com/photo-1547592165-e1d17f1a0655?w=200&h=200&fit=crop', rating: 4.9, reviews: 3120, veg: true },
+
+  // Pharmacy category (Photo 5)
+  { id: 601, name: 'Benadryl Cough Formula Syrup', price: 125, mrp: 150, category: 'pharmacy', weight: '100 ml', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop', rating: 4.9, reviews: 3200 },
+  { id: 602, name: 'Gelusil Antacid Stomach Liquid', price: 98, mrp: 120, category: 'pharmacy', weight: '200 ml', img: 'https://images.unsplash.com/photo-1550572017-edd951b55104?w=200&h=200&fit=crop', rating: 4.8, reviews: 1560 },
+  { id: 603, name: 'Volini Instant Pain Relief Spray', price: 145, mrp: 180, category: 'pharmacy', weight: '55g', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop', rating: 4.9, reviews: 1900 },
+  { id: 604, name: 'Amoxycillin Antibiotics Strip', price: 65, mrp: 99, category: 'pharmacy', weight: '10 Caps', img: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=200&h=200&fit=crop', rating: 4.7, reviews: 880 },
+
+  // Beauty category
+  { id: 701, name: 'Nivea Soft Moisturizing Cream', price: 180, mrp: 240, category: 'beauty', weight: '200 ml', img: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=200&h=200&fit=crop', rating: 4.8, reviews: 4500 },
+  { id: 702, name: 'Vaseline Cocoa Butter Lotion', price: 220, mrp: 299, category: 'beauty', weight: '300 ml', img: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=200&h=200&fit=crop', rating: 4.7, reviews: 3100 },
+
+  // Baby Care category (Photo 6)
+  { id: 801, name: 'Pampers Baby Dry Diapers (M)', price: 399, mrp: 499, category: 'babycare', weight: '24 Pack', img: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=200&h=200&fit=crop', rating: 4.9, reviews: 6200 },
+  { id: 802, name: 'Himalaya Gentle Baby Wipes', price: 120, mrp: 160, category: 'babycare', weight: '72 Wipes', img: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=200&h=200&fit=crop', rating: 4.8, reviews: 2900 }
 ];
 
 function isTicketConfirmed(pnrData) {
@@ -2137,14 +2164,16 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
        </span>` : '';
 
   const buttonHTML = qty > 0
-    ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:32px;min-width:68px;z-index:10;">
-         <button style="width:22px;height:100%;color:#16a34a;font-size:16px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
-         <span style="flex:1;text-align:center;font-size:12px;font-weight:700;color:#111827;">${qty}</span>
-         <button style="width:22px;height:100%;color:#16a34a;font-size:16px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
+    ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:36px;min-width:76px;z-index:10;box-shadow:0 2px 4px rgba(22,163,74,0.08);">
+         <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
+         <span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:#111827;font-family:'Outfit',sans-serif;">${qty}</span>
+         <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
        </div>`
     : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
-         <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:32px;width:100%;font-size:11px;font-weight:800;letter-spacing:0.02em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;" onclick="event.stopPropagation();${addClickCode}">ADD</button>
+         <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:36px;width:100%;font-size:12px;font-weight:800;letter-spacing:0.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 2px 4px rgba(22,163,74,0.08);" onclick="event.stopPropagation();${addClickCode}">ADD</button>
        </div>`;
+
+
 
   return `
     <div style="cursor:pointer; background:#ffffff; border:1px solid #e5e7eb; border-radius:16px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; height:100%; box-shadow:0 1px 4px rgba(0,0,0,0.03);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
@@ -2240,31 +2269,333 @@ function renderProducts(products) {
   }
 }
 
+
+
 function filterCategory(cat, el) {
   appState.currentFilter = cat;
   document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
   if (el) el.classList.add('active');
   
-  // Update section title
-  const sectionTitle = document.getElementById('products-section');
-  if (sectionTitle) {
-    const titles = {
-      'all': 'Trending Essentials',
-      'monsoon': 'Monsoon Specials 🌧️',
-      'comfort': 'Travel & Comfort',
-      'beverages': 'Beverages & Drinks',
-      'hygiene': 'Hygiene & Care',
-      'tech': 'Tech & Power'
-    };
-    sectionTitle.textContent = titles[cat] || 'Trending Essentials';
+  const snacksGrid = document.getElementById('home-snacks-drinks-container');
+  const featuredSlider = document.getElementById('home-featured-container');
+  const customCategory = document.getElementById('custom-category-content-container');
+  const productsListSec = document.getElementById('products-list-section');
+  const heroBlock = document.querySelector('.rq-hero-block');
+
+  if (cat === 'all') {
+    if (snacksGrid) snacksGrid.style.display = 'block';
+    if (featuredSlider) featuredSlider.style.display = 'block';
+    if (productsListSec) productsListSec.style.display = 'block';
+    if (customCategory) customCategory.classList.add('hidden');
+    if (heroBlock) heroBlock.style.display = 'block';
+    
+    renderProducts(PRODUCTS);
+  } else {
+    if (snacksGrid) snacksGrid.style.display = 'none';
+    if (featuredSlider) featuredSlider.style.display = 'none';
+    if (productsListSec) productsListSec.style.display = 'none';
+    if (customCategory) {
+      customCategory.classList.remove('hidden');
+      renderCustomCategoryLayout(cat);
+    }
+    if (heroBlock) heroBlock.style.display = 'none';
+  }
+}
+
+window.filterMonsoonSubcategory = function(subcat, element) {
+  if (element) {
+    document.querySelectorAll('.monsoon-subcat').forEach(btn => {
+      btn.classList.remove('active');
+      btn.style.background = 'rgba(255,255,255,0.08)';
+      btn.style.color = '#ffffff';
+      btn.style.boxShadow = 'none';
+      const label = btn.querySelector('span:last-child');
+      if (label) label.style.color = 'rgba(255,255,255,0.85)';
+    });
+    element.classList.add('active');
+    element.style.background = '#ffffff';
+    element.style.color = '#0b1e36';
+    element.style.boxShadow = '0 4px 10px rgba(0,0,0,0.15)';
+    const label = element.querySelector('span:last-child');
+    if (label) label.style.color = '#0b1e36';
+  }
+
+  const grid = document.getElementById('monsoon-products-grid');
+  if (!grid) return;
+  
+  grid.dataset.activeCategory = 'monsoon';
+  const filtered = PRODUCTS.filter(p => p.category === 'monsoon' && p.subcategory === subcat);
+  
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="grid-column:span 2;text-align:center;padding:40px 0;color:rgba(255,255,255,0.45);font-size:12px;font-weight:600;">No products in this subcategory.</div>`;
+    return;
   }
   
-  // Render inline on shop page (no navigation)
-  renderProducts(PRODUCTS);
+  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+};
+
+window.renderTechCategoryProducts = function() {
+  const grid = document.getElementById('tech-products-grid');
+  if (!grid) return;
   
-  // Scroll to products section smoothly
-  const productsEl = document.getElementById('products-section');
-  if (productsEl) productsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  grid.dataset.activeCategory = 'tech';
+  const filtered = PRODUCTS.filter(p => p.category === 'tech');
+  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+};
+
+window.renderPharmacyCategoryProducts = function() {
+  const grid = document.getElementById('pharmacy-products-grid');
+  if (!grid) return;
+  
+  grid.dataset.activeCategory = 'pharmacy';
+  const filtered = PRODUCTS.filter(p => p.category === 'pharmacy');
+  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+};
+
+window.renderBeautyCategoryProducts = function() {
+  const grid = document.getElementById('beauty-products-grid');
+  if (!grid) return;
+  
+  grid.dataset.activeCategory = 'beauty';
+  const filtered = PRODUCTS.filter(p => p.category === 'beauty');
+  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+};
+
+window.renderBabyCategoryProducts = function() {
+  const grid = document.getElementById('baby-products-grid');
+  if (!grid) return;
+  
+  grid.dataset.activeCategory = 'babycare';
+  const filtered = PRODUCTS.filter(p => p.category === 'babycare');
+  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+};
+
+function renderCustomCategoryLayout(cat) {
+  const container = document.getElementById('custom-category-content-container');
+  if (!container) return;
+  
+  const activeLabel = document.querySelector('.rq-cdt.active')?.querySelector('.rq-cdt-label')?.textContent?.trim() || '';
+  
+  if (cat === 'monsoon') {
+    container.innerHTML = `
+      <div style="background:#0b1e36; padding:16px 14px; min-height:80vh;" class="text-white">
+        <!-- Monsoon Subcategories Row -->
+        <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:14px; margin-bottom:16px;" class="scrollbar-none">
+          <!-- Active Umbrella -->
+          <div onclick="filterMonsoonSubcategory('umbrella', this)" class="monsoon-subcat active" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:#ffffff; color:#0b1e36; border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.15);">
+            <span class="material-symbols-outlined" style="font-size:24px; color:#ec4899;">umbrella</span>
+            <span style="font-size:10px; font-weight:800; margin-top:6px; font-family:'Outfit',sans-serif; color:#0b1e36;">Umbrella</span>
+          </div>
+          <!-- Raincoats -->
+          <div onclick="filterMonsoonSubcategory('raincoat', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
+            <span class="material-symbols-outlined" style="font-size:24px; color:#fbbf24;">rainy</span>
+            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:rgba(255,255,255,0.85);">Raincoats</span>
+          </div>
+          <!-- Cloth Clips -->
+          <div onclick="filterMonsoonSubcategory('clips', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
+            <span class="material-symbols-outlined" style="font-size:24px; color:#60a5fa;">wc</span>
+            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:rgba(255,255,255,0.85);">Clips & Hangers</span>
+          </div>
+          <!-- Soups & Snacks -->
+          <div onclick="filterMonsoonSubcategory('soups', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
+            <span class="material-symbols-outlined" style="font-size:24px; color:#f87171;">soup_kitchen</span>
+            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:rgba(255,255,255,0.85);">Soups & Snacks</span>
+          </div>
+          <!-- Cough & Cold -->
+          <div onclick="filterMonsoonSubcategory('health', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
+            <span class="material-symbols-outlined" style="font-size:24px; color:#34d399;">medical_services</span>
+            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:rgba(255,255,255,0.85);">Cough & Cold</span>
+          </div>
+        </div>
+        
+        <!-- Monsoon Product Grid -->
+        <div id="monsoon-products-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <!-- Loaded dynamically -->
+        </div>
+        
+        <!-- See all products bottom banner -->
+        <div style="margin-top:20px; background:#1b3d6b; border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="filterCategory('all', null); setRQCatByLabel('All')">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="display:flex; -space-x:8px;">
+              <span class="material-symbols-outlined" style="background:#ffffff; color:#1b3d6b; font-size:18px; border-radius:50%; padding:3px;">umbrella</span>
+            </div>
+            <span style="font-size:12px; font-weight:800; font-family:'Outfit',sans-serif;">See all products</span>
+          </div>
+          <span class="material-symbols-outlined" style="font-size:18px;">chevron_right</span>
+        </div>
+      </div>
+    `;
+    filterMonsoonSubcategory('umbrella');
+  } 
+  else if (cat === 'tech') {
+    container.innerHTML = `
+      <div style="background:#090d16; padding:16px 14px; min-height:80vh;" class="text-white">
+        <!-- Horizontal Brand Banners -->
+        <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:12px; margin-bottom:16px;" class="scrollbar-none">
+          <!-- Banner 1 -->
+          <div style="flex:0 0 130px; height:80px; background:linear-gradient(135deg, #1e3a8a, #3b82f6); border-radius:14px; border:2px solid #3b82f6; padding:8px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;">
+            <span style="font-size:7px; font-weight:900; background:#fff; color:#1e3a8a; padding:1px 4px; border-radius:3px; max-width:fit-content; text-transform:uppercase;">Featured</span>
+            <span style="font-size:11px; font-weight:800; font-family:'Outfit',sans-serif; color:#fff;">LED Lights</span>
+          </div>
+          <!-- Banner 2 -->
+          <div style="flex:0 0 130px; height:80px; background:linear-gradient(135deg, #1f2937, #111827); border-radius:14px; border:2px solid #22c55e; padding:8px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;">
+            <span style="font-size:8px; font-weight:900; color:#22c55e; font-family:'Outfit',sans-serif; text-transform:uppercase; letter-spacing:0.05em;">DIGITEK</span>
+            <span style="font-size:11px; font-weight:800; font-family:'Outfit',sans-serif; color:#fff;">Ring Lights</span>
+          </div>
+          <!-- Banner 3 -->
+          <div style="flex:0 0 130px; height:80px; background:linear-gradient(135deg, #1e1b4b, #312e81); border-radius:14px; border:2px solid #2563eb; padding:8px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;">
+            <span style="font-size:7px; font-weight:900; background:#fff; color:#1e1b4b; padding:1px 4px; border-radius:3px; max-width:fit-content; text-transform:uppercase;">Power</span>
+            <span style="font-size:11px; font-weight:800; font-family:'Outfit',sans-serif; color:#fff;">Power Banks</span>
+          </div>
+          <!-- Banner 4 -->
+          <div style="flex:0 0 130px; height:80px; background:linear-gradient(135deg, #311042, #581c87); border-radius:14px; border:2px solid #c084fc; padding:8px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;">
+            <span style="font-size:7px; font-weight:900; background:#fff; color:#311042; padding:1px 4px; border-radius:3px; max-width:fit-content; text-transform:uppercase;">Speakers</span>
+            <span style="font-size:11px; font-weight:800; font-family:'Outfit',sans-serif; color:#fff;">BT Audio</span>
+          </div>
+        </div>
+
+        <!-- Big Summer Cooling Card -->
+        <div style="background:#e5e7eb; border-radius:20px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; color:#111827; position:relative; overflow:hidden;">
+          <div style="max-width:55%;">
+            <h4 style="font-size:16px; font-weight:900; margin:0; font-family:'Outfit',sans-serif; color:#111827; line-height:1.25;">Summers are here!</h4>
+            <p style="font-size:10px; color:#4b5563; margin:4px 0 12px 0; font-family:'Outfit',sans-serif; font-weight:500;">Beat the heat with fans & coolers</p>
+            <button style="background:#111827; color:#ffffff; font-size:10px; font-weight:850; padding:6px 12px; border-radius:8px; border:none; cursor:pointer; font-family:'Outfit',sans-serif;">Shop now</button>
+          </div>
+          <div style="width:100px; height:90px; display:flex; align-items:center; justify-content:center;">
+            <img src="https://images.unsplash.com/photo-1618944847023-38aa001235f0?w=140&h=140&fit=crop" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px;">
+          </div>
+        </div>
+
+        <h3 style="font-size:14px; font-weight:900; color:#ffffff; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Top Deals</h3>
+        <!-- Product Grid -->
+        <div id="tech-products-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+    `;
+    renderTechCategoryProducts();
+  }
+  else if (cat === 'hygiene') {
+    if (activeLabel.toLowerCase() === 'pharmacy') {
+      container.innerHTML = `
+        <div style="background:#091b29; padding:16px 14px; min-height:80vh;" class="text-white">
+          <!-- Large Pharmacy Insulin/Consultation Banner -->
+          <div style="background:linear-gradient(135deg, #0284c7, #0369a1); border-radius:20px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; position:relative; overflow:hidden;">
+            <div style="max-width:60%;">
+              <h4 style="font-size:16px; font-weight:900; margin:0; font-family:'Outfit',sans-serif; color:#ffffff; line-height:1.25;">Medicines and insulins available</h4>
+              <p style="font-size:10px; color:rgba(255,255,255,0.85); margin:6px 0 12px 0; font-family:'Outfit',sans-serif;"><span style="background:#fbbf24; color:#1e293b; font-size:8px; font-weight:900; padding:1px 4px; border-radius:3px; margin-right:4px;">FREE</span>Doctor consultation after ordering</p>
+              <button style="background:#ffffff; color:#0369a1; font-size:10px; font-weight:850; padding:6px 12px; border-radius:8px; border:none; cursor:pointer; font-family:'Outfit',sans-serif;">Shop now</button>
+            </div>
+            <div style="width:90px; height:90px; display:flex; align-items:center; justify-content:center;">
+              <img src="https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=140&h=140&fit=crop" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px;">
+            </div>
+          </div>
+
+          <!-- Featured Symptoms Row -->
+          <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:12px; margin-bottom:16px;" class="scrollbar-none">
+            <!-- Symptom 1 -->
+            <div style="flex:0 0 130px; height:80px; background:linear-gradient(135deg, #581c87, #3b0764); border-radius:14px; border:2px solid #5b21b6; padding:8px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;">
+              <span style="font-size:7px; font-weight:900; background:#fff; color:#581c87; padding:1px 4px; border-radius:3px; max-width:fit-content; text-transform:uppercase;">Featured</span>
+              <span style="font-size:11px; font-weight:800; font-family:'Outfit',sans-serif; color:#fff;">Headache</span>
+            </div>
+            <!-- Symptom 2 -->
+            <div style="flex:0 0 130px; height:80px; background:linear-gradient(135deg, #78350f, #451a03); border-radius:14px; border:2px solid #d97706; padding:8px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;">
+              <span style="font-size:7px; font-weight:900; background:#fff; color:#78350f; padding:1px 4px; border-radius:3px; max-width:fit-content; text-transform:uppercase;">Featured</span>
+              <span style="font-size:11px; font-weight:800; font-family:'Outfit',sans-serif; color:#fff;">Fever</span>
+            </div>
+            <!-- Symptom 3 -->
+            <div style="flex:0 0 130px; height:80px; background:linear-gradient(135deg, #1e3a8a, #172554); border-radius:14px; border:2px solid #2563eb; padding:8px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;">
+              <span style="font-size:7px; font-weight:900; background:#fff; color:#1e3a8a; padding:1px 4px; border-radius:3px; max-width:fit-content; text-transform:uppercase;">Featured</span>
+              <span style="font-size:11px; font-weight:800; font-family:'Outfit',sans-serif; color:#fff;">Pain Relief</span>
+            </div>
+          </div>
+
+          <!-- Shop by Category circles -->
+          <h3 style="font-size:14px; font-weight:900; color:#ffffff; margin:16px 0 12px 0; font-family:'Outfit',sans-serif;">Shop by category</h3>
+          <div style="display:flex; gap:16px; overflow-x:auto; padding-bottom:8px; margin-bottom:20px;" class="scrollbar-none">
+            <div style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; flex:0 0 auto;">
+              <div style="width:60px; height:60px; border-radius:50%; background:#102e46; border:1px solid #1e425f; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=60&h=60&fit=crop" style="max-width:80%; max-height:80%; object-fit:contain;">
+              </div>
+              <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.85); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Cough, Cold</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; flex:0 0 auto;">
+              <div style="width:60px; height:60px; border-radius:50%; background:#102e46; border:1px solid #1e425f; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                <img src="https://images.unsplash.com/photo-1550572017-edd951b55104?w=60&h=60&fit=crop" style="max-width:80%; max-height:80%; object-fit:contain;">
+              </div>
+              <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.85); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Stomach Care</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; flex:0 0 auto;">
+              <div style="width:60px; height:60px; border-radius:50%; background:#102e46; border:1px solid #1e425f; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=60&h=60&fit=crop" style="max-width:80%; max-height:80%; object-fit:contain;">
+              </div>
+              <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.85); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Pain & Aid</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; flex:0 0 auto;">
+              <div style="width:60px; height:60px; border-radius:50%; background:#102e46; border:1px solid #1e425f; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                <img src="https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=60&h=60&fit=crop" style="max-width:80%; max-height:80%; object-fit:contain;">
+              </div>
+              <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.85); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Antibiotics</span>
+            </div>
+          </div>
+
+          <h3 style="font-size:14px; font-weight:900; color:#ffffff; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Top Products</h3>
+          <!-- Product Grid -->
+          <div id="pharmacy-products-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+      `;
+      renderPharmacyCategoryProducts();
+    } else {
+      container.innerHTML = `
+        <div style="background:#1d0e1b; padding:16px 14px; min-height:80vh;" class="text-white">
+          <!-- Large Beauty Banner -->
+          <div style="background:linear-gradient(135deg, #ec4899, #db2777); border-radius:20px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div style="max-width:60%;">
+              <h4 style="font-size:16px; font-weight:900; margin:0; font-family:'Outfit',sans-serif; color:#ffffff; line-height:1.25;">Glow & Groom Essentials</h4>
+              <p style="font-size:10px; color:rgba(255,255,255,0.85); margin:6px 0 12px 0; font-family:'Outfit',sans-serif;">Get flat 15% off on major skincare brands</p>
+              <button style="background:#ffffff; color:#db2777; font-size:10px; font-weight:850; padding:6px 12px; border-radius:8px; border:none; cursor:pointer; font-family:'Outfit',sans-serif;">Shop now</button>
+            </div>
+            <div style="width:90px; height:90px; display:flex; align-items:center; justify-content:center;">
+              <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=140&h=140&fit=crop" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px;">
+            </div>
+          </div>
+
+          <h3 style="font-size:14px; font-weight:900; color:#ffffff; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Beauty & Care</h3>
+          <!-- Product Grid -->
+          <div id="beauty-products-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+      `;
+      renderBeautyCategoryProducts();
+    }
+  } 
+  else if (cat === 'comfort') {
+    container.innerHTML = `
+      <div style="background:#11202e; padding:16px 14px; min-height:80vh;" class="text-white">
+        <!-- Large Baby Care Banner -->
+        <div style="background:linear-gradient(135deg, #06b6d4, #0891b2); border-radius:20px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <div style="max-width:60%;">
+            <h4 style="font-size:16px; font-weight:900; margin:0; font-family:'Outfit',sans-serif; color:#ffffff; line-height:1.25;">Baby Care & Wipes</h4>
+            <p style="font-size:10px; color:rgba(255,255,255,0.85); margin:6px 0 12px 0; font-family:'Outfit',sans-serif;">Extra gentle protection for your little ones</p>
+            <button style="background:#ffffff; color:#0891b2; font-size:10px; font-weight:850; padding:6px 12px; border-radius:8px; border:none; cursor:pointer; font-family:'Outfit',sans-serif;">Shop now</button>
+          </div>
+          <div style="width:90px; height:90px; display:flex; align-items:center; justify-content:center;">
+            <img src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=140&h=140&fit=crop" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px;">
+          </div>
+        </div>
+
+        <h3 style="font-size:14px; font-weight:900; color:#ffffff; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Baby Essentials</h3>
+        <!-- Product Grid -->
+        <div id="baby-products-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+    `;
+    renderBabyCategoryProducts();
+  }
 }
 
 function renderCategoryProducts(cat) {
@@ -2476,40 +2807,36 @@ function applyPromoCode() {
   }
 }
 
+
+
 function updateSingleProductCardDOM(productId) {
-  const card = document.querySelector(`.product-card-premium[data-product-id="${productId}"]`);
-  if (!card) return;
-  
-  const product = PRODUCTS.find(p => p.id === productId);
-  if (!product) return;
-  
-  const inCart = appState.cart.find(c => c.id === productId);
-  const qty = inCart ? inCart.qty : 0;
-  
-  const wrapper = card.querySelector(`.qty-btn-wrapper[data-product-id="${productId}"]`);
-  if (wrapper) {
-    let optionsLabel = '';
-    if (product.id === 101) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">3 options</div>';
-    else if (product.id === 105) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">2 options</div>';
-    else if (product.id === 401) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">2 options</div>';
+  const cards = document.querySelectorAll(`.product-card-premium[data-product-id="${productId}"]`);
+  cards.forEach(card => {
+    const product = PRODUCTS.find(p => p.id === productId);
+    if (!product) return;
+    
+    const inCart = appState.cart.find(c => c.id === productId);
+    const qty = inCart ? inCart.qty : 0;
+    
+    const wrapper = card.querySelector(`.qty-btn-wrapper[data-product-id="${productId}"]`);
+    if (wrapper) {
+      const grid = card.closest('#category-products-grid') || card.closest('[id$="-products-grid"]');
+      const cat = grid ? (grid.dataset.activeCategory || '') : '';
+      const changeHandler = grid ? `changeCategoryProductQty` : `changeProductQty`;
+      const addHandler = grid ? `addCategoryProductToCart` : `addToCart`;
+      const changeArgsSuffix = grid ? `, '${cat}'` : '';
 
-    const grid = card.closest('#category-products-grid');
-    const cat = grid ? grid.dataset.activeCategory : '';
-    const changeHandler = grid ? `changeCategoryProductQty` : `changeProductQty`;
-    const addHandler = grid ? `addCategoryProductToCart` : `addToCart`;
-    const changeArgsSuffix = grid ? `, '${cat}'` : '';
-
-    wrapper.innerHTML = qty > 0
-      ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:32px;min-width:68px;z-index:10;">
-           <button style="width:22px;height:100%;color:#16a34a;font-size:16px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${product.id},-1${changeArgsSuffix})">−</button>
-           <span style="flex:1;text-align:center;font-size:12px;font-weight:700;color:#111827;">${qty}</span>
-           <button style="width:22px;height:100%;color:#16a34a;font-size:16px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${product.id},1${changeArgsSuffix})">+</button>
-         </div>`
-      : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
-           <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:32px;width:100%;font-size:11px;font-weight:800;letter-spacing:0.02em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;" onclick="event.stopPropagation();${addHandler}(${product.id}${changeArgsSuffix})">ADD</button>
-           ${optionsLabel}
-         </div>`;
-  }
+      wrapper.innerHTML = qty > 0
+        ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:36px;min-width:76px;z-index:10;box-shadow:0 2px 4px rgba(22,163,74,0.08);">
+             <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${product.id},-1${changeArgsSuffix})">−</button>
+             <span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:#111827;font-family:'Outfit',sans-serif;">${qty}</span>
+             <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${product.id},1${changeArgsSuffix})">+</button>
+           </div>`
+        : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
+             <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:36px;width:100%;font-size:12px;font-weight:800;letter-spacing:0.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 2px 4px rgba(22,163,74,0.08);" onclick="event.stopPropagation();${addHandler}(${product.id}${changeArgsSuffix})">ADD</button>
+           </div>`;
+    }
+  });
 }
 
 function addToCart(productId) {

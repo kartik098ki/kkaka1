@@ -128,6 +128,14 @@
       if (window.appState && typeof window.renderCustomCategoryLayout === 'function' && window.appState.currentFilter !== 'all') {
         window.renderCustomCategoryLayout(window.appState.currentFilter);
       }
+      
+      // Re-render cart page if active
+      if (typeof window.initCartPage === 'function' && window.appState && window.appState.currentPage === 'page-cart') {
+        window.initCartPage();
+      }
+      // Update cart FAB and checkout bar colors
+      if (typeof window.updateCartFAB === 'function') window.updateCartFAB();
+      if (typeof window.updateStickyBottomBar === 'function') window.updateStickyBottomBar();
 
       // Update button icon
       const btn = document.getElementById('theme-toggle-btn');
@@ -1078,16 +1086,12 @@ input, textarea, select { font-size: 16px !important; }
 
 .products-grid-premium { gap: 18px !important; }
 .product-card-premium {
-  border-radius: 16px !important;
-  padding: 12px !important;
-  min-height: 248px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
-  border: 1.5px solid #ECEFF1 !important;
-  background: #ffffff !important;
-}
-.product-card-premium .product-img-wrap {
   border-radius: 12px !important;
-  background: transparent !important;
+  padding: 8px !important;
+  min-height: auto;
+  box-shadow: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  background: #ffffff !important;
 }
 .qty-control-premium,
 .add-btn-premium {
@@ -1500,12 +1504,6 @@ body { background-color: #10151d; }
 .shop-hero-train-img {
   display: none !important;
 }
-.product-card-premium {
-  border-radius: 24px !important;
-  background: var(--card-bg, #ffffff) !important;
-  box-shadow: var(--card-shadow, 0 12px 28px rgba(15,23,42,0.06)) !important;
-  border: var(--card-border, none) !important;
-}
 .add-btn-premium {
   min-width: 76px !important;
   height: 34px !important;
@@ -1671,14 +1669,14 @@ body { background-color: #10151d; }
 .modal-mini-product { min-width:92px; background:#fff; border:1px solid #edf2ef; border-radius:16px; padding:8px; }
 .modal-mini-product img { width:100%; aspect-ratio:1; object-fit:contain; background:#f7faf8; border-radius:12px; padding:6px; }
 .modal-mini-product span { display:block; font-size:9px; font-weight:850; color:#15231f; margin-top:5px; line-height:1.1; }
-.cart-premium-block { background:#fff; border:1px solid rgba(15,23,42,.06); border-radius:24px; padding:16px; margin:0 20px 14px; box-shadow:0 10px 26px rgba(15,23,42,.055); }
-.cart-premium-block h3 { font-size:13px; font-weight:950; color:#15231f; margin-bottom:10px; }
-.cart-addon-row { display:flex; gap:10px; overflow-x:auto; }
-.cart-addon { min-width:118px; border:1px solid #edf2ef; border-radius:18px; padding:9px; background:#fbfdfc; }
-.cart-addon img { width:100%; height:70px; object-fit:contain; }
-.cart-addon b { display:block; font-size:10px; line-height:1.15; color:#15231f; }
-.cart-addon button { margin-top:7px; width:100%; border-radius:999px; background:#006b4f; color:white; font-size:9px; font-weight:950; padding:7px; }
-.pull-refresh-hint { margin:10px 20px 0; padding:10px; border-radius:18px; background:#edf8f2; color:#006b4f; font-size:10px; font-weight:850; text-align:center; }
+.cart-premium-block { background:var(--cart-card-bg, #fff); border:1px solid var(--cart-border, rgba(15,23,42,.06)); border-radius:12px; padding:12px; margin:0 16px 8px; }
+.cart-premium-block h3 { font-size:12px; font-weight:800; color:var(--cart-text, #15231f); margin-bottom:8px; }
+.cart-addon-row { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
+.cart-addon { min-width:105px; border:1px solid var(--cart-border, #edf2ef); border-radius:12px; padding:8px; background:var(--cart-card-bg, #fbfdfc); }
+.cart-addon img { width:100%; height:60px; object-fit:contain; border-radius:8px; background:var(--cart-img-bg, #f3f4f6); padding:4px; }
+.cart-addon b { display:block; font-size:9px; line-height:1.15; color:var(--cart-text, #15231f); margin-top:4px; }
+.cart-addon button { margin-top:5px; width:100%; border-radius:8px; background:#0C8346; color:white; font-size:9px; font-weight:900; padding:6px; border:none; cursor:pointer; }
+.pull-refresh-hint { margin:8px 16px 0; padding:8px; border-radius:10px; background:var(--cart-accent-bg, #ecfdf5); color:#0C8346; font-size:10px; font-weight:800; text-align:center; }
 
 
 /* ===== COMPACT PREMIUM REFINEMENT PASS ===== */
@@ -2367,11 +2365,11 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
       body.dark-theme .product-card-premium,
       .dark-theme .product-card-premium {
-        background: #1A1C22 !important;
-        border: 1px solid #2C313A !important;
-        border-radius: 16px !important;
+        background: #1D1F24 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 12px !important;
         box-shadow: none !important;
-        padding: 10px !important;
+        padding: 8px !important;
         min-height: auto !important;
       }
       body.dark-theme [id$="-products-grid"],
@@ -2428,14 +2426,14 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       /* Brand row */
       .rq-hero-label {
         font-family: 'Outfit', sans-serif;
-        font-size: 10px;
-        font-weight: 700;
+        font-size: 8.5px;
+        font-weight: 500;
         color: #FFFFFF;
         opacity: 0.85;
         line-height: 1;
         margin: 0 0 5px 0;
         letter-spacing: 0.03em;
-        text-transform: uppercase;
+        text-transform: none;
       }
       .rq-hero-info-row {
         display: flex;
@@ -2536,12 +2534,11 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
       /* Tagline — shifted right to prevent overlap and fit in empty space */
       .rq-hero-tagline {
-        position: absolute;
-        top: 65%;
-        left: 60px;
+        margin-top: 12px;
         z-index: 10;
         text-align: left;
         max-width: 260px;
+        padding-left: 8px;
       }
       .rq-hero-tagline-sub {
         font-family: 'Outfit', sans-serif;
@@ -2620,7 +2617,8 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     </style>
 
     <!-- Hero block -->
-    <div class="rq-hero-block">
+    <div class="rq-hero-block" style="position: relative;">
+      <canvas id="rain-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;"></canvas>
       <div class="rq-hero-overlay"></div>
 
       <!-- ── Top panel: brand + search ── -->
@@ -2656,12 +2654,12 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
             <span class="material-symbols-outlined" style="font-size:24px; color:rgba(255,255,255,0.62); font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">mic</span>
           </div>
         </div>
-      </div>
 
-      <!-- ── Bottom tagline over train image ── -->
-      <div class="rq-hero-tagline">
-        <span class="rq-hero-tagline-sub">Everything you need for</span>
-        <span id="changing-word" class="rq-hero-tagline-main" style="transition: opacity 0.3s ease, transform 0.3s ease;">Travel</span>
+        <!-- ── Bottom tagline over train image (moved under search bar) ── -->
+        <div class="rq-hero-tagline">
+          <span class="rq-hero-tagline-sub">Everything you need for</span>
+          <span id="changing-word" class="rq-hero-tagline-main" style="transition: opacity 0.3s ease, transform 0.3s ease;">Travel</span>
+        </div>
       </div>
 
     </div>
@@ -2843,88 +2841,109 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
   </div>
 
   <!-- ==================== CART PAGE ==================== -->
-  <div id="page-cart" class="page bg-background">
-    <div class="sticky top-0 bg-white border-b border-outline-variant/60 px-5 py-4 flex justify-between items-center z-40 shadow-sm">
-      <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-primary active:scale-90 transition-transform" onclick="navigateTo('page-shop')">
-        <span class="material-symbols-outlined text-xl">arrow_back</span>
+  <div id="page-cart" class="page" style="background: var(--cart-page-bg, #f7f9f8);">
+    <!-- Cart Header -->
+    <div class="rq-cart-header sticky top-0 z-40 flex justify-between items-center px-4 py-3" style="background: var(--cart-header-bg, #ffffff); border-bottom: 1px solid var(--cart-border, rgba(0,0,0,0.06));">
+      <button class="w-9 h-9 flex items-center justify-center rounded-full active:scale-90 transition-transform" style="background: var(--cart-btn-bg, #f3f4f6); color: var(--cart-text, #1f2937);" onclick="navigateTo('page-shop')">
+        <span class="material-symbols-outlined text-lg">arrow_back</span>
       </button>
-      <h2 class="text-base font-headline font-bold text-on-surface">My Cart</h2>
-      <button class="text-xs font-bold text-red-600 hover:text-red-800" onclick="clearCart()">Clear</button>
+      <h2 class="text-sm font-bold font-sans" style="color: var(--cart-text, #1f2937);">My Cart</h2>
+      <button class="text-[11px] font-bold text-red-500" onclick="clearCart()">Clear all</button>
     </div>
 
-    <!-- Seat Delivery Info -->
-    <div class="m-5 bg-white border-l-4 border-primary rounded-xl p-4 flex gap-3 shadow-sm" id="delivery-card">
-      <span class="material-symbols-outlined text-primary text-xl">location_on</span>
-      <div class="flex-1">
-        <div class="text-xs font-bold text-on-surface">Delivering to your seat</div>
-        <div class="text-[10px] text-gray-500 mt-1" id="delivery-detail">Please enter ticket PNR to verify seat</div>
+    <!-- Seat Delivery Info - Compact -->
+    <div class="mx-4 mt-3 rounded-xl px-3 py-2.5 flex items-center gap-2.5" id="delivery-card" style="background: var(--cart-card-bg, #ffffff); border: 1px solid var(--cart-border, rgba(0,0,0,0.06));">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style="background: var(--cart-accent-bg, #ecfdf5);">
+        <span class="material-symbols-outlined text-[16px]" style="color: #0C8346;">location_on</span>
       </div>
-      <button class="text-xs font-bold text-secondary" onclick="navigateTo('page-pnr')">Change</button>
+      <div class="flex-1 min-w-0">
+        <div class="text-[11px] font-bold" style="color: var(--cart-text, #1f2937);">Delivering to your seat</div>
+        <div class="text-[9px] mt-0.5 truncate" style="color: var(--cart-muted, #6b7280);" id="delivery-detail">Please enter ticket PNR to verify seat</div>
+      </div>
+      <button class="text-[10px] font-bold shrink-0" style="color: #0C8346;" onclick="navigateTo('page-pnr')">Change</button>
     </div>
 
     <!-- Cart items list container -->
-    <div id="cart-items-list" class="px-5 space-y-3"></div>
+    <div id="cart-items-list" class="px-4 mt-3" style="display:flex;flex-direction:column;gap:8px;"></div>
 
     <!-- Empty state -->
     <div id="cart-empty" class="text-center py-16 px-6 hidden">
-      <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4 text-gray-400">
-        <span class="material-symbols-outlined text-4xl">shopping_cart</span>
+      <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style="background: var(--cart-card-bg, #f3f4f6);">
+        <span class="material-symbols-outlined text-3xl" style="color: var(--cart-muted, #9ca3af);">shopping_cart</span>
       </div>
-      <h3 class="font-headline text-base font-bold text-on-surface">Your cart is empty</h3>
-      <p class="text-xs text-gray-500 mt-1 mb-6">Add travel essentials for your journey!</p>
-      <button class="bg-primary text-white px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider" onclick="navigateTo('page-shop')">Browse Products</button>
+      <h3 class="font-sans text-sm font-bold" style="color: var(--cart-text, #1f2937);">Your cart is empty</h3>
+      <p class="text-[11px] mt-1 mb-5" style="color: var(--cart-muted, #6b7280);">Add travel essentials for your journey!</p>
+      <button class="bg-[#0C8346] text-white px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider active:scale-95 transition-all" onclick="navigateTo('page-shop')">Browse Products</button>
     </div>
 
     <!-- Promo code input box -->
-    <div class="mx-5 my-6 bg-white border border-outline-variant/60 rounded-2xl p-4 shadow-sm">
-      <div class="text-xs font-bold text-on-surface flex items-center gap-1.5 mb-3">
-        <span class="material-symbols-outlined text-primary text-base">local_offer</span>
+    <div class="mx-4 mt-4 rounded-xl px-3 py-3" style="background: var(--cart-card-bg, #ffffff); border: 1px solid var(--cart-border, rgba(0,0,0,0.06));">
+      <div class="text-[11px] font-bold flex items-center gap-1.5 mb-2" style="color: var(--cart-text, #1f2937);">
+        <span class="material-symbols-outlined text-sm" style="color: #0C8346;">local_offer</span>
         Apply Promo Code
       </div>
       <div class="flex gap-2">
-        <input type="text" id="promo-input" class="flex-1 bg-[#F4F6F5] border border-outline-variant rounded-xl px-3.5 py-2 text-xs uppercase tracking-wider focus:outline-none focus:border-primary" placeholder="Enter Code (RAILQUICK15)" />
-        <button onclick="applyPromoCode()" class="bg-primary text-white font-headline font-bold text-xs px-4 rounded-xl hover:bg-primary-light transition-all">Apply</button>
+        <input type="text" id="promo-input" class="flex-1 rounded-lg px-3 py-2 text-[11px] uppercase tracking-wider focus:outline-none font-sans" style="background: var(--cart-input-bg, #f3f4f6); border: 1px solid var(--cart-border, rgba(0,0,0,0.06)); color: var(--cart-text, #1f2937);" placeholder="Enter Code (RAILQUICK15)" />
+        <button onclick="applyPromoCode()" class="bg-[#0C8346] text-white font-bold text-[11px] px-4 rounded-lg active:scale-95 transition-all">Apply</button>
       </div>
       <div id="promo-status" class="text-[10px] font-bold hidden mt-2"></div>
     </div>
 
     <!-- Billing Summary receipt -->
-    <div id="cart-summary" class="mx-5 bg-white border border-outline-variant/60 rounded-2xl p-4 space-y-3 shadow-sm">
-      <div class="flex justify-between text-xs text-gray-500">
+    <div id="cart-summary" class="mx-4 mt-3 rounded-xl px-3 py-3 space-y-2" style="background: var(--cart-card-bg, #ffffff); border: 1px solid var(--cart-border, rgba(0,0,0,0.06));">
+      <div class="flex justify-between text-[11px]" style="color: var(--cart-muted, #6b7280);">
         <span>Items Subtotal</span>
-        <span id="summary-subtotal">₹0</span>
+        <span id="summary-subtotal" class="font-bold font-sans">₹0</span>
       </div>
-      <div class="flex justify-between text-xs text-gray-500">
+      <div class="flex justify-between text-[11px]" style="color: var(--cart-muted, #6b7280);">
         <span>Delivery Partner Fee</span>
-        <span id="summary-delivery">₹30</span>
+        <span id="summary-delivery" class="font-bold font-sans">₹30</span>
       </div>
-      <div class="flex justify-between text-xs text-gray-500">
+      <div class="flex justify-between text-[11px]" style="color: var(--cart-muted, #6b7280);">
         <span>Station Handling Fee</span>
-        <span id="summary-handling">₹10</span>
+        <span id="summary-handling" class="font-bold font-sans">₹10</span>
       </div>
-      <div class="flex justify-between text-xs text-gray-500">
+      <div class="flex justify-between text-[11px]" style="color: var(--cart-muted, #6b7280);">
         <span>Tax GST (5%)</span>
-        <span id="summary-gst">₹0</span>
+        <span id="summary-gst" class="font-bold font-sans">₹0</span>
       </div>
-      <div class="border-t border-dashed border-gray-200 pt-2 flex justify-between text-sm font-bold text-on-surface">
-        <span>Grand Total</span>
-        <span id="summary-total" class="text-secondary font-black">₹0</span>
+      <div class="pt-2 flex justify-between text-xs font-bold" style="border-top: 1px dashed var(--cart-border, rgba(0,0,0,0.1));">
+        <span style="color: var(--cart-text, #1f2937);">Grand Total</span>
+        <span id="summary-total" class="font-black font-sans" style="color: #0C8346;">₹0</span>
       </div>
     </div>
 
-    <div class="px-5 mt-8">
-      <button class="w-full bg-primary text-white py-4 rounded-xl font-headline font-bold hover:bg-primary-light active:scale-[0.98] transition-all shadow-md uppercase tracking-wider text-xs" onclick="proceedToCheckout()">Proceed to Checkout →</button>
+    <!-- Bottom Checkout Bar -->
+    <div class="px-4 mt-4 pb-6">
+      <div id="cart-bottom-bar" class="flex items-center justify-between rounded-[18px] px-4 py-2" style="background: var(--cart-card-bg, #ffffff); border: 1px solid var(--cart-border, rgba(0,0,0,0.06)); box-shadow: 0 8px 24px rgba(0,0,0,0.08); height: 56px;">
+        <div class="flex flex-col leading-tight">
+          <span class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--cart-muted, #6b7280);">Total</span>
+          <span id="cart-bottom-total" class="text-sm font-black font-sans" style="color: var(--cart-text, #1f2937);">₹0</span>
+        </div>
+        <button class="bg-[#0C8346] text-white px-5 py-2 rounded-xl font-sans font-bold flex items-center gap-1.5 active:scale-95 transition-all text-xs hover:bg-[#0a723d] shadow-sm" style="height: 38px;" onclick="proceedToCheckout()">
+          <span>Checkout</span>
+          <span class="material-symbols-outlined text-[15px] font-bold">play_arrow</span>
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- ==================== CHECKOUT PAGE ==================== -->
-  <div id="page-checkout" class="page bg-background">
-    <div class="sticky top-0 bg-white border-b border-outline-variant/60 px-5 py-4 flex justify-between items-center z-40 shadow-sm">
-      <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-primary active:scale-90 transition-transform" onclick="navigateTo('page-cart')">
-        <span class="material-symbols-outlined text-xl">arrow_back</span>
+  <div id="page-checkout" class="page bg-background" style="display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 74px; overflow-y: auto;">
+    <div class="sticky top-0 bg-white border-b border-outline-variant/60 px-4 py-3 flex justify-between items-center z-40 shadow-sm">
+      <button class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-50 text-gray-700 active:scale-90 transition-all border border-gray-100" onclick="navigateTo('page-cart')">
+        <span class="material-symbols-outlined text-xl font-bold">arrow_back</span>
       </button>
-      <h2 class="text-base font-headline font-bold text-on-surface">Checkout</h2>
-      <div class="w-9 h-9"></div>
+      <h2 class="text-sm font-bold text-gray-800 font-sans" style="position: absolute; left: 50%; transform: translateX(-50%);">Checkout</h2>
+      <div class="flex items-center gap-1.5">
+        <button class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-50 text-gray-750 active:scale-90 transition-all border border-gray-100" onclick="showToast('Search product catalog', 'info')">
+          <span class="material-symbols-outlined text-xl">search</span>
+        </button>
+        <button class="h-9 px-3 flex items-center justify-center gap-1.5 rounded-full bg-gray-50 text-gray-750 active:scale-90 transition-all border border-gray-100 text-[11px] font-bold" onclick="showToast('Link copied to clipboard!', 'success')">
+          <span class="material-symbols-outlined text-sm">share</span>
+          Share
+        </button>
+      </div>
     </div>
 
     <!-- Step Indicators -->
@@ -3012,18 +3031,9 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         </div>
       </div>
 
-      <h3 class="text-xs font-bold text-primary uppercase tracking-wider mb-4 flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-base">shopping_bag</span>
-        Order Items
-      </h3>
-      <div id="checkout-items-mini" class="space-y-2 mb-5"></div>
-
-      <div class="bg-white border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex justify-between items-center">
-        <span class="text-xs font-bold text-gray-500">Total Payable</span>
-        <span class="text-base font-black text-secondary" id="checkout-total-amt">₹0</span>
-      </div>
-
-      <button class="w-full bg-primary text-white py-4 rounded-xl font-headline font-bold hover:bg-primary-light active:scale-95 transition-all mt-6 uppercase tracking-wider text-xs" onclick="goToPayment()">Continue to Payment →</button>
+      <div id="checkout-items-mini" class="space-y-4 mb-4"></div>
+      <div id="checkout-recommended-container"></div>
+      <div id="checkout-bill-details-container"></div>
     </div>
 
     <!-- Step 2 Payment panel -->
@@ -3084,15 +3094,6 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         </div>
       </div>
 
-      <div class="bg-white border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex justify-between items-center mb-6">
-        <span class="text-xs font-bold text-gray-500">Payable Total</span>
-        <span class="text-base font-black text-primary animate-pulse" id="pay-total-amt">₹0</span>
-      </div>
-
-      <button class="w-full bg-primary text-white py-4 rounded-xl font-headline font-bold hover:bg-primary-light active:scale-95 transition-all uppercase tracking-wider text-xs flex justify-center items-center gap-1.5 shadow-lg" onclick="placeOrder()">
-        <span class="material-symbols-outlined text-base">lock</span>
-        Securely Pay &amp; Place Order
-      </button>
       <p class="secure-note text-[9px] text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
         <span class="material-symbols-outlined text-xs text-primary">verified</span>
         Safe &amp; secure 128-bit SSL encrypted payment gateway
@@ -3126,7 +3127,34 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
           <button class="w-full bg-white border border-outline-variant text-on-surface py-3.5 rounded-2xl font-headline font-bold active:scale-95 transition-all text-xs" onclick="navigateTo('page-shop')">Continue Shopping</button>
         </div>
       </div>
-    </div>  </div>
+    </div>
+    <!-- Sticky Bottom Bar -->
+    <div id="checkout-sticky-bar" class="fixed bottom-4 left-1/2 -translate-x-1/2 w-11/12 max-w-[385px] z-50 flex justify-between items-center px-4 py-2 rounded-[20px] border transition-all duration-300" style="box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15); height: 60px;">
+      <!-- Left side: Payment Method Selector/Indicator -->
+      <div class="flex items-center gap-3 cursor-pointer active:scale-98 transition-all shrink min-w-0" onclick="scrollToPaymentMethods()">
+        <img id="sticky-payment-icon" src="https://img.icons8.com/color/48/google-pay.png" class="w-8 h-8 object-contain shrink-0" onerror="this.src='https://img.icons8.com/color/48/wallet.png'" />
+        <div class="text-left leading-tight min-w-0">
+          <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">PAY USING</span>
+          <span id="sticky-payment-name" class="text-xs font-bold text-gray-800 flex items-center gap-0.5 truncate">
+            Google Pay UPI
+            <span class="material-symbols-outlined text-[12px] font-bold text-gray-505">keyboard_arrow_up</span>
+          </span>
+        </div>
+      </div>
+      
+      <!-- Right side: Green Place Order Button -->
+      <button onclick="handleCheckoutPrimaryAction()" class="flex items-center justify-between bg-[#0C8346] text-white px-4 py-2 rounded-xl active:scale-95 transition-all font-sans font-bold shadow-md hover:bg-[#0b733e] shrink-0" style="height: 38px; width: 175px;">
+        <div class="text-left leading-none">
+          <span id="sticky-total-price" class="text-xs font-extrabold block text-white">₹0</span>
+          <span class="text-[8px] font-semibold text-emerald-100 uppercase tracking-widest mt-0.5 block">TOTAL</span>
+        </div>
+        <div class="flex items-center gap-0.5">
+          <span id="sticky-action-text" class="text-[10px] uppercase tracking-wider font-extrabold text-white">Place Order</span>
+          <span class="material-symbols-outlined text-sm font-bold text-white">play_arrow</span>
+        </div>
+      </button>
+    </div>
+  </div>
 
   <!-- ==================== ORDERS PAGE ==================== -->
   <div id="page-orders" class="page tab-page bg-background">
@@ -3604,21 +3632,25 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     </div>
   </div>
 
-  <!-- Sticky Cart FAB on Shopping Front -->
-  <!-- Sticky Cart FAB on Shopping Front -->
-  <button id="cart-fab" class="cart-fab fixed bottom-[104px] left-1/2 -translate-x-1/2 text-white flex items-center justify-between w-11/12 max-w-[370px] px-5 py-2.5 rounded-full z-40 shadow-2xl active:scale-95 transition-all hidden" onclick="navigateTo('page-cart')">
-    <div class="flex items-center gap-3">
-      <!-- Overlapping stacked items preview -->
-      <div id="cart-fab-preview" class="flex items-center">
+  <!-- Sticky Bottom Cart Bar on Shopping Front -->
+  <div id="cart-fab" class="fixed bottom-[94px] left-1/2 -translate-x-1/2 z-50 flex items-center justify-between w-11/12 max-w-[380px] px-4 py-2 rounded-[20px] border transition-all duration-300 hidden" style="box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15); height: 60px;">
+    <!-- Left side: Items preview & stacked thumbnails -->
+    <div class="flex items-center gap-3 min-w-0" onclick="navigateTo('page-cart')" style="cursor: pointer;">
+      <div id="cart-fab-preview" class="flex items-center shrink-0">
         <!-- Dynamic thumbs injected here -->
       </div>
-      <div class="flex flex-col text-left justify-center pl-1">
-        <span class="text-sm font-bold text-white tracking-wide leading-none">View cart</span>
-        <span class="text-[11px] text-white/90 mt-1 font-medium" id="cart-fab-count">0 items</span>
+      <div class="flex flex-col text-left justify-center min-w-0 leading-tight">
+        <span id="cart-fab-title" class="text-xs font-extrabold font-sans text-gray-800">View Cart</span>
+        <span id="cart-fab-count" class="text-[10px] mt-0.5 font-bold text-gray-500">0 items</span>
       </div>
     </div>
-    <span class="material-symbols-outlined text-white text-xl mr-1 font-bold">chevron_right</span>
-  </button>
+    
+    <!-- Right side: Green CTA Button -->
+    <button onclick="navigateTo('page-cart')" class="bg-[#0C8346] text-white px-4 py-2 rounded-xl font-sans font-bold flex items-center gap-1.5 active:scale-95 transition-all text-xs shrink-0 hover:bg-[#0a723d] shadow-sm" style="height: 38px;">
+      <span>View Cart</span>
+      <span class="material-symbols-outlined text-[15px] font-bold">play_arrow</span>
+    </button>
+  </div>
 
   <!-- Loader Overlay -->
   <div id="loading-overlay" class="loading-overlay fixed inset-0 bg-black/75 backdrop-blur-md flex flex-col items-center justify-center z-[1000] hidden transition-opacity duration-300">

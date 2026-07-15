@@ -1050,45 +1050,7 @@ function getCarouselHTML(title, subtitle, categoryFilter) {
 function getDashboardProductCardHTML(p) {
   const inCart = appState.cart.find(c => c.id === p.id);
   const qty = inCart ? inCart.qty : 0;
-  const ratingText = p.rating ? `★ ${p.rating}` : '★ 4.8';
-  const weightText = p.weight ? p.weight : '1 unit';
-  
-  const cardClass = qty > 0
-    ? 'product-card-premium bg-white rounded-2xl p-3 border border-primary/40 shadow-premium-glow flex flex-col group cursor-pointer hover:border-primary/20 active:scale-[0.98] transition-all duration-300 relative overflow-hidden min-w-[135px] max-w-[135px] shrink-0'
-    : 'product-card-premium bg-white rounded-2xl p-3 border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] flex flex-col group cursor-pointer hover:border-primary/20 active:scale-[0.98] transition-all duration-300 relative overflow-hidden min-w-[135px] max-w-[135px] shrink-0';
-    
-  const buttonHTML = qty > 0
-    ? `<div class="qty-control-premium w-20 flex items-center justify-between bg-primary border border-primary rounded-lg overflow-hidden shadow-sm shrink-0">
-         <button class="w-6 h-full flex items-center justify-center text-white hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeProductQty(${p.id},-1)">−</button>
-         <span class="font-mono text-xs font-black text-white text-center flex-1">${qty}</span>
-         <button class="w-6 h-full flex items-center justify-center text-white hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeProductQty(${p.id},1)">+</button>
-       </div>`
-    : `<button class="add-btn-premium w-20 flex items-center justify-center bg-white border border-primary text-primary hover:bg-primary hover:text-white rounded-lg text-[11px] font-black uppercase transition-all shadow-sm shrink-0 active:scale-95 duration-200" onclick="event.stopPropagation();addToCart(${p.id})">Add</button>`;
-
-  return `
-    <div class="${cardClass}" data-product-id="${p.id}" onclick="openProductModal(${p.id})">
-      <!-- Rating Badge -->
-      <div class="absolute left-2.5 top-2.5 bg-black/5 backdrop-blur-md rounded-lg px-1.5 py-0.5 text-[7.5px] font-black text-slate-650 flex items-center gap-0.5 select-none z-10">
-        ${ratingText}
-      </div>
-      <!-- Image Container -->
-      <div class="w-full aspect-square bg-transparent rounded-xl p-0.5 mb-2 flex items-center justify-center overflow-hidden shrink-0">
-        <img src="${p.img}" alt="${p.name}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-350" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150&h=150&fit=crop';">
-      </div>
-      <!-- Body -->
-      <div class="flex flex-col flex-grow">
-        <h4 class="text-[10px] font-extrabold text-slate-800 line-clamp-2 leading-tight min-h-[26px] mb-0.5">${p.name}</h4>
-        <span class="text-[8px] font-bold text-slate-400 mb-2">${weightText}</span>
-        
-        <div class="flex justify-between items-center mt-auto gap-1">
-          <span class="text-xs font-black text-slate-850 font-mono">₹${p.price}</span>
-          <div class="qty-btn-wrapper" data-product-id="${p.id}">
-            ${buttonHTML}
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+  return getProductCardHTML(p, qty, `addToCart(${p.id})`, (delta) => `changeProductQty(${p.id},${delta})`, true);
 }
 
 function toggleDashboardTimeline() {
@@ -2159,170 +2121,80 @@ function resetAppStateAndLogin() {
 
 
 
-function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
+function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc, isSlider = false) {
   const weightText = p.weight ? p.weight : 'Standard';
   const mrp = p.mrp || Math.round(p.price * 1.25);
   const discPct = Math.round(((mrp - p.price) / mrp) * 100);
 
-  const pax = appState.pnrData && appState.pnrData.passengerList && appState.pnrData.passengerList[0];
-  const coach = pax ? pax.coach : 'B2';
-  const seat = pax ? pax.berth : '34';
-  const station = appState.pnrData && appState.pnrData.boardingStation ? appState.pnrData.boardingStation.split(' - ')[0] : 'New Delhi';
+  const isDark = appState.themeMode === 'dark';
+  const cardBg = isDark ? '#1D1F24' : '#ffffff';
+  const cardBorder = isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)';
+  const imgBg = isDark ? '#23262D' : '#f8f8f8';
+  const mainText = isDark ? '#ffffff' : '#1f2937';
+  const mutedText = isDark ? '#9ca3af' : '#6b7280';
+  const discColor = isDark ? '#38bdf8' : '#2563eb';
+  const accentColor = '#0C8346'; // RailQuick Green Accent
+  const btnBg = isDark ? '#1D1F24' : '#ffffff';
 
-  if (appState.themeMode === 'dark') {
-    const vegDot = p.veg
-      ? `<span style="position:absolute;bottom:6px;right:6px;width:12px;height:12px;background:#ffffff;border-radius:3px;border:1px solid #2ecc71;display:flex;align-items:center;justify-content:center;z-index:2;">
-           <span style="width:5px;height:5px;background:#2ecc71;border-radius:50%;display:block;"></span>
-         </span>` : '';
-
-    let optionsText = '';
-    if (p.id === 1001) optionsText = '3 options';
-    else if (p.id === 1003 || p.id === 1004 || p.id === 1006 || p.id === 1008 || (p.name && p.name.includes('Red Rock Deli'))) {
-      optionsText = '2 options';
-    }
-
-    const buttonHTML = qty > 0
-      ? `<div style="display:flex;align-items:center;background:#1A1C22;border:1px solid #2ecc71;border-radius:8px;overflow:hidden;height:28px;min-width:60px;z-index:10;">
-           <button style="width:18px;height:100%;color:#2ecc71;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
-           <span style="flex:1;text-align:center;font-size:11px;font-weight:700;color:#ffffff;font-family:'Outfit',sans-serif;">${qty}</span>
-           <button style="width:18px;height:100%;color:#2ecc71;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
-         </div>`
-      : `<button style="background:transparent;border:1px solid #2ecc71;color:#2ecc71;border-radius:8px;height:28px;min-width:60px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.1s;padding:2px 4px;line-height:1.05;" onclick="event.stopPropagation();${addClickCode}">
-           <span style="font-size:10.5px;font-weight:800;letter-spacing:0.02em;">ADD</span>
-           ${optionsText ? `<span style="font-size:7px;font-weight:700;color:#2ecc71;display:block;margin-top:1px;line-height:1;">${optionsText}</span>` : ''}
-         </button>`;
-
-    return `
-      <div style="cursor:pointer; background:#1A1C22; border:1px solid #2C313A; border-radius:16px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; position:relative; box-shadow:none;" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
-        <div>
-          <!-- Image Container (55% Height feel) -->
-          <div style="position:relative; width:100%; height:120px; background:#22252D; border-radius:12px; border:1px solid #2C313A; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px;">
-            <img src="${p.img}" alt="${p.name}" style="max-width:85%; max-height:85%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
-            
-            <!-- Wishlist Heart Button -->
-            <button style="position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.3); border:none; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#9ca3af; z-index:5;" onclick="event.stopPropagation(); this.classList.toggle('active'); this.style.color = this.classList.contains('active') ? '#ef4444' : '#9ca3af';">
-              <span class="material-symbols-outlined" style="font-size:13px; font-variation-settings: 'FILL' 1;">favorite</span>
-            </button>
-
-            ${vegDot}
-            <!-- Slider dots (bottom left) -->
-            <div style="position:absolute; bottom:6px; left:6px; display:flex; gap:2.5px; align-items:center;">
-              <span style="width:4.5px; height:4.5px; border-radius:50%; background:#2ecc71; display:block;"></span>
-              <span style="width:3.5px; height:3.5px; border-radius:50%; background:#9ca3af; display:block;"></span>
-              <span style="width:3.5px; height:3.5px; border-radius:50%; background:#9ca3af; display:block;"></span>
-            </div>
-          </div>
-          
-          <!-- Weight and ADD button row -->
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; gap:4px; width:100%;">
-            <span style="font-size:11px; font-weight:600; color:#9ca3af; font-family:'Outfit',sans-serif;">${weightText}</span>
-            <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();" style="flex-shrink:0;">
-              ${buttonHTML}
-            </div>
-          </div>
-
-          <!-- Price Details -->
-          <div style="display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:4px; font-family:'Outfit',sans-serif;">
-            <span style="font-size:14px; font-weight:800; color:#ffffff;">₹${p.price}</span>
-            <span style="font-size:10px; font-weight:500; color:#9ca3af; text-decoration:line-through;">₹${mrp}</span>
-            <span style="font-size:9px; font-weight:800; color:#2ecc71; background:rgba(46,204,113,0.1); padding:1px 4px; border-radius:4px; margin-left:auto;">${discPct}% OFF</span>
-          </div>
-          
-          <!-- Product Name -->
-          <h4 style="font-size:11px; font-weight:700; color:#ffffff; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:28px;">${p.name}</h4>
-        </div>
-
-        <!-- Bottom Delivery Section (RailQuick specific) -->
-        <div style="margin-top:8px; display:flex; flex-direction:column; gap:4px; border-top:1px solid #2C313A; padding-top:8px;">
-          <div style="display:flex; align-items:center; gap:4px; background:#22252D; border-radius:6px; padding:3px 6px; font-size:8.5px; color:#9ca3af; font-family:'Outfit',sans-serif;">
-            <span style="font-size:9px;">📍</span>
-            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Available at: ${station}</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:4px; background:#22252D; border-radius:6px; padding:3px 6px; font-size:8.5px; color:#9ca3af; font-family:'Outfit',sans-serif;">
-            <span style="font-size:9px;">🚆</span>
-            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Delivered to Coach ${coach} Seat ${seat}</span>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  // Light Mode Layout
   const vegDot = p.veg
-    ? `<span style="position:absolute;bottom:4px;right:4px;width:12px;height:12px;background:#ffffff;border-radius:3px;border:1px solid #16a34a;display:flex;align-items:center;justify-content:center;z-index:2;">
+    ? `<span style="position:absolute;bottom:4px;right:4px;width:12px;height:12px;background:#ffffff;border-radius:3px;border:1px solid #16a34a;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none;">
          <span style="width:5px;height:5px;background:#16a34a;border-radius:50%;display:block;"></span>
        </span>` : '';
 
+  const heartButton = `<button style="position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.2); border:none; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#ffffff; z-index:5;" onclick="event.stopPropagation(); this.classList.toggle('active'); this.style.color = this.classList.contains('active') ? '#ef4444' : '#ffffff';">
+    <span class="material-symbols-outlined" style="font-size:12px; font-variation-settings: 'FILL' 1;">favorite</span>
+  </button>`;
+
   let optionsLabel = '';
-  if (p.id === 1001) optionsLabel = '<span style="font-size:7px;font-weight:700;color:#16a34a;margin-top:0px;display:block;line-height:1;">3 options</span>';
+  if (p.id === 1001) optionsLabel = '3 options';
   else if (p.id === 1003 || p.id === 1004 || p.id === 1006 || p.id === 1008 || (p.name && p.name.includes('Red Rock Deli'))) {
-    optionsLabel = '<span style="font-size:7px;font-weight:700;color:#16a34a;margin-top:0px;display:block;line-height:1;">2 options</span>';
+    optionsLabel = '2 options';
   }
 
   const buttonHTML = qty > 0
-    ? `<div style="display:flex;align-items:center;background:var(--qty-btn-bg, #ffffff);border:1px solid #16a34a;border-radius:8px;overflow:hidden;height:28px;min-width:54px;z-index:10;box-shadow:0 1px 3px rgba(22,163,74,0.06);">
-         <button style="width:16px;height:100%;color:#16a34a;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
-         <span style="flex:1;text-align:center;font-size:10.5px;font-weight:700;color:var(--product-name-color, #111827);font-family:'Outfit',sans-serif;">${qty}</span>
-         <button style="width:16px;height:100%;color:#16a34a;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
+    ? `<div style="display:flex;align-items:center;background:${accentColor};border:1px solid ${accentColor};border-radius:6px;overflow:hidden;height:26px;width:64px;z-index:10;">
+         <button style="width:20px;height:100%;color:#ffffff;font-size:14px;font-weight:800;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
+         <span style="flex:1;text-align:center;font-size:11px;font-weight:800;color:#ffffff;font-family:'Outfit',sans-serif;line-height:26px;">${qty}</span>
+         <button style="width:20px;height:100%;color:#ffffff;font-size:14px;font-weight:800;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
        </div>`
-    : `<button style="background:var(--qty-btn-bg, #ffffff);border:1px solid #16a34a;color:#16a34a;border-radius:8px;height:28px;min-width:54px;padding: 1px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 1px 3px rgba(22,163,74,0.06);line-height:1.05;" onclick="event.stopPropagation();${addClickCode}">
-         <span style="font-size:10px;font-weight:900;letter-spacing:0.01em;display:block;color:#16a34a;">ADD</span>
-         ${optionsLabel}
+    : `<button style="background:${btnBg};border:1px solid ${accentColor};color:${accentColor};border-radius:6px;height:26px;width:64px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.1s;padding:0 2px;line-height:1.05;" onclick="event.stopPropagation();${addClickCode}">
+         <span style="font-size:10px;font-weight:900;letter-spacing:0.02em;color:${accentColor};">ADD</span>
+         ${optionsLabel ? `<span style="font-size:6.5px;font-weight:700;color:${accentColor};display:block;margin-top:0.5px;line-height:1;">${optionsLabel}</span>` : ''}
        </button>`;
 
-  let subPillHTML = '';
-  if (p.subcategory) {
-    const label = p.subcategory.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    subPillHTML = `<span style="font-size:8px; font-weight:700; color:#16a34a; background:rgba(22,163,74,0.05); padding:2px 5px; border-radius:5px; border:1px solid rgba(22,163,74,0.12); margin-top:4px; max-width:fit-content; font-family:'Outfit',sans-serif; display:inline-flex; align-items:center; gap:1.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">All ${label} <span class="material-symbols-outlined" style="font-size:8px;">chevron_right</span></span>`;
-  } else {
-    subPillHTML = `<span style="font-size:8px; font-weight:700; color:#16a34a; background:rgba(22,163,74,0.05); padding:2px 5px; border-radius:5px; border:1px solid rgba(22,163,74,0.12); margin-top:4px; max-width:fit-content; font-family:'Outfit',sans-serif; display:inline-flex; align-items:center; gap:1.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Top Deal <span class="material-symbols-outlined" style="font-size:8px;">chevron_right</span></span>`;
-  }
+  const sliderStyle = isSlider ? 'min-width:135px; max-width:135px; flex-shrink:0;' : '';
 
   return `
-    <div style="cursor:pointer; background:var(--card-bg, transparent); border:var(--card-border, none); border-radius:14px; padding:6px; display:flex; flex-direction:column; justify-content:space-between; position:relative; box-shadow:var(--card-shadow, none);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
+    <div style="cursor:pointer; background:${cardBg}; border:${cardBorder}; border-radius:12px; padding:8px; display:flex; flex-direction:column; justify-content:space-between; position:relative; ${sliderStyle}" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
       <div>
         <!-- Image Container -->
-        <div style="position:relative; width:100%; aspect-ratio:1; background:var(--img-capsule-bg, #f4f5f7); border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:6px; border:1px solid var(--border-color, rgba(0,0,0,0.05));">
-          <img src="${p.img}" alt="${p.name}" style="max-width:92%; max-height:92%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
+        <div style="position:relative; width:100%; aspect-ratio:1; background:${imgBg}; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px;">
+          <img src="${p.img}" alt="${p.name}" style="max-width:90%; max-height:90%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150&h=150&fit=crop';">
           ${vegDot}
-          <!-- Slider dots (bottom left) -->
-          <div style="position:absolute; bottom:4px; left:4px; display:flex; gap:2px; align-items:center;">
-            <span style="width:3px; height:3px; border-radius:50%; background:#94a3b8; display:block;"></span>
-            <span style="width:2.5px; height:2.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
-            <span style="width:2.5px; height:2.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
-          </div>
+          ${heartButton}
         </div>
         
-        <!-- Weight and ADD button row (Matches Photo 3) -->
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; gap:4px;">
-          <div style="border:1px solid var(--border-color, rgba(255,255,255,0.15)); border-radius:6px; padding:2px 5px; font-size:9.5px; font-weight:700; color:var(--product-name-color, #111827); font-family:'Outfit',sans-serif; text-align:center; min-width:32px; white-space:nowrap; background:var(--card-bg, transparent);">
-            ${weightText}
-          </div>
+        <!-- Weight and ADD button row -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; gap:4px; width:100%;">
+          <span style="font-size:11px; font-weight:600; color:${mutedText}; font-family:'Outfit',sans-serif; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${weightText}</span>
           <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();" style="flex-shrink:0;">
             ${buttonHTML}
           </div>
         </div>
 
         <!-- Price Details -->
-        <div style="display:flex; align-items:baseline; gap:3px; margin-bottom:1px;">
-          <span style="font-size:13.5px; font-weight:850; color:var(--product-price-color, #111827); font-family:'Outfit',sans-serif;">₹${p.price}</span>
-          <span style="font-size:9.5px; font-weight:500; color:var(--product-mrp-color, #94a3b8); text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
+        <div style="display:flex; align-items:baseline; gap:4px; margin-bottom:1px; font-family:'Outfit',sans-serif;">
+          <span style="font-size:13px; font-weight:800; color:${mainText};">₹${p.price}</span>
+          <span style="font-size:9.5px; font-weight:500; color:${mutedText}; text-decoration:line-through;">₹${mrp}</span>
         </div>
-        <div style="font-size:8.5px; font-weight:800; color:var(--product-disc-color, #3b82f6); margin-bottom:4px; font-family:'Outfit',sans-serif;">${discPct}% OFF on MRP</div>
+        
+        <!-- Discount -->
+        <div style="font-size:9px; font-weight:800; color:${discColor}; margin-bottom:4px; font-family:'Outfit',sans-serif;">${discPct}% OFF on MRP</div>
         
         <!-- Product Name -->
-        <h4 style="font-size:10.5px; font-weight:700; color:var(--product-name-color, #111827); line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:28px;">${p.name}</h4>
-        
-        <!-- Sub pill badge -->
-        ${subPillHTML}
+        <h4 style="font-size:11px; font-weight:700; color:${mainText}; line-height:1.25; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:28px;">${p.name}</h4>
       </div>
-
-      <!-- Rating and reviews -->
-      <div style="display:flex; align-items:center; gap:2.5px; margin-top:6px; font-family:'Outfit',sans-serif;">
-        <span class="material-symbols-outlined" style="font-size:10px; color:#f59e0b; font-variation-settings:'FILL' 1;">star</span>
-        <span style="font-size:9px; font-weight:700; color:var(--product-name-color, #111827);">${p.rating || '4.8'}</span>
-        <span style="font-size:8px; color:var(--product-weight-color, #9ca3af);">(${p.reviews || '120'})</span>
-      </div>
+    </div>
   `;
 }
 
@@ -3213,21 +3085,34 @@ function updateCartFAB() {
     fab.classList.remove('cart-bump');
     void fab.offsetWidth;
     fab.classList.add('cart-bump');
-    document.getElementById('cart-fab-count').textContent = `${count} item${count > 1 ? 's' : ''}`;
+    
+    const { total } = getCartTotals();
+    const countLabel = document.getElementById('cart-fab-count');
+    const titleLabel = document.getElementById('cart-fab-title');
+    
+    if (titleLabel) titleLabel.textContent = `${count} Item${count > 1 ? 's' : ''}`;
+    if (countLabel) countLabel.textContent = `₹${total}`;
+    
+    const isDark = appState.themeMode === 'dark';
+    fab.style.backgroundColor = isDark ? '#1D1F24' : '#ffffff';
+    fab.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
+    if (titleLabel) titleLabel.style.color = isDark ? '#ffffff' : '#1f2937';
+    if (countLabel) countLabel.style.color = isDark ? '#9ca3af' : '#6b7280';
     
     const preview = document.getElementById('cart-fab-preview');
     if (preview) {
       const thumbs = appState.cart.slice(0, 3).map((item, idx) => {
         const zIndex = (idx + 1) * 10;
-        const margin = idx < Math.min(appState.cart.length, 3) - 1 ? '-mr-3.5' : '';
+        const margin = idx < Math.min(appState.cart.length, 3) - 1 ? '-mr-3' : '';
+        const borderCol = isDark ? '#1D1F24' : '#ffffff';
         return `
-          <div class="w-10 h-10 rounded-full border-[2.5px] border-white bg-white overflow-hidden flex items-center justify-center shadow-md shrink-0 ${margin} relative z-${zIndex}">
+          <div class="w-8 h-8 rounded-full border-2 bg-white overflow-hidden flex items-center justify-center shadow shrink-0 ${margin} relative z-${zIndex}" style="border-color: ${borderCol};">
             <img src="${item.img}" alt="${item.name}" class="w-full h-full object-contain">
           </div>
         `;
       }).join('');
       preview.innerHTML = thumbs || `
-        <div class="w-10 h-10 rounded-full border-[2.5px] border-white bg-white/20 overflow-hidden flex items-center justify-center shadow-md shrink-0 relative z-10">
+        <div class="w-8 h-8 rounded-full border-2 bg-white/20 overflow-hidden flex items-center justify-center shadow shrink-0 relative z-10" style="border-color: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};">
           <span class="material-symbols-outlined text-white text-base">shopping_cart</span>
         </div>
       `;
@@ -3238,9 +3123,25 @@ function updateCartFAB() {
 }
 
 function initCartPage() {
+  const cartPage = document.getElementById('page-cart');
   const cartList = document.getElementById('cart-items-list');
   const emptyEl = document.getElementById('cart-empty');
   const summary = document.getElementById('cart-summary');
+  
+  // Set CSS variables for dark/light mode on cart page
+  if (cartPage) {
+    const isDark = appState.themeMode === 'dark';
+    cartPage.style.setProperty('--cart-page-bg', isDark ? '#121212' : '#f7f9f8');
+    cartPage.style.setProperty('--cart-header-bg', isDark ? '#1D1F24' : '#ffffff');
+    cartPage.style.setProperty('--cart-card-bg', isDark ? '#1D1F24' : '#ffffff');
+    cartPage.style.setProperty('--cart-border', isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)');
+    cartPage.style.setProperty('--cart-text', isDark ? '#ffffff' : '#1f2937');
+    cartPage.style.setProperty('--cart-muted', isDark ? '#9ca3af' : '#6b7280');
+    cartPage.style.setProperty('--cart-btn-bg', isDark ? '#23262D' : '#f3f4f6');
+    cartPage.style.setProperty('--cart-input-bg', isDark ? '#23262D' : '#f3f4f6');
+    cartPage.style.setProperty('--cart-accent-bg', isDark ? 'rgba(12,131,70,0.12)' : '#ecfdf5');
+    cartPage.style.setProperty('--cart-img-bg', isDark ? '#23262D' : '#f3f4f6');
+  }
   
   if (appState.cart.length === 0) {
     if (cartList) cartList.innerHTML = ''; 
@@ -3253,6 +3154,25 @@ function initCartPage() {
     renderCartItems(); 
     updateCartSummary();
     renderCartPremiumBlocks();
+  }
+  
+  // Update bottom bar total
+  const bottomTotal = document.getElementById('cart-bottom-total');
+  if (bottomTotal) {
+    const { total } = getCartTotals();
+    bottomTotal.textContent = `₹${total}`;
+    if (cartPage) {
+      const isDark = appState.themeMode === 'dark';
+      bottomTotal.style.color = isDark ? '#ffffff' : '#1f2937';
+    }
+  }
+  // Style the bottom bar for dark/light
+  const bottomBar = document.getElementById('cart-bottom-bar');
+  if (bottomBar && cartPage) {
+    const isDark = appState.themeMode === 'dark';
+    bottomBar.style.backgroundColor = isDark ? '#1D1F24' : '#ffffff';
+    bottomBar.style.borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+    bottomBar.style.boxShadow = isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(0,0,0,0.08)';
   }
   
   const detailEl = document.getElementById('delivery-detail');
@@ -3273,27 +3193,35 @@ function initCartPage() {
 function renderCartItems() {
   const list = document.getElementById('cart-items-list');
   if (!list) return;
+  const isDark = appState.themeMode === 'dark';
+  const cardBg = isDark ? '#1D1F24' : '#ffffff';
+  const cardBorder = isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)';
+  const imgBg = isDark ? '#23262D' : '#f3f4f6';
+  const textColor = isDark ? '#ffffff' : '#1f2937';
+  const mutedColor = isDark ? '#9ca3af' : '#6b7280';
+  const accentColor = '#0C8346';
+  const qtyBg = isDark ? '#23262D' : '#f3f4f6';
+  const qtyBorder = isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)';
+
   list.innerHTML = appState.cart.map(item => `
-    <div class="bg-white border border-outline-variant/50 rounded-2xl p-4 flex gap-4 shadow-sm">
-      <div class="w-16 h-16 bg-[#F4F6F5] rounded-xl flex items-center justify-center p-2 shrink-0">
-        <img class="max-h-full max-w-full object-contain" src="${item.img}" alt="${item.name}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';" />
+    <div style="background:${cardBg}; border:${cardBorder}; border-radius:12px; padding:10px; display:flex; gap:10px; align-items:center;">
+      <div style="width:56px; height:56px; background:${imgBg}; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:4px; flex-shrink:0;">
+        <img style="max-width:100%; max-height:100%; object-fit:contain;" src="${item.img}" alt="${item.name}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';" />
       </div>
-      <div class="flex-grow flex flex-col justify-between py-0.5">
-        <div>
-          <div class="text-xs font-bold text-on-surface line-clamp-1">${item.name}</div>
-          <div class="text-[9px] text-gray-400 font-bold mt-0.5">${item.weight || 'Standard'} • ₹${item.price} each</div>
-        </div>
-        <div class="flex items-center bg-[#F4F6F5] border border-outline-variant/60 rounded-xl overflow-hidden w-fit mt-2">
-          <button class="w-8 h-8 flex items-center justify-center font-bold text-primary text-xs" onclick="updateCartItemQty(${item.id},-1)">−</button>
-          <span class="font-mono text-xs font-bold text-on-surface min-w-[24px] text-center">${item.qty}</span>
-          <button class="w-8 h-8 flex items-center justify-center font-bold text-primary text-xs" onclick="updateCartItemQty(${item.id},1)">+</button>
-        </div>
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
+        <div style="font-size:11px; font-weight:700; color:${textColor}; font-family:'Outfit',sans-serif; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.name}</div>
+        <div style="font-size:9px; font-weight:600; color:${mutedColor}; font-family:'Outfit',sans-serif;">${item.weight || 'Standard'}</div>
+        <div style="font-size:12px; font-weight:800; color:${textColor}; font-family:'Outfit',sans-serif;">₹${item.price * item.qty}</div>
       </div>
-      <div class="flex flex-col justify-between items-end py-0.5">
-        <button class="text-gray-400 hover:text-red-500" onclick="removeCartItem(${item.id})">
-          <span class="material-symbols-outlined text-base">delete</span>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0;">
+        <div style="display:flex; align-items:center; background:${accentColor}; border-radius:8px; overflow:hidden; height:28px; width:72px;">
+          <button style="width:22px; height:100%; color:#fff; font-size:14px; font-weight:800; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="updateCartItemQty(${item.id},-1)">−</button>
+          <span style="flex:1; text-align:center; font-size:11px; font-weight:800; color:#fff; font-family:'Outfit',sans-serif;">${item.qty}</span>
+          <button style="width:22px; height:100%; color:#fff; font-size:14px; font-weight:800; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="updateCartItemQty(${item.id},1)">+</button>
+        </div>
+        <button style="background:none; border:none; cursor:pointer; color:${isDark ? '#6b7280' : '#9ca3af'}; padding:0;" onclick="removeCartItem(${item.id})">
+          <span class="material-symbols-outlined" style="font-size:16px;">delete</span>
         </button>
-        <strong class="text-xs font-black text-primary">₹${item.price * item.qty}</strong>
       </div>
     </div>`).join('');
 }
@@ -3308,14 +3236,46 @@ function renderCartPremiumBlocks() {
     wrap.id = 'cart-premium-blocks';
     summary.insertAdjacentElement('beforebegin', wrap);
   }
+  const isDark = appState.themeMode === 'dark';
+  const blockBg = isDark ? '#1D1F24' : '#ffffff';
+  const blockBorder = isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)';
+  const headingColor = isDark ? '#ffffff' : '#1f2937';
+  const mutedColor = isDark ? '#9ca3af' : '#6b7280';
+  const inputBg = isDark ? '#23262D' : '#f3f4f6';
+  const addonBg = isDark ? '#23262D' : '#f9fafb';
+  const addonImgBg = isDark ? '#2A2D33' : '#f3f4f6';
+  const addonBorder = isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)';
+  const hintBg = isDark ? 'rgba(12,131,70,0.12)' : '#ecfdf5';
+
   const totals = getCartTotals();
   const addons = PRODUCTS.filter(p => !appState.cart.some(c => c.id === p.id)).slice(0, 6);
   wrap.innerHTML = `
-    <div class="pull-refresh-hint">Pull down to refresh station availability</div>
-    <div class="cart-premium-block"><h3>Delivery summary</h3><div class="text-[11px] text-slate-500 font-semibold leading-relaxed">Seat delivery at ${appState.pnrData ? appState.pnrData.destination.split('(')[0].trim() : 'selected station'} • ETA 12-18 min • Saved ₹${totals.discount || Math.min(40, Math.round(totals.subtotal * .08))}</div></div>
-    <div class="cart-premium-block"><h3>Coupon for this journey</h3><button class="w-full bg-emerald-50 border border-emerald-100 text-primary rounded-2xl py-3 text-xs font-black" onclick="applyCouponCode('RAILQUICK15')">Apply RAILQUICK15 and save more</button></div>
-    <div class="cart-premium-block"><h3>Recommended add-ons</h3><div class="cart-addon-row">${addons.map(p => `<div class="cart-addon"><img src="${p.img}" onerror="this.style.display='none'"><b>${p.name}</b><span class="text-[10px] font-black text-primary">₹${p.price}</span><button onclick="addToCart(${p.id});initCartPage();">Add</button></div>`).join('')}</div></div>
-    <div class="cart-premium-block"><h3>Order notes</h3><input class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3 text-xs" placeholder="Add coach instructions or delivery note" /></div>
+    <div style="margin:8px 16px 0; padding:8px; border-radius:10px; background:${hintBg}; color:#0C8346; font-size:10px; font-weight:800; text-align:center;">Pull down to refresh station availability</div>
+    <div style="background:${blockBg}; border:${blockBorder}; border-radius:12px; padding:12px; margin:8px 16px;">
+      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 6px 0;">Delivery summary</h3>
+      <div style="font-size:10px; color:${mutedColor}; font-weight:600; line-height:1.5; font-family:'Outfit',sans-serif;">Seat delivery at ${appState.pnrData ? appState.pnrData.destination.split('(')[0].trim() : 'selected station'} • ETA 12-18 min • Saved ₹${totals.discount || Math.min(40, Math.round(totals.subtotal * .08))}</div>
+    </div>
+    <div style="background:${blockBg}; border:${blockBorder}; border-radius:12px; padding:12px; margin:0 16px 8px;">
+      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 8px 0;">Coupon for this journey</h3>
+      <button style="width:100%; background:${isDark ? 'rgba(12,131,70,0.12)' : '#ecfdf5'}; border:1px solid ${isDark ? 'rgba(12,131,70,0.2)' : '#d1fae5'}; color:#0C8346; border-radius:10px; padding:10px; font-size:11px; font-weight:800; cursor:pointer;" onclick="applyCouponCode('RAILQUICK15')">Apply RAILQUICK15 and save more</button>
+    </div>
+    <div style="background:${blockBg}; border:${blockBorder}; border-radius:12px; padding:12px; margin:0 16px 8px;">
+      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 8px 0;">Recommended add-ons</h3>
+      <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;">
+        ${addons.map(p => `
+          <div style="min-width:100px; border:${addonBorder}; border-radius:10px; padding:8px; background:${addonBg}; flex-shrink:0;">
+            <img src="${p.img}" style="width:100%; height:55px; object-fit:contain; border-radius:8px; background:${addonImgBg}; padding:4px;" onerror="this.style.display='none'">
+            <b style="display:block; font-size:9px; line-height:1.15; color:${headingColor}; margin-top:4px; font-family:'Outfit',sans-serif;">${p.name}</b>
+            <span style="font-size:10px; font-weight:800; color:#0C8346; display:block; margin-top:2px;">₹${p.price}</span>
+            <button style="margin-top:5px; width:100%; border-radius:8px; background:#0C8346; color:white; font-size:9px; font-weight:900; padding:6px; border:none; cursor:pointer;" onclick="addToCart(${p.id});initCartPage();">Add</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div style="background:${blockBg}; border:${blockBorder}; border-radius:12px; padding:12px; margin:0 16px 8px;">
+      <h3 style="font-size:12px; font-weight:800; color:${headingColor}; margin:0 0 8px 0;">Order notes</h3>
+      <input style="width:100%; background:${inputBg}; border:${blockBorder}; border-radius:10px; padding:10px; font-size:11px; color:${headingColor}; font-family:'Outfit',sans-serif; box-sizing:border-box;" placeholder="Add coach instructions or delivery note" />
+    </div>
   `;
 }
 
@@ -3459,20 +3419,240 @@ function initCheckoutPage() {
     document.getElementById('contact-name').value = appState.user.name || '';
     document.getElementById('contact-phone').value = appState.user.phone || '';
   }
+  
   renderCheckoutMiniItems();
-  const { total } = getCartTotals();
-  document.getElementById('checkout-total-amt').textContent = `₹${total}`;
-  document.getElementById('pay-total-amt').textContent = `₹${total}`;
+  renderCheckoutRecommendedProducts();
+  renderCheckoutBillDetails();
+  updateStickyBottomBar();
 }
 
 function renderCheckoutMiniItems() {
   const mini = document.getElementById('checkout-items-mini');
   if (!mini) return;
-  mini.innerHTML = appState.cart.map(item => `
-    <div class="bg-white border border-outline-variant/40 rounded-xl px-4 py-2.5 flex justify-between items-center text-xs shadow-sm">
-      <span class="text-gray-500 font-medium">${item.name} <strong class="text-primary ml-1">× ${item.qty}</strong></span>
-      <strong class="text-on-surface">₹${item.price * item.qty}</strong>
-    </div>`).join('');
+  
+  const totalQty = appState.cart.reduce((sum, item) => sum + item.qty, 0);
+  const shipmentText = `Shipment of ${totalQty} item${totalQty > 1 ? 's' : ''}`;
+  
+  mini.innerHTML = `
+    <!-- Delivery Header Card -->
+    <div class="bg-white border border-outline-variant/65 rounded-2xl p-4 shadow-sm space-y-4 mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-amber-500 font-bold" style="font-size: 20px;">schedule</span>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-gray-800 leading-tight">Delivery in 15 minutes</h4>
+          <p class="text-[11px] text-gray-400 font-medium mt-0.5">${shipmentText}</p>
+        </div>
+      </div>
+      
+      <!-- Items List -->
+      <div class="divide-y divide-gray-100">
+        ${appState.cart.map(item => {
+          const mrp = item.mrp || Math.round(item.price * 1.25);
+          return `
+            <div class="flex gap-4 py-3 first:pt-0 last:pb-0 items-start">
+              <div class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-center p-1.5 shrink-0 overflow-hidden">
+                <img class="max-h-full max-w-full object-contain" src="${item.img}" alt="${item.name}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150&h=150&fit=crop';" />
+              </div>
+              <div class="flex-grow min-w-0 py-0.5">
+                <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 leading-tight">${item.name}</h4>
+                <p class="text-[11px] text-gray-400 mt-1">${item.weight || 'Standard'}</p>
+                <button class="text-[10px] text-gray-450 font-bold mt-2 hover:text-red-500 active:scale-95 transition-all" onclick="removeCheckoutCartItem(${item.id})">Move to wishlist</button>
+              </div>
+              <div class="flex flex-col items-end justify-between self-stretch shrink-0 py-0.5">
+                <div style="display:flex;align-items:center;background:#0C8346;border:1px solid #0C8346;border-radius:6px;overflow:hidden;height:26px;width:64px;">
+                  <button style="width:20px;height:100%;color:#ffffff;font-size:14px;font-weight:800;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" onclick="event.stopPropagation();changeCheckoutProductQty(${item.id},-1)">−</button>
+                  <span style="flex:1;text-align:center;font-size:11px;font-weight:800;color:#ffffff;font-family:'Outfit',sans-serif;line-height:26px;">${item.qty}</span>
+                  <button style="width:20px;height:100%;color:#ffffff;font-size:14px;font-weight:800;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" onclick="event.stopPropagation();changeCheckoutProductQty(${item.id},1)">+</button>
+                </div>
+                <div class="flex items-center gap-1.5 mt-2">
+                  <span class="text-xs font-extrabold text-gray-800">₹${item.price}</span>
+                  <span class="text-[10px] text-gray-400 line-through">₹${mrp}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderCheckoutRecommendedProducts() {
+  const container = document.getElementById('checkout-recommended-container');
+  if (!container) return;
+  
+  const recommended = PRODUCTS.filter(p => !appState.cart.some(item => item.id === p.id)).slice(0, 6);
+  if (recommended.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  
+  const cardsHTML = recommended.map(p => {
+    return getProductCardHTML(
+      p, 
+      0, 
+      `addCheckoutRecommendedToCart(${p.id})`, 
+      (delta) => `changeCheckoutProductQty(${p.id}, ${delta})`, 
+      true
+    );
+  }).join('');
+  
+  container.innerHTML = `
+    <div class="my-6">
+      <h3 class="text-sm font-bold text-gray-800 mb-3 px-1 font-sans">You might also like</h3>
+      <div class="flex overflow-x-auto gap-3 pb-2 scrollbar-none snap-x snap-mandatory">
+        ${cardsHTML}
+      </div>
+    </div>
+  `;
+}
+
+function renderCheckoutBillDetails() {
+  const container = document.getElementById('checkout-bill-details-container');
+  if (!container) return;
+  
+  const { subtotal, discount, gst, deliveryFee, handlingFee, total } = getCartTotals();
+  const mrpTotal = appState.cart.reduce((sum, item) => {
+    const mrp = item.mrp || Math.round(item.price * 1.25);
+    return sum + (mrp * item.qty);
+  }, 0);
+  const totalSavings = mrpTotal - total;
+
+  container.innerHTML = `
+    <div class="bg-white border border-outline-variant/60 rounded-2xl p-4 shadow-sm space-y-3.5 mb-6">
+      <h3 class="text-xs font-extrabold text-gray-800 uppercase tracking-wider mb-1">Bill details</h3>
+      
+      <div class="flex justify-between items-center text-xs text-gray-500">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-gray-400 text-sm">description</span>
+          <span>Items total</span>
+          ${totalSavings > 0 ? `<span class="bg-blue-50 text-blue-600 font-bold text-[9px] px-1.5 py-0.5 rounded">Saved ₹${totalSavings}</span>` : ''}
+        </div>
+        <div class="flex items-center gap-1.5 font-sans">
+          ${totalSavings > 0 ? `<span class="text-gray-400 line-through">₹${mrpTotal}</span>` : ''}
+          <span class="text-gray-800 font-bold">₹${subtotal}</span>
+        </div>
+      </div>
+      
+      <div class="flex justify-between items-center text-xs text-gray-500">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-gray-400 text-sm">shopping_bag</span>
+          <span>Handling charge</span>
+        </div>
+        <span class="text-gray-800 font-bold font-sans">₹${handlingFee}</span>
+      </div>
+      
+      <div class="flex justify-between items-center text-xs text-gray-500">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-gray-400 text-sm">delivery_dining</span>
+          <span>Delivery charge</span>
+        </div>
+        <span class="text-gray-800 font-bold font-sans">${deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}</span>
+      </div>
+      
+      <div class="border-t border-dashed border-gray-200 my-2"></div>
+      
+      <div class="flex justify-between items-center text-sm font-bold text-gray-900">
+        <span>Grand total</span>
+        <span class="font-extrabold text-gray-900 font-sans">₹${total}</span>
+      </div>
+      
+      ${totalSavings > 0 ? `
+        <div class="bg-blue-50 rounded-xl p-3 flex justify-between items-center text-xs text-blue-600 font-bold mt-2" style="background-image: radial-gradient(circle at 100% 150%, transparent 24%, #ebf8ff 24%, #ebf8ff 28%, transparent 28%);">
+          <span>Your total savings</span>
+          <span class="font-sans">₹${totalSavings}</span>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function updateStickyBottomBar() {
+  const bar = document.getElementById('checkout-sticky-bar');
+  const totalPriceEl = document.getElementById('sticky-total-price');
+  const actionTextEl = document.getElementById('sticky-action-text');
+  const paymentNameEl = document.getElementById('sticky-payment-name');
+  const paymentIconEl = document.getElementById('sticky-payment-icon');
+  
+  if (bar) {
+    const isDark = appState.themeMode === 'dark';
+    bar.style.backgroundColor = isDark ? '#1D1F24' : '#ffffff';
+    bar.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
+    bar.style.boxShadow = isDark ? '0 12px 35px rgba(0, 0, 0, 0.35)' : '0 12px 30px rgba(0, 0, 0, 0.08)';
+    
+    if (paymentNameEl) {
+      paymentNameEl.style.color = isDark ? '#ffffff' : '#1f2937';
+    }
+  }
+
+  const { total } = getCartTotals();
+  if (totalPriceEl) totalPriceEl.textContent = `₹${total}`;
+  
+  const step = appState.checkoutStep || 1;
+  
+  if (step === 1) {
+    if (actionTextEl) actionTextEl.textContent = 'Continue';
+    if (paymentNameEl) paymentNameEl.innerHTML = `Confirm Details <span class="material-symbols-outlined text-[12px] font-bold text-gray-500">keyboard_arrow_down</span>`;
+    if (paymentIconEl) paymentIconEl.src = 'https://img.icons8.com/color/48/edit-property.png';
+  } else if (step === 2) {
+    if (actionTextEl) actionTextEl.textContent = 'Place Order';
+    const payMode = appState.selectedPayment || 'upi';
+    if (payMode === 'upi') {
+      if (paymentNameEl) paymentNameEl.innerHTML = `Google Pay UPI <span class="material-symbols-outlined text-[12px] font-bold text-gray-500">keyboard_arrow_up</span>`;
+      if (paymentIconEl) paymentIconEl.src = 'https://img.icons8.com/color/48/google-pay.png';
+    } else if (payMode === 'card') {
+      if (paymentNameEl) paymentNameEl.innerHTML = `Credit/Debit Card <span class="material-symbols-outlined text-[12px] font-bold text-gray-500">keyboard_arrow_up</span>`;
+      if (paymentIconEl) paymentIconEl.src = 'https://img.icons8.com/color/48/visa.png';
+    } else {
+      if (paymentNameEl) paymentNameEl.innerHTML = `Cash on Delivery <span class="material-symbols-outlined text-[12px] font-bold text-gray-500">keyboard_arrow_up</span>`;
+      if (paymentIconEl) paymentIconEl.src = 'https://img.icons8.com/color/48/wallet.png';
+    }
+  }
+}
+
+function handleCheckoutPrimaryAction() {
+  const step = appState.checkoutStep || 1;
+  if (step === 1) {
+    goToPayment();
+  } else if (step === 2) {
+    placeOrder();
+  }
+}
+
+function scrollToPaymentMethods() {
+  const step = appState.checkoutStep || 1;
+  if (step === 1) {
+    const contactSec = document.getElementById('contact-name');
+    if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    const paySec = document.getElementById('checkout-step-2');
+    if (paySec) paySec.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function changeCheckoutProductQty(id, delta) {
+  changeProductQty(id, delta);
+  if (appState.cart.length === 0) {
+    navigateTo('page-cart');
+  } else {
+    initCheckoutPage();
+  }
+}
+
+function removeCheckoutCartItem(id) {
+  removeCartItem(id);
+  if (appState.cart.length === 0) {
+    navigateTo('page-cart');
+  } else {
+    initCheckoutPage();
+  }
+}
+
+function addCheckoutRecommendedToCart(id) {
+  addToCart(id);
+  initCheckoutPage();
 }
 
 function goToPayment() {
@@ -3497,9 +3677,19 @@ function goToPayment() {
 }
 
 function setCheckoutStep(step) {
+  appState.checkoutStep = step;
   document.getElementById('checkout-step-1').classList.toggle('hidden', step !== 1);
   document.getElementById('checkout-step-2').classList.toggle('hidden', step !== 2);
   document.getElementById('checkout-step-3').classList.toggle('hidden', step !== 3);
+  
+  const stickyBar = document.getElementById('checkout-sticky-bar');
+  if (stickyBar) {
+    if (step === 3) {
+      stickyBar.classList.add('hidden');
+    } else {
+      stickyBar.classList.remove('hidden');
+    }
+  }
   
   for (let s = 1; s <= 3; s++) {
     const circle = document.getElementById(`step-circle-${s}`);
@@ -3517,6 +3707,7 @@ function setCheckoutStep(step) {
       }
     }
   }
+  updateStickyBottomBar();
 }
 
 function selectPayment(el, type) {
@@ -3533,6 +3724,7 @@ function selectPayment(el, type) {
     radio.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>`;
   }
   document.getElementById('upi-input-section').style.display = type === 'upi' ? 'block' : 'none';
+  updateStickyBottomBar();
 }
 
 function selectUPIApp(el) {
@@ -4551,6 +4743,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setDefaultDates();
   setupScrollChromeBehavior();
   startCustomerMarquee();
+  initRainAnimation();
   
   const shouldGoToHome = appState.hasOnboarded;
 
@@ -4678,6 +4871,222 @@ function setupScrollChromeBehavior() {
       lastScrollTop = scrollTop;
     }, { passive: true });
   });
+}
+
+function initRainAnimation() {
+  const canvas = document.getElementById('rain-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  
+  let drops = [];
+  const maxDrops = 90;
+  let lightningTimer = 0;
+  let lightningOpacity = 0;
+  let lightningBolts = [];
+  let nextLightning = Math.random() * 300 + 180; // frames until next lightning
+  let splashes = [];
+  
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+  }
+  
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  
+  // Create rain drops with varied properties
+  for (let i = 0; i < maxDrops; i++) {
+    drops.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      length: Math.random() * 18 + 8,
+      speed: Math.random() * 10 + 8,
+      opacity: Math.random() * 0.2 + 0.06,
+      width: Math.random() * 0.8 + 0.3,
+      wind: Math.random() * 1.5 + 0.3
+    });
+  }
+  
+  // Generate a forked lightning bolt path
+  function generateBolt(startX, startY, endY) {
+    const points = [{x: startX, y: startY}];
+    let currentX = startX;
+    let currentY = startY;
+    const segments = Math.floor(Math.random() * 6) + 8;
+    const segHeight = (endY - startY) / segments;
+    
+    for (let i = 0; i < segments; i++) {
+      currentY += segHeight;
+      currentX += (Math.random() - 0.5) * 40;
+      points.push({x: currentX, y: currentY});
+      
+      // Fork chance
+      if (Math.random() < 0.25 && i > 2) {
+        let forkX = currentX;
+        let forkY = currentY;
+        const forkLen = Math.floor(Math.random() * 3) + 2;
+        const forkPoints = [];
+        for (let j = 0; j < forkLen; j++) {
+          forkY += segHeight * 0.6;
+          forkX += (Math.random() - 0.5) * 30 + (Math.random() > 0.5 ? 15 : -15);
+          forkPoints.push({x: forkX, y: forkY});
+        }
+        points.fork = forkPoints;
+        points.forkStart = {x: currentX, y: currentY};
+      }
+    }
+    return points;
+  }
+  
+  function drawBolt(points, alpha) {
+    ctx.strokeStyle = `rgba(220, 235, 255, ${alpha})`;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = 'rgba(180, 210, 255, 0.8)';
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      if (typeof points[i].x === 'number') {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+    }
+    ctx.stroke();
+    
+    // Inner bright core
+    ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.9})`;
+    ctx.lineWidth = 0.8;
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      if (typeof points[i].x === 'number') {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+    }
+    ctx.stroke();
+    
+    // Draw fork if exists
+    if (points.fork && points.forkStart) {
+      ctx.strokeStyle = `rgba(200, 220, 255, ${alpha * 0.6})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(points.forkStart.x, points.forkStart.y);
+      for (let i = 0; i < points.fork.length; i++) {
+        ctx.lineTo(points.fork[i].x, points.fork[i].y);
+      }
+      ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+  }
+  
+  function animate() {
+    const parent = canvas.closest('.page');
+    if (parent && !parent.classList.contains('active')) {
+      requestAnimationFrame(animate);
+      return;
+    }
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Lightning flash background glow
+    if (lightningOpacity > 0) {
+      ctx.fillStyle = `rgba(200, 220, 255, ${lightningOpacity * 0.15})`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      lightningOpacity *= 0.88; // fade out
+      if (lightningOpacity < 0.01) lightningOpacity = 0;
+    }
+    
+    // Draw lightning bolts
+    for (let i = lightningBolts.length - 1; i >= 0; i--) {
+      const bolt = lightningBolts[i];
+      bolt.life -= 0.04;
+      if (bolt.life <= 0) {
+        lightningBolts.splice(i, 1);
+        continue;
+      }
+      drawBolt(bolt.points, bolt.life * 0.8);
+    }
+    
+    // Trigger lightning periodically
+    lightningTimer++;
+    if (lightningTimer >= nextLightning) {
+      lightningTimer = 0;
+      nextLightning = Math.random() * 400 + 200;
+      
+      const boltX = Math.random() * canvas.width * 0.8 + canvas.width * 0.1;
+      const boltPoints = generateBolt(boltX, 0, canvas.height * 0.7);
+      lightningBolts.push({ points: boltPoints, life: 1.0 });
+      lightningOpacity = 1.0;
+      
+      // Double flash effect
+      setTimeout(() => {
+        if (Math.random() < 0.5) {
+          const boltX2 = boltX + (Math.random() - 0.5) * 40;
+          const boltPoints2 = generateBolt(boltX2, 0, canvas.height * 0.5);
+          lightningBolts.push({ points: boltPoints2, life: 0.7 });
+          lightningOpacity = 0.8;
+        }
+      }, 80);
+    }
+    
+    // Draw rain drops
+    for (let i = 0; i < drops.length; i++) {
+      const d = drops[i];
+      const rainOpacity = lightningOpacity > 0.3 ? d.opacity * 2.5 : d.opacity;
+      
+      ctx.lineWidth = d.width;
+      ctx.strokeStyle = `rgba(174, 219, 255, ${Math.min(rainOpacity, 0.4)})`;
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x + d.wind, d.y + d.length);
+      ctx.stroke();
+      
+      d.y += d.speed;
+      d.x += d.wind * 0.3;
+      
+      // When drop hits the bottom, create a splash
+      if (d.y > canvas.height) {
+        // Small splash particle
+        if (Math.random() < 0.3) {
+          splashes.push({
+            x: d.x, y: canvas.height - 2,
+            vx: (Math.random() - 0.5) * 2,
+            vy: -(Math.random() * 1.5 + 0.5),
+            life: 1.0
+          });
+        }
+        d.y = -d.length - Math.random() * 40;
+        d.x = Math.random() * canvas.width;
+        d.speed = Math.random() * 10 + 8;
+      }
+    }
+    
+    // Draw splashes
+    for (let i = splashes.length - 1; i >= 0; i--) {
+      const s = splashes[i];
+      s.x += s.vx;
+      s.y += s.vy;
+      s.vy += 0.08; // gravity
+      s.life -= 0.06;
+      
+      if (s.life <= 0) {
+        splashes.splice(i, 1);
+        continue;
+      }
+      ctx.fillStyle = `rgba(174, 219, 255, ${s.life * 0.3})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Keep splash count reasonable
+    if (splashes.length > 30) splashes.splice(0, 10);
+    
+    requestAnimationFrame(animate);
+  }
+  
+  animate();
 }
 
 function startCustomerMarquee() {

@@ -2160,50 +2160,57 @@ function resetAppStateAndLogin() {
 
 
 function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
-  const weightText = p.weight ? p.weight : 'Standard Size';
+  const weightText = p.weight ? p.weight : 'Standard';
   const mrp = p.mrp || Math.round(p.price * 1.25);
   const discPct = Math.round(((mrp - p.price) / mrp) * 100);
   const vegDot = p.veg
-    ? `<span style="position:absolute;bottom:6px;right:6px;width:16px;height:16px;background:#ffffff;border-radius:4px;border:1.5px solid #16a34a;display:flex;align-items:center;justify-content:center;z-index:2;">
-         <span style="width:7px;height:7px;background:#16a34a;border-radius:50%;display:block;"></span>
+    ? `<span style="position:absolute;bottom:4px;right:4px;width:12px;height:12px;background:#ffffff;border-radius:3px;border:1px solid #16a34a;display:flex;align-items:center;justify-content:center;z-index:2;">
+         <span style="width:5px;height:5px;background:#16a34a;border-radius:50%;display:block;"></span>
        </span>` : '';
 
+  let optionsLabel = '';
+  if (p.id === 1001) optionsLabel = '<span style="font-size:7px;font-weight:700;color:#16a34a;margin-top:0px;display:block;line-height:1;">3 options</span>';
+  else if (p.id === 1003 || p.id === 1004 || p.id === 1006 || p.id === 1008 || (p.name && p.name.includes('Red Rock Deli'))) {
+    optionsLabel = '<span style="font-size:7px;font-weight:700;color:#16a34a;margin-top:0px;display:block;line-height:1;">2 options</span>';
+  }
+
   const buttonHTML = qty > 0
-    ? `<div style="display:flex;align-items:center;background:var(--qty-btn-bg, #ffffff);border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:36px;min-width:76px;z-index:10;box-shadow:0 2px 4px rgba(22,163,74,0.08);">
-         <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
-         <span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--product-name-color, #111827);font-family:'Outfit',sans-serif;">${qty}</span>
-         <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
+    ? `<div style="display:flex;align-items:center;background:var(--qty-btn-bg, #ffffff);border:1px solid #16a34a;border-radius:8px;overflow:hidden;height:28px;min-width:54px;z-index:10;box-shadow:0 1px 3px rgba(22,163,74,0.06);">
+         <button style="width:16px;height:100%;color:#16a34a;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
+         <span style="flex:1;text-align:center;font-size:10.5px;font-weight:700;color:var(--product-name-color, #111827);font-family:'Outfit',sans-serif;">${qty}</span>
+         <button style="width:16px;height:100%;color:#16a34a;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
        </div>`
-    : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
-         <button style="background:var(--qty-btn-bg, #ffffff);border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:36px;width:100%;font-size:12px;font-weight:800;letter-spacing:0.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 2px 4px rgba(22,163,74,0.08);" onclick="event.stopPropagation();${addClickCode}">ADD</button>
-       </div>`;
+    : `<button style="background:var(--qty-btn-bg, #ffffff);border:1px solid #16a34a;color:#16a34a;border-radius:8px;height:28px;min-width:54px;padding: 1px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 1px 3px rgba(22,163,74,0.06);line-height:1.05;" onclick="event.stopPropagation();${addClickCode}">
+         <span style="font-size:10px;font-weight:900;letter-spacing:0.01em;display:block;color:#16a34a;">ADD</span>
+         ${optionsLabel}
+       </button>`;
 
   let subPillHTML = '';
   if (p.subcategory) {
     const label = p.subcategory.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    subPillHTML = `<span style="font-size:9px; font-weight:700; color:#16a34a; background:rgba(22,163,74,0.06); padding:3px 8px; border-radius:6px; border:1px solid rgba(22,163,74,0.15); margin-top:6px; max-width:fit-content; font-family:'Outfit',sans-serif; display:inline-flex; align-items:center; gap:2px;">All ${label} <span class="material-symbols-outlined" style="font-size:10px;">chevron_right</span></span>`;
+    subPillHTML = `<span style="font-size:8px; font-weight:700; color:#16a34a; background:rgba(22,163,74,0.05); padding:2px 5px; border-radius:5px; border:1px solid rgba(22,163,74,0.12); margin-top:4px; max-width:fit-content; font-family:'Outfit',sans-serif; display:inline-flex; align-items:center; gap:1.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">All ${label} <span class="material-symbols-outlined" style="font-size:8px;">chevron_right</span></span>`;
   } else {
-    subPillHTML = `<span style="font-size:9px; font-weight:700; color:#16a34a; background:rgba(22,163,74,0.06); padding:3px 8px; border-radius:6px; border:1px solid rgba(22,163,74,0.15); margin-top:6px; max-width:fit-content; font-family:'Outfit',sans-serif; display:inline-flex; align-items:center; gap:2px;">Top Deal <span class="material-symbols-outlined" style="font-size:10px;">chevron_right</span></span>`;
+    subPillHTML = `<span style="font-size:8px; font-weight:700; color:#16a34a; background:rgba(22,163,74,0.05); padding:2px 5px; border-radius:5px; border:1px solid rgba(22,163,74,0.12); margin-top:4px; max-width:fit-content; font-family:'Outfit',sans-serif; display:inline-flex; align-items:center; gap:1.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Top Deal <span class="material-symbols-outlined" style="font-size:8px;">chevron_right</span></span>`;
   }
 
   return `
-    <div style="cursor:pointer; background:var(--card-bg, transparent); border:var(--card-border, none); border-radius:18px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; position:relative; box-shadow:var(--card-shadow, none);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
+    <div style="cursor:pointer; background:var(--card-bg, transparent); border:var(--card-border, none); border-radius:14px; padding:6px; display:flex; flex-direction:column; justify-content:space-between; position:relative; box-shadow:var(--card-shadow, none);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
       <div>
         <!-- Image Container -->
-        <div style="position:relative; width:100%; aspect-ratio:1; background:var(--img-capsule-bg, #f4f5f7); border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px;">
+        <div style="position:relative; width:100%; aspect-ratio:1; background:var(--img-capsule-bg, #f4f5f7); border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:6px; border:1px solid var(--border-color, rgba(0,0,0,0.05));">
           <img src="${p.img}" alt="${p.name}" style="max-width:92%; max-height:92%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
           ${vegDot}
           <!-- Slider dots (bottom left) -->
-          <div style="position:absolute; bottom:4px; left:4px; display:flex; gap:2.5px; align-items:center;">
-            <span style="width:4px; height:4px; border-radius:50%; background:#94a3b8; display:block;"></span>
-            <span style="width:3.5px; height:3.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
-            <span style="width:3.5px; height:3.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
+          <div style="position:absolute; bottom:4px; left:4px; display:flex; gap:2px; align-items:center;">
+            <span style="width:3px; height:3px; border-radius:50%; background:#94a3b8; display:block;"></span>
+            <span style="width:2.5px; height:2.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
+            <span style="width:2.5px; height:2.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
           </div>
         </div>
         
         <!-- Weight and ADD button row (Matches Photo 3) -->
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:6px;">
-          <div style="border:1px solid var(--border-color, rgba(255,255,255,0.2)); border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; color:var(--product-name-color, #111827); font-family:'Outfit',sans-serif; text-align:center; min-width:48px; white-space:nowrap;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; gap:4px;">
+          <div style="border:1px solid var(--border-color, rgba(255,255,255,0.15)); border-radius:6px; padding:2px 5px; font-size:9.5px; font-weight:700; color:var(--product-name-color, #111827); font-family:'Outfit',sans-serif; text-align:center; min-width:32px; white-space:nowrap; background:var(--card-bg, transparent);">
             ${weightText}
           </div>
           <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();" style="flex-shrink:0;">
@@ -2212,24 +2219,24 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
         </div>
 
         <!-- Price Details -->
-        <div style="display:flex; align-items:baseline; gap:4px; margin-bottom:2px;">
-          <span style="font-size:16px; font-weight:850; color:var(--product-price-color, #111827); font-family:'Outfit',sans-serif;">₹${p.price}</span>
-          <span style="font-size:10.5px; font-weight:500; color:var(--product-mrp-color, #94a3b8); text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
+        <div style="display:flex; align-items:baseline; gap:3px; margin-bottom:1px;">
+          <span style="font-size:13.5px; font-weight:850; color:var(--product-price-color, #111827); font-family:'Outfit',sans-serif;">₹${p.price}</span>
+          <span style="font-size:9.5px; font-weight:500; color:var(--product-mrp-color, #94a3b8); text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
         </div>
-        <div style="font-size:9.5px; font-weight:800; color:var(--product-disc-color, #3b82f6); margin-bottom:6px; font-family:'Outfit',sans-serif;">${discPct}% OFF on MRP</div>
+        <div style="font-size:8.5px; font-weight:800; color:var(--product-disc-color, #3b82f6); margin-bottom:4px; font-family:'Outfit',sans-serif;">${discPct}% OFF on MRP</div>
         
         <!-- Product Name -->
-        <h4 style="font-size:12px; font-weight:700; color:var(--product-name-color, #111827); line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:32px;">${p.name}</h4>
+        <h4 style="font-size:10.5px; font-weight:700; color:var(--product-name-color, #111827); line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:28px;">${p.name}</h4>
         
         <!-- Sub pill badge -->
         ${subPillHTML}
       </div>
 
       <!-- Rating and reviews -->
-      <div style="display:flex; align-items:center; gap:3px; margin-top:8px; font-family:'Outfit',sans-serif;">
-        <span class="material-symbols-outlined" style="font-size:12px; color:#f59e0b; font-variation-settings:'FILL' 1;">star</span>
-        <span style="font-size:10px; font-weight:700; color:var(--product-name-color, #111827);">${p.rating || '4.8'}</span>
-        <span style="font-size:9px; color:var(--product-weight-color, #9ca3af);">(${p.reviews || '120'})</span>
+      <div style="display:flex; align-items:center; gap:2.5px; margin-top:6px; font-family:'Outfit',sans-serif;">
+        <span class="material-symbols-outlined" style="font-size:10px; color:#f59e0b; font-variation-settings:'FILL' 1;">star</span>
+        <span style="font-size:9px; font-weight:700; color:var(--product-name-color, #111827);">${p.rating || '4.8'}</span>
+        <span style="font-size:8px; color:var(--product-weight-color, #9ca3af);">(${p.reviews || '120'})</span>
       </div>
     </div>
   `;
@@ -2367,7 +2374,7 @@ function renderProducts(products) {
             <div style="width:4px;height:15px;background:${sec.accentColor};border-radius:2px;"></div>
             <h4 style="font-size:13px;font-weight:800;color:var(--product-name-color, #1a1a1a);margin:0;font-family:'Outfit',sans-serif;">${sec.title}</h4>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px 6px;">
             ${itemsHTML}
           </div>
         </div>
@@ -2383,12 +2390,12 @@ function renderProducts(products) {
     });
 
     if (!filtered.length) {
-      grid.innerHTML = `<div style="grid-column:span 2;text-align:center;padding:40px 0;color:rgba(255,255,255,0.35);font-size:12px;font-weight:600;">No products found.</div>`;
+      grid.innerHTML = `<div style="grid-column:span 3;text-align:center;padding:40px 0;color:rgba(255,255,255,0.35);font-size:12px;font-weight:600;">No products found.</div>`;
       return;
     }
 
     const itemsHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
-    grid.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${itemsHTML}</div>`;
+    grid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px 6px;">${itemsHTML}</div>`;
   }
 }
 

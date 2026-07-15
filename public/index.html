@@ -10,7 +10,7 @@
     async
     crossorigin="anonymous"
     data-clerk-publishable-key="pk_test_c21vb3RoLWphY2thbC0xOC5jbGVyay5hY2NvdW50cy5kZXYk"
-    src="https://smooth-jackal-18.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
     type="text/javascript"
   ></script>
   
@@ -2227,181 +2227,307 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
   <!-- ==================== SHOP / HOME PAGE ==================== -->
   <div id="page-shop" class="page tab-page bg-background">
-    <!-- Hero Section -->
-    <section class="shop-hero-section" style="background: linear-gradient(160deg, #0a5c35 0%, #118A4E 60%, #0e7a46 100%) !important; padding-top: calc(14px + var(--rq-safe-top)); padding-bottom: 14px; position: relative; overflow: hidden;">
-      <!-- Decorative ambient circles -->
-      <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
-      <div style="position:absolute;bottom:-60px;left:-30px;width:140px;height:140px;border-radius:50%;background:rgba(0,0,0,0.05);pointer-events:none;"></div>
-
-      <!-- Top Row: Delivery badge + Profile (Logo removed) -->
-      <div style="display:flex;align-items:center;gap:10px;padding:0 16px;margin-bottom:10px;position:relative;z-index:10;">
-        <!-- Brand Text -->
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.5px;text-shadow:0 2px 4px rgba(0,0,0,0.05);">Railquick</span>
-          <div style="width:6px;height:6px;background:#4ADE80;border-radius:50%;margin-top:4px;animation:shopBlink 1.2s infinite;"></div>
-        </div>
-        <!-- Profile -->
-        <div onclick="navigateTo('page-account')" style="margin-left:auto;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-          <span class="material-symbols-outlined" style="font-size:20px;color:#fff;">person</span>
-        </div>
-      </div>
-
-      <!-- Location Row -->
-      <div style="display:flex;align-items:center;gap:6px;padding:0 16px;margin-bottom:10px;position:relative;z-index:10;" id="shop-delivery-header">
-        <span class="material-symbols-outlined" style="font-size:17px;color:#a7f3d0;">train</span>
-        <div id="shop-delivering-label" style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);">Select Train / PNR to order</div>
-        <button onclick="resetAppStateAndLogin()" style="margin-left:auto;background:none;border:none;cursor:pointer;display:flex;align-items:center;">
-          <span class="material-symbols-outlined" style="font-size:18px;color:rgba(255,255,255,0.6);">keyboard_arrow_down</span>
-        </button>
-      </div>
-
-      <!-- Search Box -->
-      <div style="padding:0 16px;position:relative;z-index:20;" onclick="openSearchOverlay()">
-        <div style="background:#fff;border-radius:14px;display:flex;align-items:center;height:50px;cursor:pointer;padding:0 16px;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-          <span class="material-symbols-outlined" style="font-size:21px;color:#118A4E;">search</span>
-          <div style="flex-grow:1;display:flex;align-items:center;font-size:13.5px;font-weight:600;color:#9CA3AF;margin-left:10px;user-select:none;">
-            Search&nbsp;<span id="search-placeholder-text" style="color:#118A4E;">"hot samosa"</span>
-          </div>
-          <span class="material-symbols-outlined" style="font-size:20px;color:#118A4E;">mic</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== CATEGORY ICON SCROLL TAB (below search) ===== -->
+    <!-- ===== HERO — pixel match to reference ===== -->
     <style>
-      .rq-cat-tab {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        padding: 12px 14px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      /* ── Hero wrapper ── */
+      .rq-hero-block {
         position: relative;
+        width: 100%;
+        height: 510px;
+        background-color: #02071d;
+        background-image: url('hero_rain_train.png');
+        background-size: contain;        /* show full image, no cropping */
+        background-position: center bottom; /* image anchored at bottom, gap filled by dark bg at top */
+        background-repeat: no-repeat;
+        overflow: hidden;
+        flex-shrink: 0;
       }
-      .rq-cat-tab-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 50% !important;
+
+      /* Overlay: solid dark at top (covers image gap + text panel), fades to reveal image below */
+      .rq-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(2, 7, 29, 0.97)  0%,
+          rgba(2, 7, 29, 0.95) 15%,  /* solid dark gap at top */
+          rgba(2, 7, 29, 0.90) 25%,  /* text panel area */
+          rgba(2, 7, 29, 0.06) 46%,  /* clear — train image blazes through */
+          rgba(2, 7, 29, 0.0)  60%,
+          rgba(2, 7, 29, 0.28) 82%,
+          rgba(2, 7, 29, 0.48) 100%
+        );
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* Top UI panel (fixed at top of hero) */
+      .rq-hero-top-panel {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        z-index: 10;
+        padding: calc(18px + var(--rq-safe-top, 0px)) 16px 0 16px;
+      }
+
+      /* Brand row */
+      .rq-hero-label {
+        font-family: 'Outfit', sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        color: #FFFFFF;
+        opacity: 0.9;
+        line-height: 1;
+        margin: 0 0 5px 0;
+      }
+      .rq-hero-info-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+      .rq-hero-train-name {
+        font-family: 'Outfit', sans-serif;
+        font-size: 40px;
+        font-weight: 900;
+        color: #FFFFFF;
+        line-height: 1.0;
+        letter-spacing: -0.02em;
+        text-shadow: 0 2px 16px rgba(0,0,0,0.55);
+        margin: 0;
+      }
+      .rq-hero-seat {
+        font-family: 'Outfit', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #FFFFFF;
+        opacity: 0.9;
+        margin: 6px 0 0 0;
+        text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+      }
+      /* Profile avatar — plain white silhouette, no border */
+      .rq-hero-avatar {
+        width: 46px; height: 46px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; flex-shrink: 0; margin-top: 2px;
+      }
+
+      /* Search bar — dark, no visible border */
+      .rq-hero-search {
+        margin-top: 14px;
+        background: rgba(6, 9, 32, 0.82);
+        border: none;
+        border-radius: 14px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        border: 2px solid transparent;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        height: 54px;
+        cursor: pointer;
+        overflow: hidden;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
       }
-      .rq-cat-tab:active .rq-cat-tab-icon {
-        transform: scale(0.92);
+      .rq-hero-search-left {
+        display: flex; align-items: center;
+        flex: 1; padding: 0 14px; gap: 10px; height: 100%;
       }
-      .rq-cat-tab.active .rq-cat-tab-icon {
-        border-color: #118A4E;
-        box-shadow: 0 4px 12px rgba(17, 138, 78, 0.15);
-        transform: scale(1.05);
-      }
-      .rq-cat-tab-label {
-        font-size: 11px;
-        font-weight: 600;
-        color: #64748B;
+      .rq-hero-search-placeholder {
         font-family: 'Outfit', sans-serif;
-        transition: color 0.2s;
+        font-size: 16px; font-weight: 400;
+        color: rgba(255,255,255,0.52);
+        user-select: none;
       }
-      .rq-cat-tab.active .rq-cat-tab-label {
-        color: #118A4E;
-        font-weight: 800;
+      .rq-hero-search-divider {
+        width: 1px; height: 30px;
+        background: rgba(255,255,255,0.18);
+        flex-shrink: 0;
       }
-      .rq-cat-new {
+      .rq-hero-search-mic {
+        width: 56px; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+      }
+
+      /* Tagline — left-aligned, sits in the lower-middle of the hero over the train */
+      .rq-hero-tagline {
         position: absolute;
-        top: 6px;
-        right: 8px;
-        background: #EF4444;
-        color: #fff;
-        font-size: 7px;
-        font-weight: 900;
-        border-radius: 4px;
-        padding: 1.5px 3.5px;
-        letter-spacing: 0.02em;
-        box-shadow: 0 2px 4px rgba(239,68,68,0.25);
-        font-family: 'Outfit', sans-serif;
+        top: 49%;
+        left: 0; right: 0;
+        z-index: 10;
+        text-align: left;
+        padding: 0 0 0 20px;
       }
+      .rq-hero-tagline-sub {
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px; font-weight: 700;
+        color: rgba(255,255,255,0.92);
+        text-shadow: 0 1px 10px rgba(0,0,0,0.8);
+        margin: 0 0 2px 0;
+        display: block;
+      }
+      .rq-hero-tagline-main {
+        font-family: 'Outfit', sans-serif;
+        font-size: 46px; font-weight: 900;
+        color: #FFFFFF;
+        text-shadow: 0 2px 20px rgba(0,0,0,0.65);
+        line-height: 1.0;
+        display: block;
+        min-height: 50px;
+      }
+
+      /* ── Category nav ── */
+      .rq-cat-row-dark {
+        display: flex;
+        overflow-x: auto;
+        background: #07091d;
+        scrollbar-width: none;
+        flex-shrink: 0;
+      }
+      .rq-cat-row-dark::-webkit-scrollbar { display: none; }
+
+      .rq-cdt {
+        display: flex; flex-direction: column;
+        align-items: center; gap: 5px;
+        padding: 13px 4px 11px;
+        cursor: pointer;
+        flex: 1; min-width: 60px;
+        position: relative;
+        transition: opacity 0.15s;
+      }
+      /* Active bottom bar */
+      .rq-cdt::after {
+        content: '';
+        position: absolute; bottom: 0; left: 50%;
+        transform: translateX(-50%);
+        width: 0; height: 2px;
+        background: #FFFFFF;
+        border-radius: 2px 2px 0 0;
+        transition: width 0.2s ease;
+      }
+      .rq-cdt.active::after { width: 26px; }
+
+      /* Icon — thin outline, no circle wrapper */
+      .rq-cdt .rq-cdt-ms {
+        font-size: 26px;
+        color: rgba(255,255,255,0.38);
+        display: block;
+        font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        transition: color 0.15s;
+      }
+      .rq-cdt.active .rq-cdt-ms {
+        color: rgba(255,255,255,0.92);
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      }
+
+      /* Label */
+      .rq-cdt .rq-cdt-label {
+        font-family: 'Outfit', sans-serif;
+        font-size: 10.5px; font-weight: 500;
+        color: rgba(255,255,255,0.40);
+        text-align: center; white-space: nowrap;
+        transition: color 0.15s, font-weight 0.15s;
+      }
+      .rq-cdt.active .rq-cdt-label {
+        color: #FFFFFF; font-weight: 800;
+      }
+      .rq-cdt:active { opacity: 0.55; }
     </style>
-    <div style="display:flex;overflow-x:auto;background:#fff;border-bottom:1px solid #ECEFF1;padding:6px 6px;scrollbar-width:none;" class="no-scrollbar">
-      <div class="rq-cat-tab active" onclick="filterCategory('all',null);setRQTab(this)">
-        <div class="rq-cat-tab-icon" style="background:#E8F5EE;">
-          <span class="material-symbols-outlined" style="font-size:22px;color:#118A4E;font-weight:bold;">storefront</span>
+
+    <!-- Hero block -->
+    <div class="rq-hero-block">
+      <div class="rq-hero-overlay"></div>
+
+      <!-- ── Top panel: brand + search ── -->
+      <div class="rq-hero-top-panel">
+        <!-- "Railquick in" label -->
+        <div class="rq-hero-label">Railquick in</div>
+
+        <!-- Train name + profile icon -->
+        <div class="rq-hero-info-row">
+          <div onclick="resetAppStateAndLogin()" style="cursor:pointer; flex:1;" class="active:scale-[0.98] transition-all">
+            <div id="shop-delivering-train-name" class="rq-hero-train-name">Train name</div>
+            <div id="shop-delivering-seat-coach" class="rq-hero-seat">Seat no/ coach</div>
+          </div>
+          <div class="rq-hero-avatar" onclick="navigateTo('page-account')">
+            <!-- Plain white person silhouette matching reference -->
+            <span class="material-symbols-outlined" style="font-size:36px; color:#FFFFFF; font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48;">person</span>
+          </div>
         </div>
-        <span class="rq-cat-tab-label">All</span>
+
+        <!-- Search bar -->
+        <div class="rq-hero-search" onclick="openSearchOverlay()">
+          <div class="rq-hero-search-left">
+            <span class="material-symbols-outlined" style="font-size:24px; color:rgba(255,255,255,0.50); font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24; flex-shrink:0;">search</span>
+            <span class="rq-hero-search-placeholder">Search <span id="search-placeholder-text">"milk"</span></span>
+          </div>
+          <div class="rq-hero-search-divider"></div>
+          <div class="rq-hero-search-mic">
+            <span class="material-symbols-outlined" style="font-size:24px; color:rgba(255,255,255,0.62); font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">mic</span>
+          </div>
+        </div>
       </div>
-      <div class="rq-cat-tab" onclick="filterCategory('comfort',null);setRQTab(this)">
-        <div class="rq-cat-tab-icon" style="background:#FFFBEB;">
-          <img src="product_haldirams.png" style="width:32px; height:32px; object-fit:contain;" alt="Snacks" />
-        </div>
-        <span class="rq-cat-tab-label">Snacks</span>
-      </div>
-      <div class="rq-cat-tab" onclick="filterCategory('beverages',null);setRQTab(this)">
-        <div class="rq-cat-tab-icon" style="background:#FFF7ED;">
-          <img src="product_tea.png" style="width:34px; height:34px; object-fit:contain;" alt="Chai & Drinks" />
-        </div>
-        <span class="rq-cat-tab-label">Chai &amp; Drinks</span>
-      </div>
-      <div class="rq-cat-tab" style="position:relative;" onclick="filterCategory('tech',null);setRQTab(this)">
-        <div class="rq-cat-tab-icon" style="background:#F5F3FF;">
-          <img src="product_earphones.png" style="width:32px; height:32px; object-fit:contain;" alt="Electronics" />
-        </div>
-        <span class="rq-cat-tab-label">Electronics</span>
-        <div class="rq-cat-new">NEW</div>
-      </div>
-      <div class="rq-cat-tab" onclick="filterCategory('hygiene',null);setRQTab(this)">
-        <div class="rq-cat-tab-icon" style="background:#F0F9FF;">
-          <img src="product_sanitizer.png" style="width:30px; height:30px; object-fit:contain;" alt="Hygiene" />
-        </div>
-        <span class="rq-cat-tab-label">Hygiene</span>
-      </div>
-      <div class="rq-cat-tab" onclick="filterCategory('comfort',null);setRQTab(this)">
-        <div class="rq-cat-tab-icon" style="background:#ECFDF5;">
-          <img src="product_neckpillow.png" style="width:32px; height:32px; object-fit:contain;" alt="Comfort" />
-        </div>
-        <span class="rq-cat-tab-label">Comfort</span>
+
+      <!-- ── Bottom tagline over train image ── -->
+      <div class="rq-hero-tagline">
+        <span class="rq-hero-tagline-sub">Everything you need for</span>
+        <span id="changing-word" class="rq-hero-tagline-main" style="transition: opacity 0.3s ease, transform 0.3s ease;">Travel</span>
       </div>
     </div>
+
+    <!-- ── Category nav (dark navy, below hero) ── -->
+    <div class="rq-cat-row-dark">
+      <div class="rq-cdt active" onclick="filterCategory('all',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">shopping_bag</span>
+        <span class="rq-cdt-label">All</span>
+      </div>
+      <div class="rq-cdt" onclick="filterCategory('monsoon',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">umbrella</span>
+        <span class="rq-cdt-label">Monsoon</span>
+      </div>
+      <div class="rq-cdt" onclick="filterCategory('tech',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">headphones</span>
+        <span class="rq-cdt-label">Electronics</span>
+      </div>
+      <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">face_retouching_natural</span>
+        <span class="rq-cdt-label">Beauty</span>
+      </div>
+      <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">medication</span>
+        <span class="rq-cdt-label">Pharmacy</span>
+      </div>
+      <div class="rq-cdt" onclick="filterCategory('comfort',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">child_care</span>
+        <span class="rq-cdt-label">Baby Care</span>
+      </div>
+    </div>
+
     <script>
-      function setRQTab(el){
-        document.querySelectorAll('.rq-cat-tab').forEach(t=>t.classList.remove('active'));
+      /* Category active state */
+      function setRQCat(el){
+        document.querySelectorAll('.rq-cdt').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
       }
+
+      /* Cycling tagline words — workable, clean, no emojis */
+      const rqWords = ['Travel', 'Monsoon', 'Comfort', 'Snacks', 'Your Journey'];
+      let rqWordIdx = 0;
+      const rqWordEl = document.getElementById('changing-word');
+      if (rqWordEl) {
+        setInterval(() => {
+          rqWordEl.style.opacity = '0';
+          rqWordEl.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            rqWordIdx = (rqWordIdx + 1) % rqWords.length;
+            rqWordEl.textContent = rqWords[rqWordIdx];
+            rqWordEl.style.transform = 'translateY(10px)';
+            requestAnimationFrame(() => {
+              setTimeout(() => {
+                rqWordEl.style.opacity = '1';
+                rqWordEl.style.transform = 'translateY(0)';
+              }, 20);
+            });
+          }, 280);
+        }, 3000);
+      }
     </script>
-
-    <!-- ===== GREEN HERO BANNER (RE-DESIGNED & BLENDED) ===== -->
-    <section style="margin:16px 12px; border-radius:24px; overflow:hidden; position:relative; background:linear-gradient(135deg, #0A5C35 0%, #118A4E 100%); box-shadow:0 10px 30px rgba(17, 138, 78, 0.2); min-height:165px; display:flex;">
-      <!-- Left Content (58% width) -->
-      <div style="position:relative; z-index:2; padding:20px 12px 20px 20px; width:58%; display:flex; flex-direction:column; justify-content:center;">
-        <div style="display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,0.15); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.25); border-radius:30px; padding:3px 10px; width:fit-content; margin-bottom:8px;">
-          <span style="font-size:9px; font-weight:800; color:#fff; letter-spacing:0.06em; text-transform:uppercase; display:flex; align-items:center; gap:3px; font-family:'Outfit',sans-serif;">
-            <span class="material-symbols-outlined" style="font-size:11px; color:#4ADE80; font-weight:900;">bolt</span>
-            Express Delivery
-          </span>
-        </div>
-        <h3 style="font-size:21px; font-weight:900; color:#fff; line-height:1.18; font-family:'Outfit',sans-serif; letter-spacing:-0.4px; margin:0 0 6px 0;">
-          Chai, Snacks &amp;<br/>Essentials
-        </h3>
-        <p style="font-size:11px; font-weight:500; color:rgba(255,255,255,0.85); line-height:1.4; margin:0 0 12px 0; max-width:180px;">
-          Direct to your train seat berth in minutes.
-        </p>
-        <button onclick="filterCategory('comfort',null)" style="background:#fff; color:#118A4E; border:none; border-radius:12px; padding:8px 14px; font-family:'Outfit',sans-serif; font-size:11.5px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.12); display:flex; align-items:center; gap:4px; width:fit-content; transition:all 0.2s;" class="active:scale-95">
-          Order Now
-          <span class="material-symbols-outlined" style="font-size:12px; font-weight:900;">arrow_forward</span>
-        </button>
-      </div>
-
-      <!-- Right Content (42% width with blended photo) -->
-      <div style="position:relative; width:42%; overflow:hidden;">
-        <!-- The Image -->
-        <img src="delivery_person.png" style="width:100%; height:100%; object-fit:cover; object-position:center; position:absolute; right:0; top:0;" alt="Seat Delivery" />
-        <!-- Gradient Overlay to dissolve the sharp left edge into the card background -->
-        <div style="position:absolute; inset:0; background:linear-gradient(to right, #0d7945 0%, rgba(13,121,69,0.5) 30%, transparent 100%); pointer-events:none;"></div>
-      </div>
-    </section>
 
     <!-- ===== 4-COL CATEGORY PROMO GRID (RE-DESIGNED) ===== -->
     <section style="background:#F6F8F7; padding:18px 0 16px;">
@@ -3348,9 +3474,9 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       <span class="nav-label">Orders</span>
       <span class="nav-badge" id="nav-orders-badge" style="display:none;">0</span>
     </div>
-    <div class="nav-item" data-page="page-offers" onclick="navTo('page-offers')">
-      <span class="material-symbols-outlined nav-icon">local_offer</span>
-      <span class="nav-label">Offers</span>
+    <div class="nav-item" data-page="page-games" onclick="navTo('page-games')">
+      <span class="material-symbols-outlined nav-icon">casino</span>
+      <span class="nav-label">Games</span>
     </div>
   </nav>
 

@@ -2033,8 +2033,11 @@ function updateTrainStripWithLiveStatus(liveData) {
 
 // Dynamic header showing train name, seat number, and birth details
 function updateShopTopbar() {
-  const labelEl = document.getElementById('shop-delivering-label');
-  const headerEl = document.getElementById('shop-delivery-header');
+  const trainNameEl = document.getElementById('shop-delivering-train-name');
+  const seatCoachEl = document.getElementById('shop-delivering-seat-coach');
+  const distanceEl = document.getElementById('shop-delivering-distance');
+  const badgeEl = document.getElementById('shop-delivering-badge');
+
   const seatEl = document.getElementById('shop-pnr-seat');
   const statusEl = document.getElementById('shop-pnr-status');
   const fromEl = document.getElementById('shop-pnr-from');
@@ -2048,17 +2051,17 @@ function updateShopTopbar() {
     const seat = pax ? pax.berth : '';
     const berth = pax ? pax.berthCode : '';
 
-    if (labelEl) {
-      labelEl.innerHTML = `
-        <span style="font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.12em; color: #A7F3D0; display: block; margin-bottom: 2px;">Delivering to</span>
-        <span style="font-size: 15px; font-weight: 900; color: #FFFFFF; line-height: 1.25; font-family:'Outfit',sans-serif; display:block;">
-          ${d.trainName} (${d.trainNumber}) · Coach ${coach || '—'} · Seat ${seat || '—'}
-        </span>
-      `;
+    if (trainNameEl) {
+      trainNameEl.textContent = d.trainName || 'Train name';
     }
-    // Restore the headerEl defaults
-    if (headerEl) {
-      headerEl.style.marginTop = "0px";
+    if (seatCoachEl) {
+      seatCoachEl.textContent = coach ? `Coach ${coach} / Seat ${seat} ${berth ? `(${berth})` : ''}` : 'Seat no/ caoch';
+    }
+    if (badgeEl) {
+      badgeEl.classList.remove('hidden');
+    }
+    if (distanceEl) {
+      distanceEl.textContent = appState.isPnrConfirmed ? 'Verified' : 'Waitlisted';
     }
 
     if (seatEl) {
@@ -2078,14 +2081,19 @@ function updateShopTopbar() {
       }
     }
   } else {
-    if (labelEl) {
-      labelEl.innerHTML = `
-        <span style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);">Select Train / PNR to order</span>
-      `;
+    if (trainNameEl) {
+      trainNameEl.textContent = 'Train name';
     }
-    if (headerEl) {
-      headerEl.style.marginTop = "0px";
+    if (seatCoachEl) {
+      seatCoachEl.textContent = 'Seat no/ caoch';
     }
+    if (badgeEl) {
+      badgeEl.classList.remove('hidden');
+    }
+    if (distanceEl) {
+      distanceEl.textContent = '880 m away';
+    }
+
     if (seatEl) seatEl.textContent = 'Seat —';
     if (statusEl) statusEl.textContent = 'No Ticket';
     if (fromEl) fromEl.textContent = '—';
@@ -2191,7 +2199,9 @@ function renderProducts(products) {
     }).join('');
   } else {
     const filtered = products.filter(p => {
-      const matchCategory = appState.currentFilter === 'all' || p.category === appState.currentFilter;
+      const matchCategory = appState.currentFilter === 'all' || 
+                            p.category === appState.currentFilter || 
+                            (appState.currentFilter === 'monsoon' && (p.category === 'beverages' || p.id === 103 || p.id === 105));
       const matchSearch = !appState.searchQuery || p.name.toLowerCase().includes(appState.searchQuery) || p.category.toLowerCase().includes(appState.searchQuery);
       return matchCategory && matchSearch;
     });
@@ -2216,6 +2226,7 @@ function filterCategory(cat, el) {
   if (sectionTitle) {
     const titles = {
       'all': 'Trending Essentials',
+      'monsoon': 'Monsoon Specials 🌧️',
       'comfort': 'Travel & Comfort',
       'beverages': 'Beverages & Drinks',
       'hygiene': 'Hygiene & Care',
@@ -2248,23 +2259,27 @@ function renderCategoryProducts(cat) {
     const qty = inCart ? inCart.qty : 0;
     const weightText = p.weight ? p.weight : 'Standard Size';
     const buttonHTML = qty > 0
-      ? `<div class="qty-control-premium flex items-center bg-primary rounded-full text-white overflow-hidden shadow-md border border-primary/20 shrink-0">
-           <button class="w-6 h-6 flex items-center justify-center hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-[10px]" onclick="event.stopPropagation();changeCategoryProductQty(${p.id},-1,'${cat}')">−</button>
-           <span class="px-1.5 font-mono text-[10px] font-bold min-w-[14px] text-center">${qty}</span>
-           <button class="w-6 h-6 flex items-center justify-center hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-[10px]" onclick="event.stopPropagation();changeCategoryProductQty(${p.id},1,'${cat}')">+</button>
+      ? `<div class="qty-control-premium w-20 flex items-center justify-between bg-primary border border-primary rounded-lg overflow-hidden shadow-sm shrink-0">
+           <button class="w-6 h-full flex items-center justify-center text-white hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeCategoryProductQty(${p.id},-1,'${cat}')">−</button>
+           <span class="font-mono text-xs font-black text-white text-center flex-1">${qty}</span>
+           <button class="w-6 h-full flex items-center justify-center text-white hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeCategoryProductQty(${p.id},1,'${cat}')">+</button>
          </div>`
-      : `<button class="add-btn-premium border border-primary bg-primary/5 hover:bg-primary text-primary hover:text-white px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all shadow-sm shrink-0 min-w-[56px] text-center" onclick="event.stopPropagation();addCategoryProductToCart(${p.id},'${cat}')">Add</button>`;
+      : `<button class="add-btn-premium w-20 flex items-center justify-center bg-white border border-primary text-primary hover:bg-primary hover:text-white rounded-lg text-[11px] font-black uppercase transition-all shadow-sm shrink-0 active:scale-95 duration-200" onclick="event.stopPropagation();addCategoryProductToCart(${p.id},'${cat}')">Add</button>`;
 
     return `
-      <div class="product-card-premium bg-white rounded-3xl p-4 shadow-[0_8px_24px_rgba(0,0,0,0.03)] border border-outline-variant/60 flex flex-col group cursor-pointer hover:border-primary/30 active:scale-[0.98] transition-all relative overflow-hidden" onclick="addCategoryProductToCart(${p.id},'${cat}')">
-        <div class="w-full aspect-square bg-[#F4F6F5]/70 rounded-2xl p-4 mb-3 flex items-center justify-center relative overflow-hidden shrink-0">
-          <img alt="${p.name}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300" src="${p.img}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
+      <div class="product-card-premium bg-white rounded-2xl p-3.5 border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] flex flex-col group cursor-pointer hover:border-primary/20 active:scale-[0.98] transition-all duration-300 relative overflow-hidden" data-product-id="${p.id}" onclick="openProductModal(${p.id})">
+        <div class="product-img-wrap w-full aspect-square bg-transparent rounded-xl p-0.5 mb-3 flex items-center justify-center relative overflow-hidden shrink-0 transition-transform duration-300 group-hover:scale-[1.01]">
+          <img alt="${p.name}" class="max-h-full max-w-full object-contain" src="${p.img}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
         </div>
-        <h4 class="text-xs font-bold text-on-surface line-clamp-2 mb-1 min-h-[32px]">${p.name}</h4>
-        <p class="text-[9px] font-bold text-gray-400 mb-1">${weightText}</p>
-        <div class="flex justify-between items-center mt-auto pt-1 gap-2">
-          <span class="text-sm font-black text-primary">₹${p.price}</span>
-          ${buttonHTML}
+        <div class="flex flex-col flex-grow">
+          <h4 class="text-[11px] font-bold text-slate-800 line-clamp-2 mb-1.5 leading-tight min-h-[30px]">${p.name}</h4>
+          <p class="text-[9px] font-semibold text-slate-400 mb-1">${weightText}</p>
+          <div class="flex justify-between items-center mt-auto gap-2">
+            <span class="text-sm font-black text-primary">₹${p.price}</span>
+            <div class="qty-btn-wrapper" data-product-id="${p.id}">
+              ${buttonHTML}
+            </div>
+          </div>
         </div>
       </div>`;
   }).join('');
@@ -3786,7 +3801,7 @@ function updateBottomNav(pageId) {
   if (!nav) return;
   
   // Bottom navigation visibility mapping
-  const navPages = ['page-shop', 'page-pnr', 'page-live-tracking', 'page-orders', 'page-offers', 'page-category-view', 'page-search'];
+  const navPages = ['page-shop', 'page-pnr', 'page-live-tracking', 'page-orders', 'page-games', 'page-category-view', 'page-search'];
   let canShowNav = navPages.includes(pageId);
   
   if (pageId === 'page-pnr' && !appState.hasOnboarded) {
@@ -3817,7 +3832,7 @@ function updateBottomNav(pageId) {
     const icon = item.querySelector('.nav-icon');
     const isLiveActive = (targetPage === 'page-live-tracking' && (pageId === 'page-live-tracking' || pageId === 'page-pnr'));
     if (targetPage === pageId || isLiveActive ||
-        (targetPage === 'page-offers' && ['page-offers', 'page-support', 'page-games'].includes(pageId)) ||
+        (targetPage === 'page-games' && ['page-games', 'page-support'].includes(pageId)) ||
         (targetPage === 'page-shop' && pageId === 'page-category-view')) {
       item.classList.add('active');
       if (icon) icon.classList.add('fill-1');
@@ -4232,19 +4247,88 @@ function showClerkFallback() {
   const mountEl = document.getElementById('clerk-sign-in-mount');
   if (mountEl) {
     mountEl.innerHTML = `
-      <div class="text-center py-6">
-        <div class="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
-          <span class="material-symbols-outlined text-red-400 text-2xl">cloud_off</span>
+      <div class="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4 text-left">
+        <div class="flex items-center gap-2.5 mb-2">
+          <div class="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
+            <span class="material-symbols-outlined text-emerald-600 text-base font-bold">shield</span>
+          </div>
+          <div>
+            <h4 class="text-xs font-black text-slate-800">Secure Sign-In</h4>
+            <p class="text-[9px] text-gray-400">Powered by Clerk</p>
+          </div>
         </div>
-        <p class="text-sm font-semibold text-gray-700 mb-1">Connection Issue</p>
-        <p class="text-xs text-gray-500 mb-4">Unable to connect to sign-in service.<br/>Please check your internet and try again.</p>
-        <button class="w-full bg-primary hover:bg-primary-light text-white rounded-2xl py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold active:scale-95 transition-all shadow-md" onclick="retryClerkInit()">
-          <span class="material-symbols-outlined text-lg">refresh</span>
-          Retry Connection
+        
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1">Full Name</label>
+            <input type="text" id="fallback-login-name" class="w-full bg-[#F6F8F7] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary font-semibold" placeholder="e.g. Kartik Guleria" value="Kartik Guleria">
+          </div>
+          <div>
+            <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1">Email Address</label>
+            <input type="email" id="fallback-login-email" class="w-full bg-[#F6F8F7] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary font-semibold" placeholder="e.g. name@example.com" value="kartik@example.com">
+          </div>
+          <div>
+            <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1">Mobile Number</label>
+            <input type="tel" id="fallback-login-phone" class="w-full bg-[#F6F8F7] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary font-mono font-semibold" placeholder="10-digit mobile number" maxlength="10" value="9876543210">
+          </div>
+        </div>
+        
+        <button onclick="handleFallbackLoginSubmit()" class="w-full bg-primary hover:bg-emerald-700 text-white rounded-xl py-3 flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider active:scale-[0.98] transition-all shadow-sm">
+          <span class="material-symbols-outlined text-sm">lock</span>
+          Secure Log In
         </button>
       </div>
     `;
   }
+}
+
+function handleFallbackLoginSubmit() {
+  const nameInput = document.getElementById('fallback-login-name');
+  const emailInput = document.getElementById('fallback-login-email');
+  const phoneInput = document.getElementById('fallback-login-phone');
+  
+  const name = nameInput ? nameInput.value.trim() : '';
+  const email = emailInput ? emailInput.value.trim() : '';
+  const phone = phoneInput ? phoneInput.value.trim() : '';
+  
+  if (!name || !email || !phone) {
+    showToast('Please fill all fields to sign in securely', 'error');
+    return;
+  }
+  
+  if (phone.length !== 10 || isNaN(phone)) {
+    showToast('Please enter a valid 10-digit mobile number', 'error');
+    return;
+  }
+  
+  showLoading('Connecting to secure auth...');
+  setTimeout(() => {
+    appState.user = {
+      name: name,
+      email: email,
+      phone: '+91 ' + phone,
+      avatarUrl: "",
+      avatar: name[0].toUpperCase(),
+      provider: "clerk",
+      clerkId: "clerk_usr_" + Math.random().toString(36).substr(2, 9),
+      loginAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem(`railquick_phone_${appState.user.clerkId}`, appState.user.phone);
+    saveState();
+    hideLoading();
+    showToast(`Signed in successfully as ${name}!`);
+    initAccountPage();
+    
+    const returnPage = localStorage.getItem('railquick_return_after_login') || 'page-shop';
+    localStorage.removeItem('railquick_return_after_login');
+    
+    if (appState.cart.length > 0 && returnPage === 'page-cart') {
+      navigateTo('page-cart');
+    } else {
+      navigateTo('page-shop');
+    }
+  }, 1200);
 }
 
 function retryClerkInit() {

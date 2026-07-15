@@ -32,32 +32,32 @@ let clerkInstance = null;
 
 // ===== PRODUCTS DATABASE =====
 const PRODUCTS = [
-  // Comfort / Travel category (Match Day / Comfort)
-  { id: 101, name: 'Premium Memory Foam Neck Pillow', price: 299, category: 'comfort', weight: '1 Unit', img: 'product_neckpillow.png', rating: 4.9, reviews: 1420, description: 'High-density memory foam pillow providing 360-degree neck support for sitting berths.', tags: ['Comfort', 'Best Seller'] },
-  { id: 102, name: 'Blackout Eye Mask & Foam Earplugs', price: 99, category: 'comfort', weight: '1 Combo Pack', img: 'https://images.unsplash.com/photo-1598136490941-30d885318abd?w=400&h=400&fit=crop', rating: 4.7, reviews: 560, description: '3D contoured light-blocking eye mask paired with high-decibel reduction earplugs.', tags: ['Sleep', 'Travel'] },
-  { id: 103, name: 'Haldiram\'s Bhujia Sev Combo Pack', price: 45, category: 'comfort', weight: '150g + 50g Extra', img: 'product_haldirams.png', rating: 4.9, reviews: 3120, description: 'Crispy and spicy gram flour noodle snacks, perfect companion for tea times.', tags: ['Snacks', 'Veg'] },
-  { id: 104, name: 'Bingo Potato Chips (Masala Masti)', price: 30, category: 'comfort', weight: '130g Pack', img: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400&h=400&fit=crop', rating: 4.8, reviews: 2200, description: 'Spicy and crunchy potato chips for instant journey munching.', tags: ['Snacks', 'Veg'] },
-  { id: 105, name: 'IRCTC Hot Samosa & Masala Chai Combo', price: 50, category: 'comfort', weight: '2 Samosas + 1 Tea', img: 'product_tea.png', rating: 4.9, reviews: 6890, description: 'Golden crispy samosas served with hot traditional claypot ginger masala tea.', tags: ['Hot Food', 'Chai', 'Traditional'] },
+  // Comfort / Travel category
+  { id: 101, name: 'Premium Memory Foam Neck Pillow', price: 299, mrp: 399, category: 'comfort', weight: '1 Unit', img: 'product_neckpillow.png', rating: 4.9, reviews: 1420, description: 'High-density memory foam pillow providing 360-degree neck support for sitting berths.', tags: ['Comfort', 'Best Seller'] },
+  { id: 102, name: 'Blackout Eye Mask & Foam Earplugs', price: 99, mrp: 149, category: 'comfort', weight: '1 Combo Pack', img: 'https://images.unsplash.com/photo-1598136490941-30d885318abd?w=400&h=400&fit=crop', rating: 4.7, reviews: 560, description: '3D contoured light-blocking eye mask paired with high-decibel reduction earplugs.', tags: ['Sleep', 'Travel'] },
+  { id: 103, name: "Haldiram's Bhujia Sev Combo Pack", price: 45, mrp: 60, category: 'comfort', weight: '150g + 50g Extra', img: 'product_haldirams.png', rating: 4.9, reviews: 3120, veg: true, description: 'Crispy and spicy gram flour noodle snacks, perfect companion for tea times.', tags: ['Snacks', 'Veg'] },
+  { id: 104, name: 'Bingo Potato Chips (Masala Masti)', price: 30, mrp: 40, category: 'comfort', weight: '130g Pack', img: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400&h=400&fit=crop', rating: 4.8, reviews: 2200, veg: true, description: 'Spicy and crunchy potato chips for instant journey munching.', tags: ['Snacks', 'Veg'] },
+  { id: 105, name: 'IRCTC Hot Samosa & Masala Chai Combo', price: 50, mrp: 70, category: 'comfort', weight: '2 Samosas + 1 Tea', img: 'product_tea.png', rating: 4.9, reviews: 6890, veg: true, description: 'Golden crispy samosas served with hot traditional claypot ginger masala tea.', tags: ['Hot Food', 'Chai', 'Traditional'] },
 
   // Beverages / Fresh category
-  { id: 201, name: 'Chilled Rail Neer Mineral Water', price: 15, category: 'beverages', weight: '1 Litre', img: 'product_water.png', rating: 4.9, reviews: 9450, description: 'Purified and mineral-enriched drinking water bottle, officially approved by IRCTC.', tags: ['Water', 'Hydration', 'Official'] },
-  { id: 202, name: 'Coca-Cola Chilled Beverage Can', price: 40, category: 'beverages', weight: '300 ml', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400&h=400&fit=crop', rating: 4.8, reviews: 4320, description: 'Refreshing, ice-chilled carbonated soft drink delivered straight to your seat.', tags: ['Cold Drink', 'Veg'] },
-  { id: 203, name: 'Claypot Ginger Masala Chai', price: 20, category: 'beverages', weight: '1 Kulhad Cup', img: 'product_tea.png', rating: 4.9, reviews: 8120, description: 'Freshly brewed piping hot tea with ginger and cardamom in an eco-friendly kulhad.', tags: ['Chai', 'Hot', 'Traditional'] },
-  { id: 204, name: 'Nescafe Classic Rich Hot Coffee', price: 30, category: 'beverages', weight: '1 Cup', img: 'product_tea.png', rating: 4.7, reviews: 2900, description: 'Hot instant coffee brewed with fresh creamed milk for an instant energy boost.', tags: ['Coffee', 'Hot'] },
-  { id: 205, name: 'Real Mixed Fruit Juice Tetrapack', price: 30, category: 'beverages', weight: '200 ml', img: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop', rating: 4.9, reviews: 1890, description: 'Delicious mixed fruit juice packed with natural vitamins, safe for kids.', tags: ['Juice', 'Cold'] },
+  { id: 201, name: 'Chilled Rail Neer Mineral Water', price: 15, mrp: 20, category: 'beverages', weight: '1 Litre', img: 'product_water.png', rating: 4.9, reviews: 9450, veg: true, description: 'Purified and mineral-enriched drinking water bottle, officially approved by IRCTC.', tags: ['Water', 'Hydration', 'Official'] },
+  { id: 202, name: 'Coca-Cola Chilled Beverage Can', price: 40, mrp: 50, category: 'beverages', weight: '300 ml', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400&h=400&fit=crop', rating: 4.8, reviews: 4320, veg: true, description: 'Refreshing, ice-chilled carbonated soft drink delivered straight to your seat.', tags: ['Cold Drink', 'Veg'] },
+  { id: 203, name: 'Claypot Ginger Masala Chai', price: 20, mrp: 30, category: 'beverages', weight: '1 Kulhad Cup', img: 'product_tea.png', rating: 4.9, reviews: 8120, veg: true, description: 'Freshly brewed piping hot tea with ginger and cardamom in an eco-friendly kulhad.', tags: ['Chai', 'Hot', 'Traditional'] },
+  { id: 204, name: 'Nescafe Classic Rich Hot Coffee', price: 30, mrp: 40, category: 'beverages', weight: '1 Cup', img: 'product_tea.png', rating: 4.7, reviews: 2900, veg: true, description: 'Hot instant coffee brewed with fresh creamed milk for an instant energy boost.', tags: ['Coffee', 'Hot'] },
+  { id: 205, name: 'Real Mixed Fruit Juice Tetrapack', price: 30, mrp: 40, category: 'beverages', weight: '200 ml', img: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop', rating: 4.9, reviews: 1890, veg: true, description: 'Delicious mixed fruit juice packed with natural vitamins, safe for kids.', tags: ['Juice', 'Cold'] },
 
   // Hygiene / Fashion category
-  { id: 301, name: 'Dettol Instant Hand Sanitizer Gel', price: 50, category: 'hygiene', weight: '50 ml', img: 'product_sanitizer.png', rating: 4.8, reviews: 2450, description: 'germ protection formula that kills 99.9% germs without needing water.', tags: ['Hygiene', 'Essential'] },
-  { id: 302, name: 'Colgate Fresh Mint Toothbrush & Paste', price: 55, category: 'hygiene', weight: '1 Kit', img: 'product_toothbrush.png', rating: 4.7, reviews: 920, description: 'Compact travel toothbrush paired with a mini toothpaste tube.', tags: ['Dental', 'Travel'] },
-  { id: 303, name: 'Anti-Bacterial Wet Cleansing Wipes', price: 79, category: 'hygiene', weight: '25 Wipes', img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=400&fit=crop', rating: 4.8, reviews: 1840, description: 'Refreshing wet wipes to easily clean hands, face, or dirty train seat trays.', tags: ['Wipes', 'Hygiene'] },
-  { id: 304, name: 'PeeSafe Toilet Seat Sanitizer Spray', price: 110, category: 'hygiene', weight: '75 ml Spray', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', rating: 4.9, reviews: 1120, description: 'Fast-drying sanitizing spray for clean and worry-free train restroom use.', tags: ['Hygiene', 'Travel'] },
-  { id: 305, name: 'Whisper Ultra Clean Sanitary Pads Pack', price: 85, category: 'hygiene', weight: '7 Pads', img: 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=400&h=400&fit=crop', rating: 4.8, reviews: 650, description: 'Reliable feminine hygiene essential for long-duration train travels.', tags: ['Hygiene', 'Feminine'] },
+  { id: 301, name: 'Dettol Instant Hand Sanitizer Gel', price: 50, mrp: 65, category: 'hygiene', weight: '50 ml', img: 'product_sanitizer.png', rating: 4.8, reviews: 2450, description: 'germ protection formula that kills 99.9% germs without needing water.', tags: ['Hygiene', 'Essential'] },
+  { id: 302, name: 'Colgate Fresh Mint Toothbrush & Paste', price: 55, mrp: 75, category: 'hygiene', weight: '1 Kit', img: 'product_toothbrush.png', rating: 4.7, reviews: 920, description: 'Compact travel toothbrush paired with a mini toothpaste tube.', tags: ['Dental', 'Travel'] },
+  { id: 303, name: 'Anti-Bacterial Wet Cleansing Wipes', price: 79, mrp: 99, category: 'hygiene', weight: '25 Wipes', img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=400&fit=crop', rating: 4.8, reviews: 1840, description: 'Refreshing wet wipes to easily clean hands, face, or dirty train seat trays.', tags: ['Wipes', 'Hygiene'] },
+  { id: 304, name: 'PeeSafe Toilet Seat Sanitizer Spray', price: 110, mrp: 149, category: 'hygiene', weight: '75 ml Spray', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', rating: 4.9, reviews: 1120, description: 'Fast-drying sanitizing spray for clean and worry-free train restroom use.', tags: ['Hygiene', 'Travel'] },
+  { id: 305, name: 'Whisper Ultra Clean Sanitary Pads Pack', price: 85, mrp: 110, category: 'hygiene', weight: '7 Pads', img: 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=400&h=400&fit=crop', rating: 4.8, reviews: 650, description: 'Reliable feminine hygiene essential for long-duration train travels.', tags: ['Hygiene', 'Feminine'] },
 
   // Tech / Electronics category
-  { id: 401, name: 'boAt BassHeads Wired Earphones Mic', price: 349, category: 'tech', weight: 'Wired HD Mic', img: 'product_earphones.png', rating: 4.8, reviews: 5200, description: 'In-ear wired earphones with dynamic bass and mic for handsfree calling.', tags: ['Audio', 'boAt'] },
-  { id: 402, name: '10,000mAh Slim Fast Power Bank', price: 799, category: 'tech', weight: '12W Dual Output', img: 'product_powerbank.png', rating: 4.8, reviews: 6100, description: 'Compact power bank to keep your phone charged throughout the long journey.', tags: ['Power', 'Fast Charger'] },
-  { id: 403, name: '20W Dual Port Fast Charger Adapter', price: 299, category: 'tech', weight: 'Type-C + USB', img: 'https://images.unsplash.com/photo-1616440347437-b1c73416efc2?w=400&h=400&fit=crop', rating: 4.7, reviews: 1840, description: 'Fast wall charger supporting dual ports for train cabin sockets.', tags: ['Charger', 'Fast'] },
-  { id: 404, name: 'Tough Braided Type-C Charging Cable', price: 149, category: 'tech', weight: '1.2 Meter', img: 'https://images.unsplash.com/photo-1585250481062-878848f07fcb?w=400&h=400&fit=crop', rating: 4.6, reviews: 980, description: 'Durable fast-charging data cable, built to withstand rough travel use.', tags: ['Cable', 'USB-C'] }
+  { id: 401, name: 'boAt BassHeads Wired Earphones Mic', price: 349, mrp: 499, category: 'tech', weight: 'Wired HD Mic', img: 'product_earphones.png', rating: 4.8, reviews: 5200, description: 'In-ear wired earphones with dynamic bass and mic for handsfree calling.', tags: ['Audio', 'boAt'] },
+  { id: 402, name: '10,000mAh Slim Fast Power Bank', price: 799, mrp: 1099, category: 'tech', weight: '12W Dual Output', img: 'product_powerbank.png', rating: 4.8, reviews: 6100, description: 'Compact power bank to keep your phone charged throughout the long journey.', tags: ['Power', 'Fast Charger'] },
+  { id: 403, name: '20W Dual Port Fast Charger Adapter', price: 299, mrp: 399, category: 'tech', weight: 'Type-C + USB', img: 'https://images.unsplash.com/photo-1616440347437-b1c73416efc2?w=400&h=400&fit=crop', rating: 4.7, reviews: 1840, description: 'Fast wall charger supporting dual ports for train cabin sockets.', tags: ['Charger', 'Fast'] },
+  { id: 404, name: 'Tough Braided Type-C Charging Cable', price: 149, mrp: 199, category: 'tech', weight: '1.2 Meter', img: 'https://images.unsplash.com/photo-1585250481062-878848f07fcb?w=400&h=400&fit=crop', rating: 4.6, reviews: 980, description: 'Durable fast-charging data cable, built to withstand rough travel use.', tags: ['Cable', 'USB-C'] }
 ];
 
 function isTicketConfirmed(pnrData) {
@@ -2127,41 +2127,74 @@ function resetAppStateAndLogin() {
   showToast('Session reset. Please enter PNR or Train.', 'info');
 }
 
-function renderSingleProductCardHTML(p) {
-  const inCart = appState.cart.find(c => c.id === p.id);
-  const qty = inCart ? inCart.qty : 0;
+function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
   const weightText = p.weight ? p.weight : 'Standard Size';
-  
-  const buttonHTML = qty > 0
-    ? `<div class="qty-control-premium w-20 flex items-center justify-between bg-primary border border-primary rounded-lg overflow-hidden shadow-sm shrink-0">
-         <button class="w-6 h-full flex items-center justify-center text-white hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeProductQty(${p.id},-1)">−</button>
-         <span class="font-mono text-xs font-black text-white text-center flex-1">${qty}</span>
-         <button class="w-6 h-full flex items-center justify-center text-white hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeProductQty(${p.id},1)">+</button>
-       </div>`
-    : `<button class="add-btn-premium w-20 flex items-center justify-center bg-white border border-primary text-primary hover:bg-primary hover:text-white rounded-lg text-[11px] font-black uppercase transition-all shadow-sm shrink-0 active:scale-95 duration-200" onclick="event.stopPropagation();addToCart(${p.id})">Add</button>`;
+  const mrp = p.mrp || Math.round(p.price * 1.25);
+  const discPct = Math.round(((mrp - p.price) / mrp) * 100);
+  const vegDot = p.veg
+    ? `<span style="position:absolute;bottom:6px;right:6px;width:16px;height:16px;background:#ffffff;border-radius:4px;border:1.5px solid #16a34a;display:flex;align-items:center;justify-content:center;z-index:2;">
+         <span style="width:7px;height:7px;background:#16a34a;border-radius:50%;display:block;"></span>
+       </span>` : '';
 
-  const cardClass = qty > 0 
-    ? 'border-primary/45 bg-white shadow-premium-glow' 
-    : 'border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)]';
+  let optionsLabel = '';
+  if (p.id === 101) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">3 options</div>';
+  else if (p.id === 105) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">2 options</div>';
+  else if (p.id === 401) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">2 options</div>';
+
+  const buttonHTML = qty > 0
+    ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:32px;min-width:68px;z-index:10;">
+         <button style="width:22px;height:100%;color:#16a34a;font-size:16px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
+         <span style="flex:1;text-align:center;font-size:12px;font-weight:700;color:#111827;">${qty}</span>
+         <button style="width:22px;height:100%;color:#16a34a;font-size:16px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
+       </div>`
+    : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
+         <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:32px;width:100%;font-size:11px;font-weight:800;letter-spacing:0.02em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;" onclick="event.stopPropagation();${addClickCode}">ADD</button>
+         ${optionsLabel}
+       </div>`;
 
   return `
-    <div class="product-card-premium bg-white rounded-2xl p-3.5 border ${cardClass} flex flex-col group cursor-pointer hover:border-primary/20 active:scale-[0.98] transition-all duration-300 relative overflow-hidden" data-product-id="${p.id}" onclick="openProductModal(${p.id})">
-      <span class="product-badge">${productBadge(p)}</span>
-      <div class="product-img-wrap w-full aspect-square bg-transparent rounded-xl p-0.5 mb-3 flex items-center justify-center relative overflow-hidden shrink-0 transition-transform duration-300 group-hover:scale-[1.01]">
-        <img alt="${p.name}" class="max-h-full max-w-full object-contain" src="${p.img}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
-      </div>
-      <div class="flex flex-col flex-grow">
-        <h4 class="text-[11px] font-bold text-slate-800 line-clamp-2 mb-1.5 leading-tight min-h-[30px]">${p.name}</h4>
-        <p class="text-[9px] font-semibold text-slate-400 mb-1">${weightText}</p>
-        <div class="flex justify-between items-center mt-auto gap-2">
-          <span class="text-sm font-black text-primary">₹${p.price}</span>
-          <div class="qty-btn-wrapper" data-product-id="${p.id}">
+    <div style="cursor:pointer;" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
+      <!-- Card Container -->
+      <div style="background:#f3f4f6; border:1px solid #e5e7eb; border-radius:16px; padding:6px; display:flex; flex-direction:column; gap:6px;">
+        <!-- Image Container -->
+        <div style="position:relative; width:100%; aspect-ratio:1; background:#ffffff; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <img src="${p.img}" alt="${p.name}" style="max-width:92%; max-height:92%; object-fit:contain; padding:4px;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
+          <!-- Heart icon -->
+          <span class="material-symbols-outlined" style="position:absolute; top:6px; right:6px; color:#cbd5e1; font-size:18px;">favorite</span>
+          <!-- Veg dot -->
+          ${vegDot}
+          <!-- Slider dots -->
+          <div style="position:absolute; bottom:6px; left:8px; display:flex; gap:3px; align-items:center;">
+            <span style="width:4.5px; height:4.5px; border-radius:50%; background:#94a3b8; display:block;"></span>
+            <span style="width:4px; height:4px; border-radius:50%; background:#cbd5e1; display:block;"></span>
+            <span style="width:4px; height:4px; border-radius:50%; background:#cbd5e1; display:block;"></span>
+          </div>
+        </div>
+        <!-- Weight and ADD Row -->
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:2px 2px 4px; min-height:36px;">
+          <span style="font-size:12px; font-weight:700; color:#4b5563;">${weightText}</span>
+          <div class="qty-btn-wrapper" data-product-id="${p.id}" onclick="event.stopPropagation();">
             ${buttonHTML}
           </div>
         </div>
       </div>
+      <!-- Outside Content -->
+      <div style="padding:6px 2px 2px;">
+        <div style="display:flex; align-items:baseline; gap:5px; margin-bottom:2px;">
+          <span style="font-size:18px; font-weight:800; color:#111827; font-family:'Outfit',sans-serif;">₹${p.price}</span>
+          <span style="font-size:12px; font-weight:500; color:#9ca3af; text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
+        </div>
+        <div style="font-size:10.5px; font-weight:700; color:#2563eb; margin-bottom:4px; font-family:'Outfit',sans-serif;">${discPct}% OFF on MRP</div>
+        <h4 style="font-size:12px; font-weight:600; color:#374151; line-height:1.4; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:34px;">${p.name}</h4>
+      </div>
     </div>
   `;
+}
+
+function renderSingleProductCardHTML(p) {
+  const inCart = appState.cart.find(c => c.id === p.id);
+  const qty = inCart ? inCart.qty : 0;
+  return getProductCardHTML(p, qty, `addToCart(${p.id})`, (delta) => `changeProductQty(${p.id},${delta})`);
 }
 
 function renderProducts(products) {
@@ -2186,12 +2219,12 @@ function renderProducts(products) {
       if (!sec.items.length) return '';
       const itemsHTML = sec.items.map(p => renderSingleProductCardHTML(p)).join('');
       return `
-        <div class="mb-8">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 0 4px;">
-            <div style="width: 4px; height: 15px; background: ${sec.accentColor}; border-radius: 2px;"></div>
-            <h4 style="font-size: 13.5px; font-weight: 800; color: #1E293B; margin: 0; font-family: 'Outfit', sans-serif;">${sec.title}</h4>
+        <div style="margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <div style="width:4px;height:15px;background:${sec.accentColor};border-radius:2px;"></div>
+            <h4 style="font-size:13px;font-weight:800;color:#1a1a1a;margin:0;font-family:'Outfit',sans-serif;">${sec.title}</h4>
           </div>
-          <div class="grid grid-cols-2 gap-4">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
             ${itemsHTML}
           </div>
         </div>
@@ -2207,12 +2240,12 @@ function renderProducts(products) {
     });
 
     if (!filtered.length) {
-      grid.innerHTML = `<div class="col-span-2 text-center py-16 text-gray-400 text-xs font-semibold">No products found.</div>`;
+      grid.innerHTML = `<div style="grid-column:span 2;text-align:center;padding:40px 0;color:rgba(255,255,255,0.35);font-size:12px;font-weight:600;">No products found.</div>`;
       return;
     }
 
     const itemsHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
-    grid.innerHTML = `<div class="grid grid-cols-2 gap-4">${itemsHTML}</div>`;
+    grid.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${itemsHTML}</div>`;
   }
 }
 
@@ -2247,6 +2280,7 @@ function renderCategoryProducts(cat) {
   const grid = document.getElementById('category-products-grid');
   if (!grid) return;
   
+  grid.dataset.activeCategory = cat; // Set active category
   const filtered = PRODUCTS.filter(p => p.category === cat);
   
   if (!filtered.length) {
@@ -2257,31 +2291,7 @@ function renderCategoryProducts(cat) {
   grid.innerHTML = filtered.map(p => {
     const inCart = appState.cart.find(c => c.id === p.id);
     const qty = inCart ? inCart.qty : 0;
-    const weightText = p.weight ? p.weight : 'Standard Size';
-    const buttonHTML = qty > 0
-      ? `<div class="qty-control-premium w-20 flex items-center justify-between bg-primary border border-primary rounded-lg overflow-hidden shadow-sm shrink-0">
-           <button class="w-6 h-full flex items-center justify-center text-white hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeCategoryProductQty(${p.id},-1,'${cat}')">−</button>
-           <span class="font-mono text-xs font-black text-white text-center flex-1">${qty}</span>
-           <button class="w-6 h-full flex items-center justify-center text-white hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeCategoryProductQty(${p.id},1,'${cat}')">+</button>
-         </div>`
-      : `<button class="add-btn-premium w-20 flex items-center justify-center bg-white border border-primary text-primary hover:bg-primary hover:text-white rounded-lg text-[11px] font-black uppercase transition-all shadow-sm shrink-0 active:scale-95 duration-200" onclick="event.stopPropagation();addCategoryProductToCart(${p.id},'${cat}')">Add</button>`;
-
-    return `
-      <div class="product-card-premium bg-white rounded-2xl p-3.5 border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] flex flex-col group cursor-pointer hover:border-primary/20 active:scale-[0.98] transition-all duration-300 relative overflow-hidden" data-product-id="${p.id}" onclick="openProductModal(${p.id})">
-        <div class="product-img-wrap w-full aspect-square bg-transparent rounded-xl p-0.5 mb-3 flex items-center justify-center relative overflow-hidden shrink-0 transition-transform duration-300 group-hover:scale-[1.01]">
-          <img alt="${p.name}" class="max-h-full max-w-full object-contain" src="${p.img}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
-        </div>
-        <div class="flex flex-col flex-grow">
-          <h4 class="text-[11px] font-bold text-slate-800 line-clamp-2 mb-1.5 leading-tight min-h-[30px]">${p.name}</h4>
-          <p class="text-[9px] font-semibold text-slate-400 mb-1">${weightText}</p>
-          <div class="flex justify-between items-center mt-auto gap-2">
-            <span class="text-sm font-black text-primary">₹${p.price}</span>
-            <div class="qty-btn-wrapper" data-product-id="${p.id}">
-              ${buttonHTML}
-            </div>
-          </div>
-        </div>
-      </div>`;
+    return getProductCardHTML(p, qty, `addCategoryProductToCart(${p.id},'${cat}')`, (delta) => `changeCategoryProductQty(${p.id},${delta},'${cat}')`);
   }).join('');
 }
 
@@ -2485,21 +2495,29 @@ function updateSingleProductCardDOM(productId) {
   const inCart = appState.cart.find(c => c.id === productId);
   const qty = inCart ? inCart.qty : 0;
   
-  if (qty > 0) {
-    card.className = 'product-card-premium bg-white rounded-2xl p-3.5 border border-primary/45 shadow-premium-glow flex flex-col group cursor-pointer hover:border-primary/20 active:scale-[0.98] transition-all duration-300 relative overflow-hidden';
-  } else {
-    card.className = 'product-card-premium bg-white rounded-2xl p-3.5 border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] flex flex-col group cursor-pointer hover:border-primary/20 active:scale-[0.98] transition-all duration-300 relative overflow-hidden';
-  }
-  
   const wrapper = card.querySelector(`.qty-btn-wrapper[data-product-id="${productId}"]`);
   if (wrapper) {
+    let optionsLabel = '';
+    if (product.id === 101) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">3 options</div>';
+    else if (product.id === 105) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">2 options</div>';
+    else if (product.id === 401) optionsLabel = '<div style="font-size:9px;color:#16a34a;font-weight:600;margin-top:2px;text-align:center;">2 options</div>';
+
+    const grid = card.closest('#category-products-grid');
+    const cat = grid ? grid.dataset.activeCategory : '';
+    const changeHandler = grid ? `changeCategoryProductQty` : `changeProductQty`;
+    const addHandler = grid ? `addCategoryProductToCart` : `addToCart`;
+    const changeArgsSuffix = grid ? `, '${cat}'` : '';
+
     wrapper.innerHTML = qty > 0
-      ? `<div class="qty-control-premium w-20 flex items-center justify-between bg-primary border border-primary rounded-lg overflow-hidden shadow-sm shrink-0">
-           <button class="w-6 h-full flex items-center justify-center text-white hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeProductQty(${product.id},-1)">−</button>
-           <span class="font-mono text-xs font-black text-white text-center flex-1">${qty}</span>
-           <button class="w-6 h-full flex items-center justify-center text-white hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeProductQty(${product.id},1)">+</button>
+      ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:32px;min-width:68px;z-index:10;">
+           <button style="width:22px;height:100%;color:#16a34a;font-size:16px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${product.id},-1${changeArgsSuffix})">−</button>
+           <span style="flex:1;text-align:center;font-size:12px;font-weight:700;color:#111827;">${qty}</span>
+           <button style="width:22px;height:100%;color:#16a34a;font-size:16px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${product.id},1${changeArgsSuffix})">+</button>
          </div>`
-      : `<button class="add-btn-premium w-20 flex items-center justify-center bg-white border border-primary text-primary hover:bg-primary hover:text-white rounded-lg text-[11px] font-black uppercase transition-all shadow-sm shrink-0 active:scale-95 duration-200" onclick="event.stopPropagation();addToCart(${product.id})">Add</button>`;
+      : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
+           <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:32px;width:100%;font-size:11px;font-weight:800;letter-spacing:0.02em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;" onclick="event.stopPropagation();${addHandler}(${product.id}${changeArgsSuffix})">ADD</button>
+           ${optionsLabel}
+         </div>`;
   }
 }
 
@@ -2519,7 +2537,7 @@ function addToCartById(productId) {
   const product = PRODUCTS.find(p => p.id === productId);
   if (!product) return;
   addToCart(productId);
-  showToast(`${product.name} added to cart!`, 'success');
+  // Quiet add — no toast message
 }
 
 function addComboToCart(productIds) {
@@ -2532,7 +2550,7 @@ function addComboToCart(productIds) {
   saveState(); 
   updateCartFAB();
   productIds.forEach(id => updateSingleProductCardDOM(id));
-  showToast('Combo pack added to cart!', 'success');
+  // Quiet add — no toast message
   if (navigator.vibrate) navigator.vibrate(50);
 }
 
@@ -3257,29 +3275,7 @@ function initAccountPage() {
         }
       }
     } else if (mountEl && !clerkInstance) {
-      // Clerk not loaded yet — show loading or retry button
-      if (!mountEl.querySelector('.clerk-loading-state') && !mountEl.querySelector('button')) {
-        mountEl.innerHTML = `
-          <div class="clerk-loading-state flex flex-col items-center justify-center py-6 gap-3">
-            <div class="w-8 h-8 border-[3px] border-primary border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-xs text-gray-400 font-medium">Loading sign-in...</p>
-          </div>
-        `;
-        // Auto-retry after a short delay if Clerk hasn't loaded
-        setTimeout(() => {
-          if (!clerkInstance && mountEl) {
-            mountEl.innerHTML = `
-              <div class="flex flex-col items-center gap-3 py-4">
-                <button class="w-full bg-primary hover:bg-primary-light text-white rounded-2xl py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold active:scale-95 transition-all shadow-md" onclick="retryClerkInit(); setTimeout(() => initAccountPage(), 2000);">
-                  <span class="material-symbols-outlined text-lg">refresh</span>
-                  Load Sign-In
-                </button>
-                <p class="text-[10px] text-gray-400">Tap to connect to sign-in service</p>
-              </div>
-            `;
-          }
-        }, 5000);
-      }
+      showClerkFallback();
     }
   }
 }
@@ -3484,7 +3480,7 @@ function addToCartFromModal() {
   saveState(); 
   updateCartFAB(); 
   closeProductModal();
-  showToast(`✓ ${appState.modalProduct.name.split(' ').slice(0, 3).join(' ')} × ${qty} added!`);
+  // Quiet add — no toast message
   renderProducts(PRODUCTS);
   
   // Also sync search overlay results if open
@@ -3967,6 +3963,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   startSearchTypewriter();
+  initClerk();
   
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProductModal(); });
 });
@@ -4247,34 +4244,34 @@ function showClerkFallback() {
   const mountEl = document.getElementById('clerk-sign-in-mount');
   if (mountEl) {
     mountEl.innerHTML = `
-      <div class="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4 text-left">
-        <div class="flex items-center gap-2.5 mb-2">
-          <div class="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
-            <span class="material-symbols-outlined text-emerald-600 text-base font-bold">shield</span>
+      <div style="background:#1e2a14; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.3); display:flex; flex-direction:column; gap:16px; text-align:left;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:28px; height:28px; border-radius:8px; background:rgba(34,197,94,0.15); display:flex; align-items:center; justify-content:center;">
+            <span class="material-symbols-outlined" style="color:#22c55e; font-size:16px; font-weight:bold;">shield</span>
           </div>
           <div>
-            <h4 class="text-xs font-black text-slate-800">Secure Sign-In</h4>
-            <p class="text-[9px] text-gray-400">Powered by Clerk</p>
+            <h4 style="font-size:12px; font-weight:800; color:#ffffff; margin:0;">Secure Sign-In</h4>
+            <p style="font-size:9.5px; color:rgba(255,255,255,0.4); margin:0;">Powered by Clerk</p>
           </div>
         </div>
         
-        <div class="space-y-3">
+        <div style="display:flex; flex-direction:column; gap:12px;">
           <div>
-            <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1">Full Name</label>
-            <input type="text" id="fallback-login-name" class="w-full bg-[#F6F8F7] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary font-semibold" placeholder="e.g. Kartik Guleria" value="Kartik Guleria">
+            <label style="display:block; font-size:9px; font-weight:800; color:rgba(255,255,255,0.55); text-transform:uppercase; tracking-wider; margin-bottom:4px;">Full Name</label>
+            <input type="text" id="fallback-login-name" style="width:100%; background:#131c0e; border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:8px 12px; color:#ffffff; font-size:12px; focus:outline-none;" placeholder="e.g. Kartik Guleria" value="Kartik Guleria">
           </div>
           <div>
-            <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1">Email Address</label>
-            <input type="email" id="fallback-login-email" class="w-full bg-[#F6F8F7] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary font-semibold" placeholder="e.g. name@example.com" value="kartik@example.com">
+            <label style="display:block; font-size:9px; font-weight:800; color:rgba(255,255,255,0.55); text-transform:uppercase; tracking-wider; margin-bottom:4px;">Email Address</label>
+            <input type="email" id="fallback-login-email" style="width:100%; background:#131c0e; border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:8px 12px; color:#ffffff; font-size:12px; focus:outline-none;" placeholder="e.g. name@example.com" value="kartik@example.com">
           </div>
           <div>
-            <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1">Mobile Number</label>
-            <input type="tel" id="fallback-login-phone" class="w-full bg-[#F6F8F7] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary font-mono font-semibold" placeholder="10-digit mobile number" maxlength="10" value="9876543210">
+            <label style="display:block; font-size:9px; font-weight:800; color:rgba(255,255,255,0.55); text-transform:uppercase; tracking-wider; margin-bottom:4px;">Mobile Number</label>
+            <input type="tel" id="fallback-login-phone" style="width:100%; background:#131c0e; border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:8px 12px; color:#ffffff; font-size:12px; font-family:monospace; focus:outline-none;" placeholder="10-digit mobile number" maxlength="10" value="9876543210">
           </div>
         </div>
         
-        <button onclick="handleFallbackLoginSubmit()" class="w-full bg-primary hover:bg-emerald-700 text-white rounded-xl py-3 flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider active:scale-[0.98] transition-all shadow-sm">
-          <span class="material-symbols-outlined text-sm">lock</span>
+        <button onclick="handleFallbackLoginSubmit()" style="width:100%; background:#22c55e; color:#ffffff; border:none; border-radius:10px; padding:10px 0; font-size:12px; font-weight:800; text-transform:uppercase; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:14px;">lock</span>
           Secure Log In
         </button>
       </div>

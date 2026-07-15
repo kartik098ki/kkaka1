@@ -1044,8 +1044,9 @@ input, textarea, select { font-size: 16px !important; }
 
 #page-account {
   min-height: 100%;
-  overflow: hidden !important;
-  padding-bottom: 0 !important;
+  overflow-y: auto !important;
+  padding-bottom: 100px !important;
+  background: #0f1209 !important;
 }
 #page-account > .sticky {
   padding-top: calc(16px + var(--rq-safe-top)) !important;
@@ -1361,7 +1362,7 @@ body { background-color: #10151d; }
 }
 
 #page-shop {
-  background: linear-gradient(180deg, #f5f7f6 0%, #ffffff 45%, #f8faf9 100%) !important;
+  background: #f4f4f4 !important;
 }
 #page-shop .gradient-header {
   border-bottom-left-radius: 48px !important;
@@ -2226,41 +2227,48 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
   </div>
 
   <!-- ==================== SHOP / HOME PAGE ==================== -->
-  <div id="page-shop" class="page tab-page bg-background">
+  <div id="page-shop" class="page tab-page" style="background:#f4f4f4;">
     <!-- ===== HERO — pixel match to reference ===== -->
     <style>
       /* ── Hero wrapper ── */
       .rq-hero-block {
         position: relative;
         width: 100%;
-        height: 510px;
+        aspect-ratio: 878 / 720;
         background-color: #02071d;
         background-image: url('hero_rain_train.png');
-        background-size: contain;        /* show the entire image, no zoom or crop */
-        background-position: center bottom; /* anchor image to bottom */
+        background-size: 100% 100%;
+        background-position: center center;
         background-repeat: no-repeat;
         overflow: hidden;
         flex-shrink: 0;
       }
 
-      /* Overlay: covers top gap with solid dark color, fades out over the image sky, vignette at bottom */
+      /*
+        Overlay strategy (cover fills full 520px):
+        - Top 35%: strong dark — text (Railquick/Train name/Search) must be readable
+        - 35%→60%: fade into the scene (clouds/rain visible)
+        - 60%→78%: nearly clear — umbrella + train in full view
+        - 78%→100%: darken again for category nav strip
+      */
       .rq-hero-overlay {
         position: absolute;
         inset: 0;
         background: linear-gradient(
           180deg,
-          rgba(2, 7, 29, 0.98) 0%,     /* solid to cover top gap and status bar */
-          rgba(2, 7, 29, 0.98) 32%,    /* solid down to where contain image starts */
-          rgba(2, 7, 29, 0.40) 45%,    /* smooth blend over the image sky */
-          rgba(2, 7, 29, 0.0)  55%,    /* clear area to show the train fully */
-          rgba(2, 7, 29, 0.15) 80%,    /* subtle bottom vignette */
-          rgba(2, 7, 29, 0.40) 100%
+          rgba(2, 7, 29, 0.65) 0%,    /* semi-transparent dark at top for text readability */
+          rgba(2, 7, 29, 0.50) 20%,   /* lets rain clouds show through */
+          rgba(2, 7, 29, 0.25) 35%,   /* transition */
+          rgba(2, 7, 29, 0.08) 50%,   /* clear for tagline & train windshield */
+          rgba(2, 7, 29, 0.04) 68%,   /* fully open for train tracks */
+          rgba(2, 7, 29, 0.55) 85%,   /* darken near the bottom */
+          rgba(2, 7, 29, 0.90) 100%   /* solid dark navy at the bottom for category nav */
         );
         pointer-events: none;
         z-index: 1;
       }
 
-      /* Top UI panel (fixed at top of hero) */
+      /* Top UI panel */
       .rq-hero-top-panel {
         position: absolute;
         top: 0; left: 0; right: 0;
@@ -2302,14 +2310,14 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         margin: 6px 0 0 0;
         text-shadow: 0 1px 6px rgba(0,0,0,0.4);
       }
-      /* Profile avatar — plain white silhouette, no border */
+      /* Profile avatar */
       .rq-hero-avatar {
         width: 46px; height: 46px;
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; flex-shrink: 0; margin-top: 2px;
       }
 
-      /* Search bar — dark, no visible border */
+      /* Search bar */
       .rq-hero-search {
         margin-top: 14px;
         background: rgba(6, 9, 32, 0.82);
@@ -2344,10 +2352,10 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         flex-shrink: 0;
       }
 
-      /* Tagline — centered, small and clean so it matches the reference photo exactly */
+      /* Tagline — centered at ~58% from top, over the train image */
       .rq-hero-tagline {
         position: absolute;
-        top: 53%;
+        top: 68%;
         left: 50%;
         transform: translate(-50%, -50%);
         z-index: 10;
@@ -2358,29 +2366,26 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       .rq-hero-tagline-sub {
         font-family: 'Outfit', sans-serif;
         font-size: 13px; font-weight: 600;
-        color: rgba(255,255,255,0.85);
-        text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+        color: rgba(255,255,255,0.88);
+        text-shadow: 0 1px 10px rgba(0,0,0,0.7);
         margin: 0 0 2px 0;
         display: block;
       }
       .rq-hero-tagline-main {
         font-family: 'Outfit', sans-serif;
-        font-size: 28px; font-weight: 900;
+        font-size: 30px; font-weight: 900;
         color: #FFFFFF;
-        text-shadow: 0 2px 14px rgba(0,0,0,0.65);
+        text-shadow: 0 2px 16px rgba(0,0,0,0.70);
         line-height: 1.1;
         display: block;
       }
-      /* ── Category nav (placed inside the hero block at bottom) ── */
+
       .rq-cat-row-dark {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
         z-index: 15;
         display: flex;
         overflow-x: auto;
-        background: linear-gradient(to top, rgba(2, 7, 29, 0.70) 0%, rgba(2, 7, 29, 0.0) 100%);
+        background: #030616;  /* solid dark navy — matches reference */
+        border-top: 1px solid rgba(255,255,255,0.06);
         scrollbar-width: none;
         flex-shrink: 0;
       }
@@ -2388,35 +2393,35 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
       .rq-cdt {
         display: flex; flex-direction: column;
-        align-items: center; gap: 5px;
-        padding: 13px 4px 11px;
+        align-items: center; gap: 6px;
+        padding: 14px 4px 12px;
         cursor: pointer;
-        flex: 1; min-width: 60px;
+        flex: 1; min-width: 64px;
         position: relative;
         transition: opacity 0.15s;
       }
-      /* Active bottom bar */
+      /* Active bottom indicator */
       .rq-cdt::after {
         content: '';
         position: absolute; bottom: 0; left: 50%;
         transform: translateX(-50%);
-        width: 0; height: 2px;
+        width: 0; height: 2.5px;
         background: #FFFFFF;
         border-radius: 2px 2px 0 0;
         transition: width 0.2s ease;
       }
-      .rq-cdt.active::after { width: 26px; }
+      .rq-cdt.active::after { width: 28px; }
 
-      /* Icon — thin outline, no circle wrapper */
+      /* Icon */
       .rq-cdt .rq-cdt-ms {
-        font-size: 26px;
-        color: rgba(255,255,255,0.38);
+        font-size: 28px;
+        color: rgba(255,255,255,0.45);
         display: block;
         font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
         transition: color 0.15s;
       }
       .rq-cdt.active .rq-cdt-ms {
-        color: rgba(255,255,255,0.92);
+        color: rgba(255,255,255,0.95);
         font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
       }
 
@@ -2424,7 +2429,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       .rq-cdt .rq-cdt-label {
         font-family: 'Outfit', sans-serif;
         font-size: 10.5px; font-weight: 500;
-        color: rgba(255,255,255,0.40);
+        color: rgba(255,255,255,0.45);
         text-align: center; white-space: nowrap;
         transition: color 0.15s, font-weight 0.15s;
       }
@@ -2447,7 +2452,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         <div class="rq-hero-info-row">
           <div onclick="resetAppStateAndLogin()" style="cursor:pointer; flex:1;" class="active:scale-[0.98] transition-all">
             <div id="shop-delivering-train-name" class="rq-hero-train-name">Train name</div>
-            <div id="shop-delivering-seat-coach" class="rq-hero-seat">Seat no/ coach</div>
+            <div id="shop-delivering-seat-coach" class="rq-hero-seat">Seat no/ caoch</div>
           </div>
           <div class="rq-hero-avatar" onclick="navigateTo('page-account')">
             <!-- Plain white person silhouette matching reference -->
@@ -2474,32 +2479,33 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         <span id="changing-word" class="rq-hero-tagline-main" style="transition: opacity 0.3s ease, transform 0.3s ease;">Travel</span>
       </div>
 
-      <!-- ── Category nav (dark navy, now inside hero overlaying the reflections) ── -->
-      <div class="rq-cat-row-dark">
-        <div class="rq-cdt active" onclick="filterCategory('all',null);setRQCat(this)">
-          <span class="material-symbols-outlined rq-cdt-ms">shopping_bag</span>
-          <span class="rq-cdt-label">All</span>
-        </div>
-        <div class="rq-cdt" onclick="filterCategory('monsoon',null);setRQCat(this)">
-          <span class="material-symbols-outlined rq-cdt-ms">umbrella</span>
-          <span class="rq-cdt-label">Monsoon</span>
-        </div>
-        <div class="rq-cdt" onclick="filterCategory('tech',null);setRQCat(this)">
-          <span class="material-symbols-outlined rq-cdt-ms">headphones</span>
-          <span class="rq-cdt-label">Electronics</span>
-        </div>
-        <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
-          <span class="material-symbols-outlined rq-cdt-ms">face_retouching_natural</span>
-          <span class="rq-cdt-label">Beauty</span>
-        </div>
-        <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
-          <span class="material-symbols-outlined rq-cdt-ms">medication</span>
-          <span class="rq-cdt-label">Pharmacy</span>
-        </div>
-        <div class="rq-cdt" onclick="filterCategory('comfort',null);setRQCat(this)">
-          <span class="material-symbols-outlined rq-cdt-ms">child_care</span>
-          <span class="rq-cdt-label">Baby Care</span>
-        </div>
+    </div>
+
+    <!-- ── Category nav (outside and below the hero) ── -->
+    <div class="rq-cat-row-dark">
+      <div class="rq-cdt active" onclick="filterCategory('all',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">shopping_bag</span>
+        <span class="rq-cdt-label">All</span>
+      </div>
+      <div class="rq-cdt" onclick="filterCategory('monsoon',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">umbrella</span>
+        <span class="rq-cdt-label">Monsoon</span>
+      </div>
+      <div class="rq-cdt" onclick="filterCategory('tech',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">headphones</span>
+        <span class="rq-cdt-label">Electronics</span>
+      </div>
+      <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">face_retouching_natural</span>
+        <span class="rq-cdt-label">Beauty</span>
+      </div>
+      <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">medication</span>
+        <span class="rq-cdt-label">Pharmacy</span>
+      </div>
+      <div class="rq-cdt" onclick="filterCategory('comfort',null);setRQCat(this)">
+        <span class="material-symbols-outlined rq-cdt-ms">child_care</span>
+        <span class="rq-cdt-label">Baby Care</span>
       </div>
     </div>
 
@@ -2533,41 +2539,16 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       }
     </script>
 
-    <!-- ===== QUICK ACTIONS BAR ===== -->
-    <section style="background:#ffffff;padding:6px 16px 14px;border-bottom:6px solid #F1F5F0;">
-      <div style="display:flex;gap:8px;">
-        <div onclick="navigateTo('page-pnr');setTimeout(()=>switchPNRTab('pnr'),100);" style="flex:1;background:linear-gradient(135deg,#E7F6EF 0%,#d1f0e3 100%);border-radius:14px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:10px;border:1px solid #b6e8d0;transition:all 0.2s;">
-          <div style="width:36px;height:36px;background:#118A4E;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <span class="material-symbols-outlined" style="font-size:18px;color:#fff;">confirmation_number</span>
-          </div>
-          <div>
-            <div style="font-size:11px;font-weight:800;color:#1A1A1A;">Check PNR</div>
-            <div style="font-size:9px;color:#6B7280;font-weight:600;">Verify ticket status</div>
-          </div>
-        </div>
-        <div onclick="navigateTo('page-pnr');setTimeout(()=>switchPNRTab('live'),100);" style="flex:1;background:linear-gradient(135deg,#FFFBEB 0%,#FEF3C7 100%);border-radius:14px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:10px;border:1px solid #FDE68A;transition:all 0.2s;">
-          <div style="width:36px;height:36px;background:#F59E0B;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <span class="material-symbols-outlined" style="font-size:18px;color:#fff;">train</span>
-          </div>
-          <div>
-            <div style="font-size:11px;font-weight:800;color:#1A1A1A;">Live Train</div>
-            <div style="font-size:9px;color:#6B7280;font-weight:600;">Track your train</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Products List Section -->
-    <section class="px-margin-mobile mb-6" style="padding-top: 16px;">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-base font-headline font-bold text-on-surface" id="products-section">Trending Essentials</h3>
-        <button class="text-primary-light font-bold text-xs hover:opacity-75 flex items-center gap-1" onclick="filterCategory('all', null)">
-          See All <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+    <section style="background:#f4f4f4;padding:16px 14px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <h3 style="font-size:15px;font-weight:800;color:#1a1a1a;margin:0;" id="products-section">Trending Essentials</h3>
+        <button style="font-size:11px;font-weight:700;color:#118A4E;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:2px;" onclick="filterCategory('all', null)">
+          See All <span class="material-symbols-outlined" style="font-size:16px;">chevron_right</span>
         </button>
       </div>
-      
       <!-- Grid Items (sectioned layout rendered via Javascript) -->
-      <div class="products-grid-premium" id="products-grid" style="padding-bottom: 100px;"></div>
+      <div id="products-grid" style="padding-bottom:110px;"></div>
     </section>
   </div>
 
@@ -2880,134 +2861,85 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
   </div>
 
   <!-- ==================== ACCOUNT PAGE ==================== -->
-  <div id="page-account" class="page tab-page bg-background flex flex-col h-full">
-    <div class="sticky top-0 bg-white border-b border-outline-variant/60 px-5 py-4 flex justify-between items-center z-40 shadow-sm">
-      <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-primary active:scale-90 transition-transform" onclick="navigateTo('page-shop')">
-        <span class="material-symbols-outlined text-xl">arrow_back</span>
-      </button>
-      <h2 class="text-base font-headline font-bold text-on-surface">My Account</h2>
-      <div class="w-9 h-9"></div>
-    </div>
+  <div id="page-account" class="page tab-page" style="background:#0f1209;overflow-y:auto;padding-bottom:90px;">
 
-    <!-- Login section -->
-    <div id="account-login-section" class="account-scroll flex-1 overflow-y-auto">
-      <div class="flex flex-col items-center justify-start pt-8 pb-24 px-6 min-h-full relative">
-        <!-- Animated Background Gradient -->
-        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none"></div>
-        
-        <!-- Logo + Branding -->
-        <div class="relative z-10 flex flex-col items-center w-full">
-          <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center mb-6 shadow-xl pulse-glow">
-            <span class="material-symbols-outlined text-white text-4xl">train</span>
-          </div>
-          <h2 class="text-2xl font-headline font-black text-on-surface mb-2 tracking-tight">Welcome to RailQuick</h2>
-          <p class="text-sm text-gray-500 mb-8 text-center max-w-[280px] leading-relaxed">Sign in to track orders, save preferences &amp; checkout faster.</p>
-          
-          <!-- Clerk Sign-In Embedded Here -->
-          <div id="clerk-sign-in-mount" class="w-full min-h-[200px]">
-            <div class="clerk-loading-state flex flex-col items-center justify-center py-8 gap-4">
-              <div class="w-10 h-10 border-[3px] border-primary border-t-transparent rounded-full animate-spin"></div>
-              <p class="text-xs text-gray-400 font-medium">Connecting to sign-in...</p>
-            </div>
-          </div>
-
-          <!-- Restart Button for Logged Out users too -->
-          <div class="mt-6 flex items-center gap-2 text-gray-400">
-            <span class="material-symbols-outlined text-sm">lock</span>
-            <span class="text-[10px] font-medium">Secured by Clerk · End-to-end encrypted</span>
-          </div>
-
-          <!-- Restart Button for Logged Out users too -->
-          <button class="mt-8 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-5 py-3.5 rounded-2xl font-headline font-bold active:scale-[0.98] transition-all text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm" onclick="resetAppStateAndRestart()">
-            <span class="material-symbols-outlined text-base">restart_alt</span>
-            Start Again / Reset App
-          </button>
+    <!-- Login section (shown when logged out) -->
+    <div id="account-login-section">
+      <div style="padding:16px 16px 0;"><button style="width:36px;height:36px;border-radius:50%;background:#1e2a14;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="navigateTo('page-shop')"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">arrow_back</span></button></div>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:32px 24px 24px;">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#3a6b24,#22c55e);display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 0 0 4px rgba(34,197,94,0.2);">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:40px;">person</span>
         </div>
+        <h2 style="font-size:20px;font-weight:900;color:#fff;margin:0 0 6px;font-family:'Outfit',sans-serif;">Welcome to RailQuick</h2>
+        <p style="font-size:12px;color:rgba(255,255,255,0.5);text-align:center;margin:0 0 28px;line-height:1.5;">Sign in to track orders, save preferences &amp; checkout faster.</p>
+        <div id="clerk-sign-in-mount" style="width:100%;min-height:200px;">
+          <div style="display:flex;flex-direction:column;align-items:center;padding:32px 0;gap:12px;">
+            <div style="width:40px;height:40px;border:3px solid #22c55e;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+            <p style="font-size:11px;color:rgba(255,255,255,0.4);">Connecting to sign-in...</p>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:14px;">lock</span><span style="font-size:10px;color:rgba(255,255,255,0.3);">Secured by Clerk · End-to-end encrypted</span></div>
+        <button style="margin-top:20px;background:#1e2a14;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);padding:12px 20px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;" onclick="resetAppStateAndRestart()"><span class="material-symbols-outlined" style="font-size:16px;">restart_alt</span> Start Again / Reset App</button>
       </div>
     </div>
 
     <!-- Logged in section -->
-    <div id="account-logged-section" class="account-scroll flex-1 overflow-y-auto p-6 pb-28 space-y-5 hidden">
-      <div class="bg-gradient-to-br from-primary to-primary-light rounded-3xl p-5 flex items-center gap-4 shadow-lg relative overflow-hidden">
-        <div class="absolute inset-0 bg-white/5"></div>
-        <div class="relative w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm text-white font-headline font-black text-xl flex items-center justify-center shadow border border-white/20" id="profile-avatar">K</div>
-        <div class="flex-1 relative">
-          <div class="text-sm font-bold text-white" id="profile-name">User</div>
-          <div class="text-[10px] text-white/70 mt-0.5" id="profile-email">user@gmail.com</div>
-          <div class="text-[10px] text-white/70 mt-0.5" id="profile-phone">Phone: —</div>
-          <div class="text-[9px] font-bold text-secondary mt-1.5 flex items-center gap-1">
-            <span class="material-symbols-outlined text-[10px] fill-1">verified</span>
-            VERIFIED MEMBER
-          </div>
+    <div id="account-logged-section" class="hidden">
+      <div style="padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;">
+        <button style="width:36px;height:36px;border-radius:50%;background:#1e2a14;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="navigateTo('page-shop')"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">arrow_back</span></button>
+        <div style="width:36px;"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:20px 24px 28px;">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#3a6b24,#22c55e);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 0 0 4px rgba(34,197,94,0.2);" id="profile-avatar"><span class="material-symbols-outlined" style="color:#fff;font-size:40px;">person</span></div>
+        <div style="font-size:20px;font-weight:900;color:#fff;font-family:'Outfit',sans-serif;" id="profile-name">My Account</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:3px;" id="profile-email"></div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;" id="profile-phone"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 16px 20px;">
+        <div onclick="navigateTo('page-orders')" style="background:#1e2a14;border-radius:16px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
+          <span class="material-symbols-outlined" style="color:#86efac;font-size:26px;">inventory_2</span>
+          <span style="font-size:12px;font-weight:800;color:#fff;text-align:center;">My Orders</span>
+          <span style="font-size:10px;color:rgba(255,255,255,0.4);text-align:center;">View your orders</span>
+        </div>
+        <div onclick="navigateTo('page-pnr')" style="background:#1e2a14;border-radius:16px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
+          <span class="material-symbols-outlined" style="color:#86efac;font-size:26px;">confirmation_number</span>
+          <span style="font-size:12px;font-weight:800;color:#fff;text-align:center;">My PNRs</span>
+          <span style="font-size:10px;color:rgba(255,255,255,0.4);text-align:center;">Check your PNRs</span>
+        </div>
+        <div style="background:#1e2a14;border-radius:16px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
+          <span class="material-symbols-outlined" style="color:#86efac;font-size:26px;">card_giftcard</span>
+          <span style="font-size:12px;font-weight:800;color:#fff;text-align:center;">Refer &amp; Earn</span>
+          <span style="font-size:10px;color:rgba(255,255,255,0.4);text-align:center;">Earn rewards</span>
         </div>
       </div>
-
-      <!-- Profile Completion / Mobile Number Compulsory Card -->
-      <div id="profile-completion-card" class="bg-amber-50 border border-amber-200 rounded-3xl p-5 space-y-3 hidden">
-        <div class="flex items-start gap-2.5">
-          <span class="material-symbols-outlined text-amber-700 text-xl animate-pulse">warning</span>
-          <div>
-            <h4 class="text-xs font-headline font-black text-amber-900">Complete Your Delivery Profile</h4>
-            <p class="text-[10px] text-amber-700 leading-normal mt-0.5">A valid mobile number is compulsory to receive order delivery SMS updates and OTPs at the station.</p>
-          </div>
-        </div>
-        <div class="flex gap-2 mt-1">
-          <input type="tel" id="completion-phone-input" class="flex-1 bg-white border border-amber-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 font-mono" placeholder="Enter 10-digit mobile" maxlength="10" />
-          <button onclick="saveCompulsoryPhone()" class="bg-amber-600 hover:bg-amber-700 text-white text-[10px] font-black uppercase px-4 py-2 rounded-xl transition-all">Save</button>
+      <div style="margin:0 16px 16px;background:#1e2a14;border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
+        <div style="width:44px;height:44px;border-radius:12px;background:#22c55e;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="material-symbols-outlined" style="color:#fff;font-size:22px;">train</span></div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:800;color:#fff;">About RailQuick</div><div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;line-height:1.4;">Your trusted travel companion for ordering essentials on train.</div></div>
+        <span class="material-symbols-outlined" style="color:rgba(255,255,255,0.35);font-size:20px;">chevron_right</span>
+      </div>
+      <div style="padding:0 16px 16px;">
+        <div style="font-size:12px;font-weight:800;color:#4ade80;margin-bottom:10px;letter-spacing:0.04em;">Support</div>
+        <div style="background:#1e2a14;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;" onclick="navigateTo('page-support')"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">chat_bubble</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Help Centre</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">phone</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Contact Us</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">help</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">FAQs</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
         </div>
       </div>
-
-      <div class="bg-white border border-outline-variant/60 rounded-3xl overflow-hidden shadow-sm">
-        <div class="flex items-center gap-3.5 px-5 py-4 border-b border-gray-100 cursor-pointer active:bg-gray-50 transition-colors" onclick="navigateTo('page-orders')">
-          <span class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500">
-            <span class="material-symbols-outlined text-base">inventory_2</span>
-          </span>
-          <span class="text-xs font-bold text-on-surface flex-1">My Orders</span>
-          <span class="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
-        </div>
-        <div class="flex items-center gap-3.5 px-5 py-4 border-b border-gray-100 cursor-pointer active:bg-gray-50 transition-colors" onclick="navigateTo('page-pnr')">
-          <span class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500">
-            <span class="material-symbols-outlined text-base">train</span>
-          </span>
-          <span class="text-xs font-bold text-on-surface flex-1">PNR &amp; Live Tracking</span>
-          <span class="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
-        </div>
-        <div class="flex items-center gap-3.5 px-5 py-4 border-b border-gray-100 cursor-pointer active:bg-gray-50 transition-colors" onclick="navigateTo('page-offers')">
-          <span class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500">
-            <span class="material-symbols-outlined text-base">local_offer</span>
-          </span>
-          <span class="text-xs font-bold text-on-surface flex-1">Offers &amp; Coupons</span>
-          <span class="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
-        </div>
-        <div class="flex items-center gap-3.5 px-5 py-4 border-b border-gray-100 cursor-pointer active:bg-gray-50 transition-colors" onclick="navigateTo('page-support')">
-          <span class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500">
-            <span class="material-symbols-outlined text-base">support_agent</span>
-          </span>
-          <span class="text-xs font-bold text-on-surface flex-1">Help &amp; Support Chat</span>
-          <span class="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
-        </div>
-        <div class="flex items-center gap-3.5 px-5 py-4 border-b border-gray-100 cursor-pointer active:bg-gray-50 transition-colors" onclick="navigateTo('page-games')">
-          <span class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500">
-            <span class="material-symbols-outlined text-base">casino</span>
-          </span>
-          <span class="text-xs font-bold text-on-surface flex-1">Pass the Time (Games)</span>
-          <span class="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+      <div style="padding:0 16px 16px;">
+        <div style="font-size:12px;font-weight:800;color:#4ade80;margin-bottom:10px;letter-spacing:0.04em;">More</div>
+        <div style="background:#1e2a14;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">star</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Rate RailQuick</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">group_add</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Refer &amp; Earn</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">shield</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Privacy Policy</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">description</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Terms &amp; Conditions</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">share</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Share RailQuick</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
         </div>
       </div>
-      <!-- Separate Actions block -->
-      <div class="space-y-3 pt-2 pb-12">
-        <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 py-3.5 rounded-2xl font-headline font-bold active:scale-[0.98] transition-all text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm" onclick="resetAppStateAndRestart()">
-          <span class="material-symbols-outlined text-base">restart_alt</span>
-          Start Again / Reset App
-        </button>
-        <button class="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/50 py-3.5 rounded-2xl font-headline font-bold active:scale-[0.98] transition-all text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm" onclick="signOut()">
-          <span class="material-symbols-outlined text-base">logout</span>
-          Sign Out of Account
-        </button>
+      <div style="padding:0 16px 16px;">
+        <button style="width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;padding:14px;border-radius:16px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="signOut()"><span class="material-symbols-outlined" style="font-size:18px;">logout</span> Sign Out</button>
       </div>
     </div>
   </div>
-
   <!-- ==================== OFFERS & COUPONS PAGE ==================== -->
   <div id="page-offers" class="page bg-background">
     <div class="sticky top-0 bg-white border-b border-outline-variant/60 px-5 py-4 flex justify-between items-center z-40 shadow-sm">

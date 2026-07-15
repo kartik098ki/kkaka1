@@ -1502,8 +1502,9 @@ body { background-color: #10151d; }
 }
 .product-card-premium {
   border-radius: 24px !important;
-  background: #ffffff !important;
-  box-shadow: 0 12px 28px rgba(15,23,42,0.06) !important;
+  background: var(--card-bg, #ffffff) !important;
+  box-shadow: var(--card-shadow, 0 12px 28px rgba(15,23,42,0.06)) !important;
+  border: var(--card-border, none) !important;
 }
 .add-btn-premium {
   min-width: 76px !important;
@@ -1553,18 +1554,19 @@ body { background-color: #10151d; }
   left: 50%;
   bottom: calc(94px + var(--rq-safe-bottom)) !important;
   transform: translateX(-50%);
-  width: min(90vw, 360px) !important;
-  height: 66px !important;
-  border-radius: 999px !important;
-  background-color: #2e7d32 !important; /* Vibrant green */
-  border: 4.5px solid #1b5e20 !important; /* Thick deep green border */
+  width: calc(100% - 24px) !important;
+  max-width: 360px !important;
+  height: 60px !important;
+  border-radius: 24px !important;
+  background-color: #16a34a !important; /* Premium Zepto-style green */
+  border: none !important;
   color: #fff !important;
   z-index: 55;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 0 14px 0 10px !important;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3) !important;
+  padding: 0 18px 0 10px !important;
+  box-shadow: 0 12px 32px rgba(22, 163, 74, 0.25) !important;
   transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 #cart-fab.hidden { display: none !important; }
@@ -2294,9 +2296,9 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     <!-- ===== HERO — pixel match to reference ===== -->
     <style>
       :root {
-        --card-bg: transparent;
-        --card-border: none;
-        --card-shadow: none;
+        --card-bg: #ffffff;
+        --card-border: 1px solid rgba(0, 0, 0, 0.05);
+        --card-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
         --img-capsule-bg: #f4f5f7;
         --product-name-color: #111827;
         --product-weight-color: #6b7280;
@@ -2614,7 +2616,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
         <!-- Train name + profile icon -->
         <div class="rq-hero-info-row">
-          <div onclick="resetAppStateAndLogin()" style="cursor:pointer; flex:1; padding-left: 10px;" class="active:scale-[0.98] transition-all">
+          <div onclick="resetAppStateAndLogin()" style="cursor:pointer; flex:1; padding-left: 0px;" class="active:scale-[0.98] transition-all">
             <div id="shop-delivering-train-name" class="rq-hero-train-name">Train name</div>
             <div id="shop-delivering-seat-coach" class="rq-hero-seat">Seat no/ caoch</div>
           </div>
@@ -3590,7 +3592,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
   <!-- Sticky Cart FAB on Shopping Front -->
   <!-- Sticky Cart FAB on Shopping Front -->
-  <button id="cart-fab" class="cart-fab fixed bottom-[104px] left-1/2 -translate-x-1/2 bg-[#1c7b1c] hover:bg-[#156115] text-white flex items-center justify-between w-11/12 max-w-[370px] px-5 py-2.5 rounded-full z-40 shadow-2xl active:scale-95 transition-all hidden border border-white/10" onclick="navigateTo('page-cart')">
+  <button id="cart-fab" class="cart-fab fixed bottom-[104px] left-1/2 -translate-x-1/2 text-white flex items-center justify-between w-11/12 max-w-[370px] px-5 py-2.5 rounded-full z-40 shadow-2xl active:scale-95 transition-all hidden" onclick="navigateTo('page-cart')">
     <div class="flex items-center gap-3">
       <!-- Overlapping stacked items preview -->
       <div id="cart-fab-preview" class="flex items-center">
@@ -3601,9 +3603,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         <span class="text-[11px] text-white/90 mt-1 font-medium" id="cart-fab-count">0 items</span>
       </div>
     </div>
-    <div class="w-8 h-8 rounded-full bg-[#115a0c] flex items-center justify-center text-white shrink-0 shadow-inner">
-      <span class="material-symbols-outlined text-white text-base">chevron_right</span>
-    </div>
+    <span class="material-symbols-outlined text-white text-xl mr-1 font-bold">chevron_right</span>
   </button>
 
   <!-- Loader Overlay -->

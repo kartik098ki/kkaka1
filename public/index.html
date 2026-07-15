@@ -2236,25 +2236,25 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         height: 510px;
         background-color: #02071d;
         background-image: url('hero_rain_train.png');
-        background-size: cover;          /* fill the container without repeating */
-        background-position: right bottom; /* align the train (on the right) to the right viewport edge */
+        background-size: contain;        /* show the entire image, no zoom or crop */
+        background-position: center bottom; /* anchor image to bottom */
         background-repeat: no-repeat;
         overflow: hidden;
         flex-shrink: 0;
       }
 
-      /* Overlay: semi-transparent at top for text readability (letting rain streaks show), clears in middle, vignette at bottom */
+      /* Overlay: covers top gap with solid dark color, fades out over the image sky, vignette at bottom */
       .rq-hero-overlay {
         position: absolute;
         inset: 0;
         background: linear-gradient(
           180deg,
-          rgba(2, 7, 29, 0.70)  0%,   /* softer top tint, shows the rain streaks */
-          rgba(2, 7, 29, 0.55) 20%,
-          rgba(2, 7, 29, 0.05) 45%,   /* completely clear for the train */
-          rgba(2, 7, 29, 0.0)  60%,
-          rgba(2, 7, 29, 0.25) 80%,
-          rgba(2, 7, 29, 0.45) 100%
+          rgba(2, 7, 29, 0.98) 0%,     /* solid to cover top gap and status bar */
+          rgba(2, 7, 29, 0.98) 32%,    /* solid down to where contain image starts */
+          rgba(2, 7, 29, 0.40) 45%,    /* smooth blend over the image sky */
+          rgba(2, 7, 29, 0.0)  55%,    /* clear area to show the train fully */
+          rgba(2, 7, 29, 0.15) 80%,    /* subtle bottom vignette */
+          rgba(2, 7, 29, 0.40) 100%
         );
         pointer-events: none;
         z-index: 1;

@@ -2178,11 +2178,19 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
          <button style="background:var(--qty-btn-bg, #ffffff);border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:36px;width:100%;font-size:12px;font-weight:800;letter-spacing:0.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 2px 4px rgba(22,163,74,0.08);" onclick="event.stopPropagation();${addClickCode}">ADD</button>
        </div>`;
 
+  let subPillHTML = '';
+  if (p.subcategory) {
+    const label = p.subcategory.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    subPillHTML = `<span style="font-size:9px; font-weight:700; color:#16a34a; background:rgba(22,163,74,0.06); padding:3px 8px; border-radius:6px; border:1px solid rgba(22,163,74,0.15); margin-top:6px; max-width:fit-content; font-family:'Outfit',sans-serif; display:inline-flex; align-items:center; gap:2px;">All ${label} <span class="material-symbols-outlined" style="font-size:10px;">chevron_right</span></span>`;
+  } else {
+    subPillHTML = `<span style="font-size:9px; font-weight:700; color:#16a34a; background:rgba(22,163,74,0.06); padding:3px 8px; border-radius:6px; border:1px solid rgba(22,163,74,0.15); margin-top:6px; max-width:fit-content; font-family:'Outfit',sans-serif; display:inline-flex; align-items:center; gap:2px;">Top Deal <span class="material-symbols-outlined" style="font-size:10px;">chevron_right</span></span>`;
+  }
+
   return `
-    <div style="cursor:pointer; background:var(--card-bg, transparent); border:var(--card-border, none); border-radius:16px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; height:100%; box-shadow:var(--card-shadow, none);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
+    <div style="cursor:pointer; background:var(--card-bg, transparent); border:var(--card-border, none); border-radius:18px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; position:relative; box-shadow:var(--card-shadow, none);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
       <div>
-        <!-- Image Container (capsule design) -->
-        <div style="position:relative; width:100%; aspect-ratio:1; background:var(--img-capsule-bg, #f4f5f7); border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px;">
+        <!-- Image Container -->
+        <div style="position:relative; width:100%; aspect-ratio:1; background:var(--img-capsule-bg, #f4f5f7); border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px;">
           <img src="${p.img}" alt="${p.name}" style="max-width:92%; max-height:92%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
           ${vegDot}
           <!-- Slider dots (bottom left) -->
@@ -2193,32 +2201,35 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
           </div>
         </div>
         
-        <!-- Product Name -->
-        <h4 style="font-size:12px; font-weight:700; color:var(--product-name-color, #1f2937); line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:32px;">${p.name}</h4>
+        <!-- Weight and ADD button row (Matches Photo 3) -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:6px;">
+          <div style="border:1px solid var(--border-color, rgba(255,255,255,0.2)); border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; color:var(--product-name-color, #111827); font-family:'Outfit',sans-serif; text-align:center; min-width:48px; white-space:nowrap;">
+            ${weightText}
+          </div>
+          <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();" style="flex-shrink:0;">
+            ${buttonHTML}
+          </div>
+        </div>
+
+        <!-- Price Details -->
+        <div style="display:flex; align-items:baseline; gap:4px; margin-bottom:2px;">
+          <span style="font-size:16px; font-weight:850; color:var(--product-price-color, #111827); font-family:'Outfit',sans-serif;">₹${p.price}</span>
+          <span style="font-size:10.5px; font-weight:500; color:var(--product-mrp-color, #94a3b8); text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
+        </div>
+        <div style="font-size:9.5px; font-weight:800; color:var(--product-disc-color, #3b82f6); margin-bottom:6px; font-family:'Outfit',sans-serif;">${discPct}% OFF on MRP</div>
         
-        <!-- Subtitle: Weight -->
-        <div style="font-size:11px; font-weight:600; color:var(--product-weight-color, #6b7280); margin-top:4px; font-family:'Outfit',sans-serif;">${weightText}</div>
-      </div>
-      
-      <!-- Rating and Reviews (Gold Stars at bottom) -->
-      <div style="display:flex; align-items:center; gap:3px; margin-top:6px; font-family:'Outfit',sans-serif;">
-        <span class="material-symbols-outlined" style="font-size:12px; color:#f59e0b; font-variation-settings:'FILL' 1;">star</span>
-        <span style="font-size:10px; font-weight:700; color:var(--product-name-color, #111827);">${p.rating || '4.8'}</span>
-        <span style="font-size:9px; color:var(--product-weight-color, #6b7280);">(${p.reviews || '120'})</span>
+        <!-- Product Name -->
+        <h4 style="font-size:12px; font-weight:700; color:var(--product-name-color, #111827); line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:32px;">${p.name}</h4>
+        
+        <!-- Sub pill badge -->
+        ${subPillHTML}
       </div>
 
-      <!-- Price & Button Row -->
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:4px; border-top: 1px solid var(--border-color, rgba(0,0,0,0.06));">
-        <div style="display:flex; flex-direction:column; min-width:0; flex-shrink:1;">
-          <div style="display:flex; align-items:baseline; gap:4px; flex-wrap:wrap;">
-            <span style="font-size:15px; font-weight:850; color:var(--product-price-color, #111827); font-family:'Outfit',sans-serif;">₹${p.price}</span>
-            <span style="font-size:10.5px; font-weight:500; color:var(--product-mrp-color, #9ca3af); text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
-          </div>
-          <span style="font-size:8.5px; font-weight:800; color:var(--product-disc-color, #2563eb); font-family:'Outfit',sans-serif; margin-top:1px;">${discPct}% OFF</span>
-        </div>
-        <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();" style="flex-shrink:0;">
-          ${buttonHTML}
-        </div>
+      <!-- Rating and reviews -->
+      <div style="display:flex; align-items:center; gap:3px; margin-top:8px; font-family:'Outfit',sans-serif;">
+        <span class="material-symbols-outlined" style="font-size:12px; color:#f59e0b; font-variation-settings:'FILL' 1;">star</span>
+        <span style="font-size:10px; font-weight:700; color:var(--product-name-color, #111827);">${p.rating || '4.8'}</span>
+        <span style="font-size:9px; color:var(--product-weight-color, #9ca3af);">(${p.reviews || '120'})</span>
       </div>
     </div>
   `;

@@ -2310,8 +2310,11 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         --border-color: rgba(0,0,0,0.06);
         --bottom-nav-bg: rgba(255, 255, 255, 0.95);
         --bottom-nav-border: rgba(0,0,0,0.06);
-        --bottom-nav-text-active: #fbbf24;
+        --bottom-nav-text-active: #118A4E;
         --bottom-nav-text-inactive: #9ca3af;
+        --page-bg: #ffffff;
+        --header-bg: #ffffff;
+        --text-color: #111827;
       }
       
       body.dark-theme {
@@ -2329,6 +2332,35 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         --bottom-nav-border: rgba(255, 255, 255, 0.08);
         --bottom-nav-text-active: #fbbf24;
         --bottom-nav-text-inactive: #8e8e93;
+        --page-bg: #121212;
+        --header-bg: #121212;
+        --text-color: #ffffff;
+      }
+
+      /* Theme application to all pages except PNR & Splash */
+      .page:not(#page-pnr):not(#page-splash) {
+        background: var(--page-bg) !important;
+      }
+      .page:not(#page-pnr):not(#page-splash) .sticky,
+      .page:not(#page-pnr):not(#page-splash) header,
+      .page:not(#page-pnr):not(#page-splash) > div[class*="sticky"] {
+        background: var(--header-bg) !important;
+        border-color: var(--border-color) !important;
+      }
+      .page:not(#page-pnr):not(#page-splash) h1,
+      .page:not(#page-pnr):not(#page-splash) h2,
+      .page:not(#page-pnr):not(#page-splash) h3,
+      .page:not(#page-pnr):not(#page-splash) h4,
+      .page:not(#page-pnr):not(#page-splash) .text-on-surface {
+        color: var(--text-color) !important;
+      }
+      body.dark-theme .page:not(#page-pnr):not(#page-splash) input {
+        color: #ffffff !important;
+        background: #1c1c1e !important;
+      }
+      body.dark-theme .page:not(#page-pnr):not(#page-splash) button:has(span) {
+        background: #1c1c1e !important;
+        color: #ffffff !important;
       }
 
       /* ── Hero wrapper ── */
@@ -3443,20 +3475,14 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       <span class="material-symbols-outlined nav-icon fill-1">home</span>
       <span class="nav-label">Home</span>
     </div>
+    <div class="nav-item" data-page="page-live-tracking" onclick="navTo('page-live-tracking')">
+      <span class="material-symbols-outlined nav-icon">train</span>
+      <span class="nav-label">Live Train</span>
+    </div>
     <div class="nav-item" data-page="page-orders" onclick="navTo('page-orders')">
-      <span class="material-symbols-outlined nav-icon">history</span>
-      <span class="nav-label">Order Again</span>
-    </div>
-    <div class="nav-item" data-page="page-categories" onclick="filterCategory('all', null); setRQCatByLabel('All'); navTo('page-shop');">
-      <span class="material-symbols-outlined nav-icon">apps</span>
-      <span class="nav-label">Categories</span>
-    </div>
-    <div class="nav-item" data-page="page-print" onclick="alert('Print feature coming soon! You will be able to print your train receipt and ticket summary directly.');">
-      <span class="material-symbols-outlined nav-icon">print</span>
-      <span class="nav-label">Print</span>
-    </div>
-    <div class="nav-item" data-page="page-district" onclick="alert('Welcome to District! Premium categories and specialized train amenities are launching soon.');" style="display:flex; align-items:center; justify-content:center; padding: 0 4px !important;">
-      <div style="background: #7c3aed; color: #ffffff; font-weight: 900; font-size: 10px; padding: 4px 6px; border-radius: 6px; font-family: 'Outfit', sans-serif; text-transform: lowercase; letter-spacing: -0.02em;">district</div>
+      <span class="material-symbols-outlined nav-icon">inventory_2</span>
+      <span class="nav-label">Orders</span>
+      <span class="nav-badge" id="nav-orders-badge" style="display:none;">0</span>
     </div>
   </nav>
 

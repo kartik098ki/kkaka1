@@ -1126,29 +1126,10 @@ input, textarea, select { font-size: 16px !important; }
   background: #0f1209 !important;
 }
 
-/* PNR page: keep original light styling intact */
+/* PNR page background — keep light */
 #page-pnr {
-  background: #F6F7F8 !important;
+  background: var(--rq-bg, #F6F7F8) !important;
 }
-#page-pnr input,
-#page-pnr textarea {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #ECECEC !important;
-}
-#page-pnr input::placeholder,
-#page-pnr textarea::placeholder {
-  color: #6B7280 !important;
-}
-#page-pnr .bg-surface { background-color: #ffffff !important; }
-/* PNR card/main content uses dark text — but NOT the hero header (which is white on green) */
-#page-pnr main { color: #111827; }
-#page-pnr main h3, #page-pnr main h4 { color: #111827; }
-/* Hero header text stays white — do NOT override */
-#page-pnr header { color: #ffffff; }
-/* Travel utility section text */
-#page-pnr #travel-utility-section { color: #111827; }
-/* Tab button colors are controlled by JS inline styles — no !important here */
 
 
 #page-account > .sticky {
@@ -1363,49 +1344,12 @@ body { background-color: #10151d; }
   padding: 8px 12px;
 }
 
-#page-pnr {
-  background: var(--rq-bg) !important;
-}
-#page-pnr header {
-  min-height: auto !important;
-  padding-top: calc(24px + var(--rq-safe-top)) !important;
-  padding-bottom: 24px !important;
-  padding-left: 20px !important;
-  padding-right: 20px !important;
-  background: radial-gradient(circle at 80% 30%, rgba(17, 138, 78, 0.10) 0%, rgba(255, 255, 255, 0) 75%), #ffffff !important;
-  border-bottom-left-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
-  box-shadow: none !important;
-  position: relative !important;
-}
-#page-pnr header button {
-  width: 36px !important;
-  height: 36px !important;
-  border-radius: 999px !important;
-  background: #FFFFFF !important;
-  border: 1px solid #ECECEC !important;
-  color: #111827 !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
-  transition: all 0.2s ease !important;
-}
-#page-pnr header h1 {
-  font-family: 'Outfit', sans-serif !important;
-  font-size: 28px !important;
-  line-height: 1.15 !important;
-  letter-spacing: -0.03em !important;
-  font-weight: 800 !important;
-  color: #111827 !important;
-}
-#page-pnr header p {
-  font-size: 13px !important;
-  color: #6B7280 !important;
-  margin-top: 6px !important;
-  line-height: 1.45 !important;
-}
+/* PNR page — main content area light styling */
 #page-pnr main {
   margin-top: 4px !important;
   padding-left: 16px !important;
   padding-right: 16px !important;
+  color: #111827;
 }
 #page-pnr main > section:first-child {
   border-radius: 28px !important;
@@ -1414,41 +1358,34 @@ body { background-color: #10151d; }
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03) !important;
   background: #FFFFFF !important;
 }
+/* Tab buttons: no forced background so green indicator shows properly */
 #page-pnr #tab-pnr,
 #page-pnr #tab-live {
   border: none !important;
   box-shadow: none !important;
   background: transparent !important;
 }
-#page-pnr .pnr-panel input {
-  height: 54px !important;
-  min-height: 54px !important;
-  border-radius: 16px !important;
-  font-size: 15px !important;
-  padding: 12px 16px !important;
-  border: 1px solid #ECECEC !important;
-  box-shadow: none !important;
+/* PNR inputs: light styling */
+#page-pnr input,
+#page-pnr textarea {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #ECECEC !important;
 }
-#page-pnr .pnr-panel input:focus {
-  border-color: #118A4E !important;
-  box-shadow: 0 0 0 3px rgba(17, 138, 78, 0.08) !important;
+#page-pnr input::placeholder,
+#page-pnr textarea::placeholder {
+  color: #9CA3AF !important;
 }
-#page-pnr .pnr-panel label {
-  color: #118A4E !important;
-  letter-spacing: 0.05em !important;
-}
-#page-pnr .pnr-panel button {
-  height: 52px !important;
-  min-height: 52px !important;
-  border-radius: 16px !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
-}
+#page-pnr .bg-surface { background-color: #ffffff !important; }
+/* PNR submit button: keep green */
 #page-pnr .pnr-panel button.bg-primary,
 #page-pnr .pnr-panel button[class*="bg-primary"] {
   background: #118A4E !important;
+  color: #ffffff !important;
   box-shadow: 0 6px 20px rgba(17, 138, 78, 0.15) !important;
 }
+/* Override the dark button:has(span) rule for PNR buttons */
+#page-pnr button { background: unset; color: unset; }
 .train-hero-img {
   position: absolute;
   right: 0px;
@@ -2379,7 +2316,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         background: #181818 !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
       }
-      .page:not(#page-pnr):not(#page-splash) button:has(span) {
+      .page:not(#page-pnr):not(#page-splash) button:has(span):not([class*="bg-"]):not([style*="background"]):not([class*="text-"]):not([style*="color"]) {
         background: #181818 !important;
         color: #ffffff !important;
       }

@@ -1899,13 +1899,12 @@ function checkPnrExpiry() {
 function initShopPage() {
   // Check for PNR expiry on load
   checkPnrExpiry();
-  if (!appState.pnrData) return;
 
   // Update greeting based on time of day
   const hour = new Date().getHours();
   const greeting = hour < 5 ? 'Good Night' : hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
   const greetEl = document.getElementById('shop-delivering-label');
-  if (greetEl && !appState.pnrData) greetEl.textContent = greeting;
+  if (greetEl) greetEl.textContent = greeting;
 
   showProductSkeletons();
   setTimeout(() => {

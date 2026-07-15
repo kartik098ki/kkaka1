@@ -75,6 +75,69 @@
     }
   </script>
   <link rel="stylesheet" href="styles.css?v=1.1">
+  <script>
+    // Theme Management System
+    (function() {
+      const savedTheme = localStorage.getItem('theme-mode') || 'dark';
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+        document.addEventListener('DOMContentLoaded', function() {
+          document.body.classList.add('dark-theme');
+          const btn = document.getElementById('theme-toggle-btn');
+          if (btn) {
+            btn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 20px; color: #FFFFFF;">dark_mode</span>`;
+          }
+        });
+      } else {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+        document.addEventListener('DOMContentLoaded', function() {
+          document.body.classList.remove('dark-theme');
+          const btn = document.getElementById('theme-toggle-btn');
+          if (btn) {
+            btn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 20px; color: #FFFFFF;">light_mode</span>`;
+          }
+        });
+      }
+    })();
+
+    window.toggleThemeMode = function() {
+      const isDark = document.body.classList.toggle('dark-theme');
+      const newTheme = isDark ? 'dark' : 'light';
+      localStorage.setItem('theme-mode', newTheme);
+      
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      }
+
+      if (window.appState) {
+        window.appState.themeMode = newTheme;
+      }
+      
+      // Re-render products if they exist
+      if (typeof window.renderProducts === 'function' && window.PRODUCTS) {
+        window.renderProducts(window.PRODUCTS);
+      }
+      
+      // Re-render custom categories if active
+      if (window.appState && typeof window.renderCustomCategoryLayout === 'function' && window.appState.currentFilter !== 'all') {
+        window.renderCustomCategoryLayout(window.appState.currentFilter);
+      }
+
+      // Update button icon
+      const btn = document.getElementById('theme-toggle-btn');
+      if (btn) {
+        btn.innerHTML = isDark 
+          ? `<span class="material-symbols-outlined" style="font-size: 20px; color: #FFFFFF;">dark_mode</span>`
+          : `<span class="material-symbols-outlined" style="font-size: 20px; color: #FFFFFF;">light_mode</span>`;
+      }
+    };
+  </script>
   <style>
     /* Base wrapper styling */
     html, body {
@@ -1095,7 +1158,7 @@ body { background-color: #10151d; }
     radial-gradient(circle at 8% 0%, rgba(23, 190, 131, 0.22), transparent 28%),
     linear-gradient(145deg, #006b4f 0%, #004d3c 52%, #002f27 100%) !important;
 }
-#page-shop { background: linear-gradient(180deg, #f5f7f6 0%, #ffffff 42%, #f8faf9 100%) !important; }
+#page-shop { background: var(--page-shop-bg) !important; }
 #page-shop .gradient-header {
   border-bottom-left-radius: 54px !important;
   border-bottom-right-radius: 54px !important;
@@ -1362,7 +1425,7 @@ body { background-color: #10151d; }
 }
 
 #page-shop {
-  background: #f4f4f4 !important;
+  background: var(--page-shop-bg) !important;
 }
 #page-shop .gradient-header {
   border-bottom-left-radius: 48px !important;
@@ -1464,8 +1527,8 @@ body { background-color: #10151d; }
   width: calc(100% - 24px) !important;
   max-width: 390px !important;
   border-radius: 28px !important;
-  background: rgba(255,255,255,0.94) !important;
-  border: 1px solid rgba(15,23,42,0.08) !important;
+  background: var(--bottom-nav-bg) !important;
+  border: 1px solid var(--bottom-nav-border) !important;
   padding: 9px 8px !important;
   box-shadow: 0 18px 45px rgba(15,23,42,0.18) !important;
 }
@@ -1478,12 +1541,12 @@ body { background-color: #10151d; }
 }
 .nav-item::before { display: none !important; }
 .nav-item.active {
-  background: var(--rq-green-soft) !important;
+  background: transparent !important;
 }
-.nav-item .nav-icon { color: #9ca3af !important; font-size: 24px !important; }
-.nav-item .nav-label { color: #9ca3af !important; font-size: 10px !important; letter-spacing: 0 !important; }
+.nav-item .nav-icon { color: var(--bottom-nav-text-inactive) !important; font-size: 24px !important; }
+.nav-item .nav-label { color: var(--bottom-nav-text-inactive) !important; font-size: 10px !important; letter-spacing: 0 !important; }
 .nav-item.active .nav-icon,
-.nav-item.active .nav-label { color: var(--rq-green) !important; }
+.nav-item.active .nav-label { color: var(--bottom-nav-text-active) !important; }
 
 #cart-fab {
   position: fixed;
@@ -2227,9 +2290,47 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
   </div>
 
   <!-- ==================== SHOP / HOME PAGE ==================== -->
-  <div id="page-shop" class="page tab-page" style="background:#f4f4f4;">
+  <div id="page-shop" class="page tab-page">
     <!-- ===== HERO — pixel match to reference ===== -->
     <style>
+      :root {
+        --card-bg: transparent;
+        --card-border: none;
+        --card-shadow: none;
+        --img-capsule-bg: #f4f5f7;
+        --product-name-color: #111827;
+        --product-weight-color: #6b7280;
+        --product-price-color: #111827;
+        --product-mrp-color: #9ca3af;
+        --product-disc-color: #2563eb;
+        --qty-btn-bg: #ffffff;
+        --qty-btn-color: #16a34a;
+        --page-shop-bg: linear-gradient(180deg, #f5f7f6 0%, #ffffff 42%, #f8faf9 100%);
+        --products-list-bg: #f4f4f4;
+        --border-color: rgba(0,0,0,0.06);
+        --bottom-nav-bg: rgba(255, 255, 255, 0.95);
+        --bottom-nav-border: rgba(0,0,0,0.06);
+        --bottom-nav-text-active: #fbbf24;
+        --bottom-nav-text-inactive: #9ca3af;
+      }
+      
+      body.dark-theme {
+        --img-capsule-bg: #1c1c1e;
+        --product-name-color: #ffffff;
+        --product-weight-color: #9ca3af;
+        --product-price-color: #ffffff;
+        --product-mrp-color: #6b7280;
+        --product-disc-color: #3b82f6;
+        --qty-btn-bg: #1c1c1e;
+        --page-shop-bg: #121212;
+        --products-list-bg: #121212;
+        --border-color: rgba(255,255,255,0.06);
+        --bottom-nav-bg: rgba(18, 18, 18, 0.96);
+        --bottom-nav-border: rgba(255, 255, 255, 0.08);
+        --bottom-nav-text-active: #fbbf24;
+        --bottom-nav-text-inactive: #8e8e93;
+      }
+
       /* ── Hero wrapper ── */
       .rq-hero-block {
         position: relative;
@@ -2279,7 +2380,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       /* Brand row */
       .rq-hero-label {
         font-family: 'Outfit', sans-serif;
-        font-size: 12px;
+        font-size: 10px;
         font-weight: 700;
         color: #FFFFFF;
         opacity: 0.85;
@@ -2295,7 +2396,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       }
       .rq-hero-train-name {
         font-family: 'Outfit', sans-serif;
-        font-size: 24px;
+        font-size: 20px;
         font-weight: 800;
         color: #FFFFFF;
         line-height: 1.1;
@@ -2305,25 +2406,48 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       }
       .rq-hero-seat {
         font-family: 'Outfit', sans-serif;
-        font-size: 12px;
-        font-weight: 500;
+        font-size: 11px;
+        font-weight: 600;
         color: #FFFFFF;
         opacity: 0.85;
         margin: 4px 0 0 0;
         text-shadow: 0 1px 6px rgba(0,0,0,0.4);
       }
+      /* Theme toggle pill */
+      .theme-toggle-pill {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1.5px solid rgba(255, 255, 255, 0.35);
+        color: #FFFFFF;
+        border-radius: 20px;
+        width: 38px; height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: -10px;
+        padding: 0;
+      }
+      .theme-toggle-pill:hover {
+        background: rgba(255, 255, 255, 0.22);
+        transform: scale(1.05);
+      }
+      .theme-toggle-pill:active {
+        transform: scale(0.95);
+      }
       /* Profile avatar */
       .rq-hero-avatar {
         width: 38px; height: 38px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.12);
-        border: 1.5px solid rgba(255, 255, 255, 0.35);
+        background: transparent;
+        border: 1.5px solid rgba(255, 255, 255, 0.40);
         display: flex; align-items: center; justify-content: center;
-        cursor: pointer; flex-shrink: 0; margin-top: -6px;
-        transition: background 0.2s;
+        cursor: pointer; flex-shrink: 0; margin-top: -10px;
+        transition: background 0.2s, border-color 0.2s;
       }
       .rq-hero-avatar:hover {
-        background: rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.80);
       }
 
       /* Search bar */
@@ -2458,13 +2582,18 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
         <!-- Train name + profile icon -->
         <div class="rq-hero-info-row">
-          <div onclick="resetAppStateAndLogin()" style="cursor:pointer; flex:1;" class="active:scale-[0.98] transition-all">
+          <div onclick="resetAppStateAndLogin()" style="cursor:pointer; flex:1; padding-left: 10px;" class="active:scale-[0.98] transition-all">
             <div id="shop-delivering-train-name" class="rq-hero-train-name">Train name</div>
             <div id="shop-delivering-seat-coach" class="rq-hero-seat">Seat no/ caoch</div>
           </div>
-          <div class="rq-hero-avatar" onclick="navigateTo('page-account')">
-            <!-- Plain white person silhouette matching reference -->
-            <span class="material-symbols-outlined" style="font-size:36px; color:#FFFFFF; font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48;">person</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button id="theme-toggle-btn" onclick="toggleThemeMode()" class="theme-toggle-pill" aria-label="Toggle theme">
+              <span class="material-symbols-outlined" style="font-size: 20px; color: #FFFFFF;">light_mode</span>
+            </button>
+            <div class="rq-hero-avatar" onclick="navigateTo('page-account')">
+              <!-- Plain white person silhouette matching reference -->
+              <span class="material-symbols-outlined" style="font-size:30px; color:#FFFFFF; font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48;">person</span>
+            </div>
           </div>
         </div>
 
@@ -2552,71 +2681,71 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     </script>
 
     <!-- Snacks & Drinks Category Grid (First Photo) -->
-    <div id="home-snacks-drinks-container" style="background:#0c0d12; padding:18px 14px; border-bottom:1px solid rgba(255,255,255,0.06);">
-      <h3 style="font-size:16px; font-weight:800; color:#ffffff; margin:0 0 16px 0; font-family:'Outfit',sans-serif;">Snacks & Drinks</h3>
+    <div id="home-snacks-drinks-container" style="padding:18px 14px; border-bottom:1px solid var(--border-color, rgba(255,255,255,0.06));">
+      <h3 style="font-size:16px; font-weight:800; color:var(--product-name-color, #ffffff); margin:0 0 16px 0; font-family:'Outfit',sans-serif;">Snacks & Drinks</h3>
       <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px 8px;">
         <!-- Card 1: Chips & Namkeen -->
         <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:#1c1c1e; border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
             <img src="https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
           </div>
-          <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.9); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Chips &<br>Namkeen</span>
+          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Chips &<br>Namkeen</span>
         </div>
         <!-- Card 2: Sweets & Chocolates -->
         <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:#1c1c1e; border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
             <img src="https://images.unsplash.com/photo-1581798459219-318e76aecc7b?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
           </div>
-          <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.9); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Sweets &<br>Chocolates</span>
+          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Sweets &<br>Chocolates</span>
         </div>
         <!-- Card 3: Drinks & Juices -->
         <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:#1c1c1e; border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
             <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
           </div>
-          <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.9); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Drinks &<br>Juices</span>
+          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Drinks &<br>Juices</span>
         </div>
         <!-- Card 4: Tea, Coffee & Milk Drinks -->
         <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:#1c1c1e; border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
             <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
           </div>
-          <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.9); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Tea, Coffee<br>& Milk Drin...</span>
+          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Tea, Coffee<br>& Milk Drin...</span>
         </div>
         <!-- Card 5: Instant Food -->
         <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:#1c1c1e; border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <img src="https://images.unsplash.com/photo-1612966608967-312ba59f574e?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
+          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <img src="cat_instant_food.png" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
           </div>
-          <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.9); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Instant<br>Food</span>
+          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Instant<br>Food</span>
         </div>
         <!-- Card 6: Sauces & Spreads -->
         <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:#1c1c1e; border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
             <img src="https://images.unsplash.com/photo-1596701062351-df5f8af54b85?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
           </div>
-          <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.9); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Sauces &<br>Spreads</span>
+          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Sauces &<br>Spreads</span>
         </div>
         <!-- Card 7: Paan Corner -->
         <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:#1c1c1e; border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
             <img src="https://images.unsplash.com/photo-1600857062241-98e5dba7f214?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
           </div>
-          <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.9); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Paan<br>Corner</span>
+          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Paan<br>Corner</span>
         </div>
         <!-- Card 8: Ice Creams & More -->
         <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:#1c1c1e; border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
             <img src="https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
           </div>
-          <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.9); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Ice Creams<br>& More</span>
+          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Ice Creams<br>& More</span>
         </div>
       </div>
     </div>
 
     <!-- Featured This Week (Second Photo) -->
-    <div id="home-featured-container" style="background:#0c0d12; padding:18px 14px; border-bottom:1px solid rgba(255,255,255,0.06); overflow:hidden;">
-      <h3 style="font-size:16px; font-weight:800; color:#ffffff; margin:0 0 14px 0; font-family:'Outfit',sans-serif;">Featured this week</h3>
+    <div id="home-featured-container" style="padding:18px 14px; border-bottom:1px solid var(--border-color, rgba(255,255,255,0.06)); overflow:hidden;">
+      <h3 style="font-size:16px; font-weight:800; color:var(--product-name-color, #ffffff); margin:0 0 14px 0; font-family:'Outfit',sans-serif;">Featured this week</h3>
       <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:6px;" class="scrollbar-none">
         
         <!-- Banner 1: Rainy Day Essentials -->
@@ -2629,7 +2758,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         </div>
 
         <!-- Banner 2: Newly Launched -->
-        <div onclick="filterCategory('tech', this); setRQCatByLabel('Electronics')" style="flex:0 0 200px; height:150px; background:linear-gradient(180deg, #f59e0b 0%, #d97706 100%); border-radius:18px; border:2px solid #fbbf24; position:relative; overflow:hidden; cursor:pointer; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
+        <div onclick="filterCategory('tech', this); setRQCatByLabel('Electronics')" style="flex:0 0 200px; height:150px; background:linear-gradient(180deg, rgba(217, 119, 6, 0.45) 0%, rgba(180, 83, 9, 0.95) 100%), url('https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=300&fit=crop'); background-size:cover; border-radius:18px; border:2px solid #fbbf24; position:relative; overflow:hidden; cursor:pointer; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
           <span style="background:#ffffff; color:#d97706; font-size:9px; font-weight:900; padding:3px 8px; border-radius:6px; max-width:fit-content; text-transform:uppercase; font-family:'Outfit',sans-serif;">Newly Launched</span>
           <div>
             <h4 style="font-size:15px; font-weight:900; color:#ffffff; margin:0; line-height:1.25; font-family:'Outfit',sans-serif;">For You</h4>
@@ -2638,7 +2767,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         </div>
 
         <!-- Banner 3: Magazine Corner -->
-        <div onclick="filterCategory('tech', this); setRQCatByLabel('Electronics')" style="flex:0 0 200px; height:150px; background:linear-gradient(180deg, #4b5563 0%, #1f2937 100%); border-radius:18px; border:2px solid #2563eb; position:relative; overflow:hidden; cursor:pointer; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
+        <div onclick="filterCategory('tech', this); setRQCatByLabel('Electronics')" style="flex:0 0 200px; height:150px; background:linear-gradient(180deg, rgba(31, 41, 55, 0.45) 0%, rgba(17, 24, 39, 0.95) 100%), url('https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=300&fit=crop'); background-size:cover; border-radius:18px; border:2px solid #2563eb; position:relative; overflow:hidden; cursor:pointer; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
           <span style="background:#ffffff; color:#2563eb; font-size:9px; font-weight:900; padding:3px 8px; border-radius:6px; max-width:fit-content; text-transform:uppercase; font-family:'Outfit',sans-serif;">Featured</span>
           <div>
             <h4 style="font-size:15px; font-weight:900; color:#ffffff; margin:0; line-height:1.25; font-family:'Outfit',sans-serif;">Magazine<br>Corner</h4>
@@ -2653,9 +2782,9 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     <div id="custom-category-content-container" class="hidden"></div>
 
     <!-- Products List Section -->
-    <section style="background:#f4f4f4;padding:16px 14px 0;" id="products-list-section">
+    <section style="background:var(--products-list-bg, #f4f4f4);padding:16px 14px 0;" id="products-list-section">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <h3 style="font-size:15px;font-weight:800;color:#1a1a1a;margin:0;" id="products-section">Trending Essentials</h3>
+        <h3 style="font-size:15px;font-weight:800;color:var(--product-name-color, #1a1a1a);margin:0;" id="products-section">Trending Essentials</h3>
         <button style="font-size:11px;font-weight:700;color:#118A4E;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:2px;" onclick="filterCategory('all', null)">
           See All <span class="material-symbols-outlined" style="font-size:16px;">chevron_right</span>
         </button>
@@ -3314,14 +3443,20 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       <span class="material-symbols-outlined nav-icon fill-1">home</span>
       <span class="nav-label">Home</span>
     </div>
-    <div class="nav-item" data-page="page-live-tracking" onclick="navTo('page-live-tracking')">
-      <span class="material-symbols-outlined nav-icon">train</span>
-      <span class="nav-label">Live Train</span>
-    </div>
     <div class="nav-item" data-page="page-orders" onclick="navTo('page-orders')">
-      <span class="material-symbols-outlined nav-icon">inventory_2</span>
-      <span class="nav-label">Orders</span>
-      <span class="nav-badge" id="nav-orders-badge" style="display:none;">0</span>
+      <span class="material-symbols-outlined nav-icon">history</span>
+      <span class="nav-label">Order Again</span>
+    </div>
+    <div class="nav-item" data-page="page-categories" onclick="filterCategory('all', null); setRQCatByLabel('All'); navTo('page-shop');">
+      <span class="material-symbols-outlined nav-icon">apps</span>
+      <span class="nav-label">Categories</span>
+    </div>
+    <div class="nav-item" data-page="page-print" onclick="alert('Print feature coming soon! You will be able to print your train receipt and ticket summary directly.');">
+      <span class="material-symbols-outlined nav-icon">print</span>
+      <span class="nav-label">Print</span>
+    </div>
+    <div class="nav-item" data-page="page-district" onclick="alert('Welcome to District! Premium categories and specialized train amenities are launching soon.');" style="display:flex; align-items:center; justify-content:center; padding: 0 4px !important;">
+      <div style="background: #7c3aed; color: #ffffff; font-weight: 900; font-size: 10px; padding: 4px 6px; border-radius: 6px; font-family: 'Outfit', sans-serif; text-transform: lowercase; letter-spacing: -0.02em;">district</div>
     </div>
   </nav>
 

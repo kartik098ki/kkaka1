@@ -25,13 +25,18 @@ let appState = {
   currentFilter: 'all',
   searchQuery: '',
   appliedCoupon: null,
-  vegOnly: false
+  vegOnly: false,
+  themeMode: localStorage.getItem('theme-mode') || 'dark'
 };
 
 let clerkInstance = null;
 
 // ===== PRODUCTS DATABASE =====
 const PRODUCTS = [
+  { id: 1001, name: 'Beanly Choco Hazelnut Spread with Breadsticks', price: 99, mrp: 133, category: 'beverages', weight: '52 g', img: 'product_beanly.png', rating: 5, reviews: 10866, veg: true, description: 'Yummy chocolate hazelnut dip spread with crispy breadsticks, fun to dip and eat!' },
+  { id: 1002, name: 'Crax Truffle Fries (Black Truffle & Parmesan Cheese)', price: 48, mrp: 60, category: 'beverages', weight: '55 g', img: 'product_crax.png', rating: 5, reviews: 705, veg: true, description: 'Delicious and crispy black truffle gourmet style fries potato chips.' },
+  { id: 1003, name: 'Red Rock Deli Kettle Chips (Basil Thai Sweet Chilli)', price: 51, mrp: 60, category: 'beverages', weight: '58 g', img: 'product_redrock.png', rating: 4.8, reviews: 924, veg: true, description: 'No Palm Oil premium kettle-cooked chips in rich sweet chilli flavour.' },
+
   // Comfort / Travel category
   { id: 101, name: 'Premium Memory Foam Neck Pillow', price: 299, mrp: 399, category: 'comfort', weight: '1 Unit', img: 'product_neckpillow.png', rating: 4.9, reviews: 1420, description: 'High-density memory foam pillow providing 360-degree neck support for sitting berths.', tags: ['Comfort', 'Best Seller'] },
   { id: 102, name: 'Blackout Eye Mask & Foam Earplugs', price: 99, mrp: 149, category: 'comfort', weight: '1 Combo Pack', img: 'https://images.unsplash.com/photo-1598136490941-30d885318abd?w=400&h=400&fit=crop', rating: 4.7, reviews: 560, description: '3D contoured light-blocking eye mask paired with high-decibel reduction earplugs.', tags: ['Sleep', 'Travel'] },
@@ -2164,24 +2169,21 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
        </span>` : '';
 
   const buttonHTML = qty > 0
-    ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:36px;min-width:76px;z-index:10;box-shadow:0 2px 4px rgba(22,163,74,0.08);">
+    ? `<div style="display:flex;align-items:center;background:var(--qty-btn-bg, #ffffff);border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:36px;min-width:76px;z-index:10;box-shadow:0 2px 4px rgba(22,163,74,0.08);">
          <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
-         <span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:#111827;font-family:'Outfit',sans-serif;">${qty}</span>
+         <span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--product-name-color, #111827);font-family:'Outfit',sans-serif;">${qty}</span>
          <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
        </div>`
     : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
-         <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:36px;width:100%;font-size:12px;font-weight:800;letter-spacing:0.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 2px 4px rgba(22,163,74,0.08);" onclick="event.stopPropagation();${addClickCode}">ADD</button>
+         <button style="background:var(--qty-btn-bg, #ffffff);border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:36px;width:100%;font-size:12px;font-weight:800;letter-spacing:0.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 2px 4px rgba(22,163,74,0.08);" onclick="event.stopPropagation();${addClickCode}">ADD</button>
        </div>`;
 
-
-
   return `
-    <div style="cursor:pointer; background:#ffffff; border:1px solid #e5e7eb; border-radius:16px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; height:100%; box-shadow:0 1px 4px rgba(0,0,0,0.03);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
+    <div style="cursor:pointer; background:var(--card-bg, transparent); border:var(--card-border, none); border-radius:16px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; height:100%; box-shadow:var(--card-shadow, none);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
       <div>
-        <!-- Image Container -->
-        <div style="position:relative; width:100%; aspect-ratio:1; background:#ffffff; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px;">
-          <img src="${p.img}" alt="${p.name}" style="max-width:95%; max-height:95%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
-          <!-- Veg dot -->
+        <!-- Image Container (capsule design) -->
+        <div style="position:relative; width:100%; aspect-ratio:1; background:var(--img-capsule-bg, #f4f5f7); border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px;">
+          <img src="${p.img}" alt="${p.name}" style="max-width:92%; max-height:92%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
           ${vegDot}
           <!-- Slider dots (bottom left) -->
           <div style="position:absolute; bottom:4px; left:4px; display:flex; gap:2.5px; align-items:center;">
@@ -2190,18 +2192,29 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
             <span style="width:3.5px; height:3.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
           </div>
         </div>
-        <!-- Product Details -->
-        <h4 style="font-size:12px; font-weight:600; color:#1f2937; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0 0 3px 0; font-family:'Outfit',sans-serif; min-height:34px;">${p.name}</h4>
-        <div style="font-size:11px; font-weight:500; color:#6b7280; margin-bottom:8px; font-family:'Outfit',sans-serif;">${weightText}</div>
+        
+        <!-- Product Name -->
+        <h4 style="font-size:12px; font-weight:700; color:var(--product-name-color, #1f2937); line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:32px;">${p.name}</h4>
+        
+        <!-- Subtitle: Weight -->
+        <div style="font-size:11px; font-weight:600; color:var(--product-weight-color, #6b7280); margin-top:4px; font-family:'Outfit',sans-serif;">${weightText}</div>
       </div>
+      
+      <!-- Rating and Reviews (Gold Stars at bottom) -->
+      <div style="display:flex; align-items:center; gap:3px; margin-top:6px; font-family:'Outfit',sans-serif;">
+        <span class="material-symbols-outlined" style="font-size:12px; color:#f59e0b; font-variation-settings:'FILL' 1;">star</span>
+        <span style="font-size:10px; font-weight:700; color:var(--product-name-color, #111827);">${p.rating || '4.8'}</span>
+        <span style="font-size:9px; color:var(--product-weight-color, #6b7280);">(${p.reviews || '120'})</span>
+      </div>
+
       <!-- Price & Button Row -->
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:4px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:4px; border-top: 1px solid var(--border-color, rgba(0,0,0,0.06));">
         <div style="display:flex; flex-direction:column; min-width:0; flex-shrink:1;">
           <div style="display:flex; align-items:baseline; gap:4px; flex-wrap:wrap;">
-            <span style="font-size:15px; font-weight:800; color:#111827; font-family:'Outfit',sans-serif;">₹${p.price}</span>
-            <span style="font-size:10px; font-weight:500; color:#9ca3af; text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
+            <span style="font-size:15px; font-weight:850; color:var(--product-price-color, #111827); font-family:'Outfit',sans-serif;">₹${p.price}</span>
+            <span style="font-size:10.5px; font-weight:500; color:var(--product-mrp-color, #9ca3af); text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
           </div>
-          <span style="font-size:8.5px; font-weight:700; color:#2563eb; font-family:'Outfit',sans-serif; margin-top:1px;">${discPct}% OFF</span>
+          <span style="font-size:8.5px; font-weight:800; color:var(--product-disc-color, #2563eb); font-family:'Outfit',sans-serif; margin-top:1px;">${discPct}% OFF</span>
         </div>
         <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();" style="flex-shrink:0;">
           ${buttonHTML}
@@ -2218,6 +2231,12 @@ function renderSingleProductCardHTML(p) {
 }
 
 function renderDarkProductCardHTML(p, theme) {
+  if (appState.themeMode === 'light') {
+    const inCart = appState.cart.find(c => c.id === p.id);
+    const qty = inCart ? inCart.qty : 0;
+    return getProductCardHTML(p, qty, `addToCart(${p.id})`, (delta) => `changeProductQty(${p.id},${delta})`);
+  }
+
   const inCart = appState.cart.find(c => c.id === p.id);
   const qty = inCart ? inCart.qty : 0;
   
@@ -2243,13 +2262,13 @@ function renderDarkProductCardHTML(p, theme) {
   const changeArgsSuffix = `, '${p.category}'`;
   
   const buttonHTML = qty > 0
-    ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:36px;min-width:76px;z-index:10;box-shadow:0 2px 4px rgba(22,163,74,0.08);">
+    ? `<div style="display:flex;align-items:center;background:#1c1c1e;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:36px;min-width:76px;z-index:10;box-shadow:0 2px 4px rgba(22,163,74,0.08);">
          <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${p.id},-1${changeArgsSuffix})">−</button>
-         <span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:#111827;font-family:'Outfit',sans-serif;">${qty}</span>
+         <span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:#ffffff;font-family:'Outfit',sans-serif;">${qty}</span>
          <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${p.id},1${changeArgsSuffix})">+</button>
        </div>`
     : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
-         <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:36px;width:100%;font-size:12px;font-weight:800;letter-spacing:0.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 2px 4px rgba(22,163,74,0.08);" onclick="event.stopPropagation();${addHandler}(${p.id}${changeArgsSuffix})">ADD</button>
+         <button style="background:#1c1c1e;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:36px;width:100%;font-size:12px;font-weight:800;letter-spacing:0.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 2px 4px rgba(22,163,74,0.08);" onclick="event.stopPropagation();${addHandler}(${p.id}${changeArgsSuffix})">ADD</button>
        </div>`;
 
   const isUmbrella = p.subcategory === 'umbrella';
@@ -2261,7 +2280,7 @@ function renderDarkProductCardHTML(p, theme) {
     <div style="cursor:pointer; background:${cardBg}; border:1px solid rgba(255,255,255,0.06); border-radius:18px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; position:relative; box-shadow:0 4px 15px rgba(0,0,0,0.15);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
       <div>
         <!-- Image Container -->
-        <div style="position:relative; width:100%; aspect-ratio:1; background:#ffffff; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px;">
+        <div style="position:relative; width:100%; aspect-ratio:1; background:#1c1c1e; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px;">
           <img src="${p.img}" alt="${p.name}" style="max-width:92%; max-height:92%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
           ${vegDot}
           <!-- Slider dots (bottom left) -->
@@ -2290,23 +2309,17 @@ function renderDarkProductCardHTML(p, theme) {
         <div style="font-size:9.5px; font-weight:800; color:${badgeColor}; margin-bottom:6px; font-family:'Outfit',sans-serif;">${discPct}% OFF on MRP</div>
         
         <!-- Product Name -->
-        <h4 style="font-size:12px; font-weight:600; color:#ffffff; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:32px;">${p.name}</h4>
+        <h4 style="font-size:12px; font-weight:700; color:#ffffff; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:32px;">${p.name}</h4>
         
         <!-- Sub pill badge -->
         ${subPillHTML}
       </div>
 
-      <!-- Footer section (Delivery and "See more like this" button) -->
-      <div style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; display:flex; flex-direction:column; gap:6px;">
-        <!-- Delivery info -->
-        <div style="display:flex; align-items:center; justify-content:space-between; font-size:9px; color:${textMuted}; font-family:'Outfit',sans-serif; font-weight:600;">
-          <span style="display:flex; align-items:center; gap:2px;"><span class="material-symbols-outlined" style="font-size:11px;">schedule</span> 8 mins</span>
-          <span style="display:flex; align-items:center; gap:2px; color:#fbbf24;"><span class="material-symbols-outlined" style="font-size:11px;">warning</span> 1 left</span>
-        </div>
-        <!-- See more like this -->
-        <div style="background:rgba(34,197,94,0.12); color:#22c55e; border-radius:8px; padding:6px; font-size:9.5px; font-weight:800; text-align:center; font-family:'Outfit',sans-serif; cursor:pointer;" onclick="event.stopPropagation(); filterCategory('all', null); setRQCatByLabel('All');">
-          See more like this
-        </div>
+      <!-- Rating and reviews -->
+      <div style="display:flex; align-items:center; gap:3px; margin-top:6px; font-family:'Outfit',sans-serif;">
+        <span class="material-symbols-outlined" style="font-size:12px; color:#f59e0b; font-variation-settings:'FILL' 1;">star</span>
+        <span style="font-size:10px; font-weight:700; color:#ffffff;">${p.rating || '4.8'}</span>
+        <span style="font-size:9px; color:${textMuted};">(${p.reviews || '120'})</span>
       </div>
     </div>
   `;
@@ -2341,7 +2354,7 @@ function renderProducts(products) {
         <div style="margin-bottom:24px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
             <div style="width:4px;height:15px;background:${sec.accentColor};border-radius:2px;"></div>
-            <h4 style="font-size:13px;font-weight:800;color:#1a1a1a;margin:0;font-family:'Outfit',sans-serif;">${sec.title}</h4>
+            <h4 style="font-size:13px;font-weight:800;color:var(--product-name-color, #1a1a1a);margin:0;font-family:'Outfit',sans-serif;">${sec.title}</h4>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
             ${itemsHTML}
@@ -2412,21 +2425,25 @@ function filterCategory(cat, el) {
 }
 
 window.filterMonsoonSubcategory = function(subcat, element) {
+  const isLight = appState.themeMode === 'light';
+  
   if (element) {
     document.querySelectorAll('.monsoon-subcat').forEach(btn => {
       btn.classList.remove('active');
-      btn.style.background = 'rgba(255,255,255,0.08)';
-      btn.style.color = '#ffffff';
+      btn.style.background = isLight ? '#f3f4f6' : 'rgba(255,255,255,0.08)';
+      btn.style.color = isLight ? '#1a1a1a' : '#ffffff';
+      btn.style.border = isLight ? '1px solid #e5e7eb' : '1px solid rgba(255,255,255,0.1)';
       btn.style.boxShadow = 'none';
       const label = btn.querySelector('span:last-child');
-      if (label) label.style.color = 'rgba(255,255,255,0.85)';
+      if (label) label.style.color = isLight ? '#4b5563' : 'rgba(255,255,255,0.85)';
     });
     element.classList.add('active');
-    element.style.background = '#ffffff';
-    element.style.color = '#0b1e36';
+    element.style.background = isLight ? '#118a4e' : '#ffffff';
+    element.style.color = isLight ? '#ffffff' : '#0b1e36';
+    element.style.border = 'none';
     element.style.boxShadow = '0 4px 10px rgba(0,0,0,0.15)';
     const label = element.querySelector('span:last-child');
-    if (label) label.style.color = '#0b1e36';
+    if (label) label.style.color = isLight ? '#ffffff' : '#0b1e36';
   }
 
   const grid = document.getElementById('monsoon-products-grid');
@@ -2477,7 +2494,6 @@ window.renderBabyCategoryProducts = function() {
   grid.dataset.activeCategory = 'babycare';
   const filtered = PRODUCTS.filter(p => p.category === 'babycare');
   grid.innerHTML = filtered.map(p => renderDarkCategoryProduct(p, 'babycare')).join('');
-
 };
 
 function renderCustomCategoryLayout(cat) {
@@ -2485,36 +2501,67 @@ function renderCustomCategoryLayout(cat) {
   if (!container) return;
   
   const activeLabel = document.querySelector('.rq-cdt.active')?.querySelector('.rq-cdt-label')?.textContent?.trim() || '';
-  
+  const isLight = appState.themeMode === 'light';
+
+  // Monsoon theme styling
+  const monsoonBg = isLight ? '#ffffff' : '#0b1e36';
+  const monsoonText = isLight ? '#1a1a1a' : '#ffffff';
+  const monsoonTextMuted = isLight ? '#4b5563' : 'rgba(255,255,255,0.85)';
+  const monsoonSubcatBg = isLight ? '#f3f4f6' : 'rgba(255,255,255,0.08)';
+  const monsoonSubcatBorder = isLight ? '1px solid #e5e7eb' : '1px solid rgba(255,255,255,0.1)';
+  const monsoonSubcatActiveBg = isLight ? '#118a4e' : '#ffffff';
+  const monsoonSubcatActiveColor = isLight ? '#ffffff' : '#0b1e36';
+  const monsoonBannerBg = isLight ? '#f3f4f6' : '#1b3d6b';
+  const monsoonBannerText = isLight ? '#118a4e' : '#ffffff';
+
+  // Tech theme styling
+  const techBg = isLight ? '#ffffff' : '#090d16';
+  const techText = isLight ? '#1a1a1a' : '#ffffff';
+
+  // Pharmacy theme styling
+  const pharmBg = isLight ? '#ffffff' : '#091b29';
+  const pharmText = isLight ? '#1a1a1a' : '#ffffff';
+  const pharmTextMuted = isLight ? '#4b5563' : 'rgba(255,255,255,0.85)';
+  const pharmCircleBg = isLight ? '#f3f4f6' : '#102e46';
+  const pharmCircleBorder = isLight ? '1px solid #e5e7eb' : '1px solid #1e425f';
+
+  // Beauty theme styling
+  const beautyBg = isLight ? '#ffffff' : '#1d0e1b';
+  const beautyText = isLight ? '#1a1a1a' : '#ffffff';
+
+  // Baby Care theme styling
+  const babyBg = isLight ? '#ffffff' : '#11202e';
+  const babyText = isLight ? '#1a1a1a' : '#ffffff';
+
   if (cat === 'monsoon') {
     container.innerHTML = `
-      <div style="background:#0b1e36; padding:16px 14px; min-height:80vh;" class="text-white">
+      <div style="background:${monsoonBg}; padding:16px 14px; min-height:80vh; color:${monsoonText};">
         <!-- Monsoon Subcategories Row -->
         <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:14px; margin-bottom:16px;" class="scrollbar-none">
           <!-- Active Umbrella -->
-          <div onclick="filterMonsoonSubcategory('umbrella', this)" class="monsoon-subcat active" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:#ffffff; color:#0b1e36; border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.15);">
+          <div onclick="filterMonsoonSubcategory('umbrella', this)" class="monsoon-subcat active" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:${monsoonSubcatActiveBg}; color:${monsoonSubcatActiveColor}; border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.15);">
             <span class="material-symbols-outlined" style="font-size:24px; color:#ec4899;">umbrella</span>
-            <span style="font-size:10px; font-weight:800; margin-top:6px; font-family:'Outfit',sans-serif; color:#0b1e36;">Umbrella</span>
+            <span style="font-size:10px; font-weight:800; margin-top:6px; font-family:'Outfit',sans-serif; color:${monsoonSubcatActiveColor};">Umbrella</span>
           </div>
           <!-- Raincoats -->
-          <div onclick="filterMonsoonSubcategory('raincoat', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
+          <div onclick="filterMonsoonSubcategory('raincoat', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:${monsoonSubcatBg}; border:${monsoonSubcatBorder}; border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
             <span class="material-symbols-outlined" style="font-size:24px; color:#fbbf24;">rainy</span>
-            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:rgba(255,255,255,0.85);">Raincoats</span>
+            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:${monsoonTextMuted};">Raincoats</span>
           </div>
           <!-- Cloth Clips -->
-          <div onclick="filterMonsoonSubcategory('clips', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
+          <div onclick="filterMonsoonSubcategory('clips', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:${monsoonSubcatBg}; border:${monsoonSubcatBorder}; border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
             <span class="material-symbols-outlined" style="font-size:24px; color:#60a5fa;">wc</span>
-            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:rgba(255,255,255,0.85);">Clips & Hangers</span>
+            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:${monsoonTextMuted};">Clips & Hangers</span>
           </div>
           <!-- Soups & Snacks -->
-          <div onclick="filterMonsoonSubcategory('soups', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
+          <div onclick="filterMonsoonSubcategory('soups', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:${monsoonSubcatBg}; border:${monsoonSubcatBorder}; border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
             <span class="material-symbols-outlined" style="font-size:24px; color:#f87171;">soup_kitchen</span>
-            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:rgba(255,255,255,0.85);">Soups & Snacks</span>
+            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:${monsoonTextMuted};">Soups & Snacks</span>
           </div>
           <!-- Cough & Cold -->
-          <div onclick="filterMonsoonSubcategory('health', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
+          <div onclick="filterMonsoonSubcategory('health', this)" class="monsoon-subcat" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; background:${monsoonSubcatBg}; border:${monsoonSubcatBorder}; border-radius:18px; padding:12px 14px; text-align:center; min-width:85px; cursor:pointer;">
             <span class="material-symbols-outlined" style="font-size:24px; color:#34d399;">medical_services</span>
-            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:rgba(255,255,255,0.85);">Cough & Cold</span>
+            <span style="font-size:10px; font-weight:700; margin-top:6px; font-family:'Outfit',sans-serif; color:${monsoonTextMuted};">Cough & Cold</span>
           </div>
         </div>
         
@@ -2524,14 +2571,14 @@ function renderCustomCategoryLayout(cat) {
         </div>
         
         <!-- See all products bottom banner -->
-        <div style="margin-top:20px; background:#1b3d6b; border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="filterCategory('all', null); setRQCatByLabel('All')">
+        <div style="margin-top:20px; background:${monsoonBannerBg}; border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; color:${monsoonBannerText};" onclick="filterCategory('all', null); setRQCatByLabel('All')">
           <div style="display:flex; align-items:center; gap:10px;">
             <div style="display:flex; -space-x:8px;">
-              <span class="material-symbols-outlined" style="background:#ffffff; color:#1b3d6b; font-size:18px; border-radius:50%; padding:3px;">umbrella</span>
+              <span class="material-symbols-outlined" style="background:${isLight ? '#118a4e' : '#ffffff'}; color:${isLight ? '#ffffff' : '#1b3d6b'}; font-size:18px; border-radius:50%; padding:3px;">umbrella</span>
             </div>
-            <span style="font-size:12px; font-weight:800; font-family:'Outfit',sans-serif;">See all products</span>
+            <span style="font-size:12px; font-weight:800; font-family:'Outfit',sans-serif; color:${isLight ? '#118a4e' : '#ffffff'};">See all products</span>
           </div>
-          <span class="material-symbols-outlined" style="font-size:18px;">chevron_right</span>
+          <span class="material-symbols-outlined" style="font-size:18px; color:${monsoonBannerText};">chevron_right</span>
         </div>
       </div>
     `;
@@ -2539,7 +2586,7 @@ function renderCustomCategoryLayout(cat) {
   } 
   else if (cat === 'tech') {
     container.innerHTML = `
-      <div style="background:#090d16; padding:16px 14px; min-height:80vh;" class="text-white">
+      <div style="background:${techBg}; padding:16px 14px; min-height:80vh; color:${techText};">
         <!-- Horizontal Brand Banners -->
         <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:12px; margin-bottom:16px;" class="scrollbar-none">
           <!-- Banner 1 -->
@@ -2576,7 +2623,7 @@ function renderCustomCategoryLayout(cat) {
           </div>
         </div>
 
-        <h3 style="font-size:14px; font-weight:900; color:#ffffff; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Top Deals</h3>
+        <h3 style="font-size:14px; font-weight:900; color:${techText}; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Top Deals</h3>
         <!-- Product Grid -->
         <div id="tech-products-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <!-- Loaded dynamically -->
@@ -2588,7 +2635,7 @@ function renderCustomCategoryLayout(cat) {
   else if (cat === 'hygiene') {
     if (activeLabel.toLowerCase() === 'pharmacy') {
       container.innerHTML = `
-        <div style="background:#091b29; padding:16px 14px; min-height:80vh;" class="text-white">
+        <div style="background:${pharmBg}; padding:16px 14px; min-height:80vh; color:${pharmText};">
           <!-- Large Pharmacy Insulin/Consultation Banner -->
           <div style="background:linear-gradient(135deg, #0284c7, #0369a1); border-radius:20px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; position:relative; overflow:hidden;">
             <div style="max-width:60%;">
@@ -2621,35 +2668,35 @@ function renderCustomCategoryLayout(cat) {
           </div>
 
           <!-- Shop by Category circles -->
-          <h3 style="font-size:14px; font-weight:900; color:#ffffff; margin:16px 0 12px 0; font-family:'Outfit',sans-serif;">Shop by category</h3>
+          <h3 style="font-size:14px; font-weight:900; color:${pharmText}; margin:16px 0 12px 0; font-family:'Outfit',sans-serif;">Shop by category</h3>
           <div style="display:flex; gap:16px; overflow-x:auto; padding-bottom:8px; margin-bottom:20px;" class="scrollbar-none">
             <div style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; flex:0 0 auto;">
-              <div style="width:60px; height:60px; border-radius:50%; background:#102e46; border:1px solid #1e425f; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+              <div style="width:60px; height:60px; border-radius:50%; background:${pharmCircleBg}; border:${pharmCircleBorder}; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                 <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=60&h=60&fit=crop" style="max-width:80%; max-height:80%; object-fit:contain;">
               </div>
-              <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.85); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Cough, Cold</span>
+              <span style="font-size:9px; font-weight:700; color:${pharmTextMuted}; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Cough, Cold</span>
             </div>
             <div style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; flex:0 0 auto;">
-              <div style="width:60px; height:60px; border-radius:50%; background:#102e46; border:1px solid #1e425f; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+              <div style="width:60px; height:60px; border-radius:50%; background:${pharmCircleBg}; border:${pharmCircleBorder}; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                 <img src="https://images.unsplash.com/photo-1550572017-edd951b55104?w=60&h=60&fit=crop" style="max-width:80%; max-height:80%; object-fit:contain;">
               </div>
-              <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.85); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Stomach Care</span>
+              <span style="font-size:9px; font-weight:700; color:${pharmTextMuted}; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Stomach Care</span>
             </div>
             <div style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; flex:0 0 auto;">
-              <div style="width:60px; height:60px; border-radius:50%; background:#102e46; border:1px solid #1e425f; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+              <div style="width:60px; height:60px; border-radius:50%; background:${pharmCircleBg}; border:${pharmCircleBorder}; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                 <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=60&h=60&fit=crop" style="max-width:80%; max-height:80%; object-fit:contain;">
               </div>
-              <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.85); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Pain & Aid</span>
+              <span style="font-size:9px; font-weight:700; color:${pharmTextMuted}; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Pain & Aid</span>
             </div>
             <div style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; flex:0 0 auto;">
-              <div style="width:60px; height:60px; border-radius:50%; background:#102e46; border:1px solid #1e425f; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+              <div style="width:60px; height:60px; border-radius:50%; background:${pharmCircleBg}; border:${pharmCircleBorder}; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                 <img src="https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=60&h=60&fit=crop" style="max-width:80%; max-height:80%; object-fit:contain;">
               </div>
-              <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.85); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Antibiotics</span>
+              <span style="font-size:9px; font-weight:700; color:${pharmTextMuted}; margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif;">Antibiotics</span>
             </div>
           </div>
 
-          <h3 style="font-size:14px; font-weight:900; color:#ffffff; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Top Products</h3>
+          <h3 style="font-size:14px; font-weight:900; color:${pharmText}; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Top Products</h3>
           <!-- Product Grid -->
           <div id="pharmacy-products-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
             <!-- Loaded dynamically -->
@@ -2659,7 +2706,7 @@ function renderCustomCategoryLayout(cat) {
       renderPharmacyCategoryProducts();
     } else {
       container.innerHTML = `
-        <div style="background:#1d0e1b; padding:16px 14px; min-height:80vh;" class="text-white">
+        <div style="background:${beautyBg}; padding:16px 14px; min-height:80vh; color:${beautyText};">
           <!-- Large Beauty Banner -->
           <div style="background:linear-gradient(135deg, #ec4899, #db2777); border-radius:20px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <div style="max-width:60%;">
@@ -2672,7 +2719,7 @@ function renderCustomCategoryLayout(cat) {
             </div>
           </div>
 
-          <h3 style="font-size:14px; font-weight:900; color:#ffffff; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Beauty & Care</h3>
+          <h3 style="font-size:14px; font-weight:900; color:${beautyText}; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Beauty & Care</h3>
           <!-- Product Grid -->
           <div id="beauty-products-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
             <!-- Loaded dynamically -->
@@ -2684,7 +2731,7 @@ function renderCustomCategoryLayout(cat) {
   } 
   else if (cat === 'comfort') {
     container.innerHTML = `
-      <div style="background:#11202e; padding:16px 14px; min-height:80vh;" class="text-white">
+      <div style="background:${babyBg}; padding:16px 14px; min-height:80vh; color:${babyText};">
         <!-- Large Baby Care Banner -->
         <div style="background:linear-gradient(135deg, #06b6d4, #0891b2); border-radius:20px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
           <div style="max-width:60%;">
@@ -2697,7 +2744,7 @@ function renderCustomCategoryLayout(cat) {
           </div>
         </div>
 
-        <h3 style="font-size:14px; font-weight:900; color:#ffffff; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Baby Essentials</h3>
+        <h3 style="font-size:14px; font-weight:900; color:${babyText}; margin:0 0 12px 0; font-family:'Outfit',sans-serif;">Baby Essentials</h3>
         <!-- Product Grid -->
         <div id="baby-products-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <!-- Loaded dynamically -->

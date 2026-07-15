@@ -396,8 +396,8 @@
   100% { transform: translate(12px, 8px) scale(1.08); }
 }
 
-/* Premium dark background for real app look */
-.tab-page {
+/* Premium dark background for real app look — excludes PNR page */
+.tab-page:not(#page-pnr) {
   background: #0B0B0B !important;
 }
 
@@ -430,38 +430,28 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
-/* ===== GLOBAL DARK MODE OVERRIDES ===== */
-body, .app-wrapper, .page, .tab-page {
-  background-color: #0B0B0B !important;
-  color: #ffffff;
+/* ===== SCOPED DARK MODE OVERRIDES (shop, cart, account, orders only) ===== */
+/* These are scoped so PNR page keeps its original light card look */
+
+#page-shop, #page-cart, #page-account, #page-orders,
+#page-live-tracking, #page-checkout, #page-search {
+  background-color: #0B0B0B;
 }
 
-/* Input fields dark mode */
-input, textarea, select {
+/* Dark inputs only on dark pages */
+#page-shop input, #page-shop textarea, #page-shop select,
+#page-cart input, #page-cart textarea,
+#page-account input, #page-account textarea,
+#page-checkout input, #page-checkout textarea,
+#page-search input {
   background-color: #23262D !important;
   color: #ffffff !important;
   border-color: rgba(255,255,255,0.1) !important;
 }
-input::placeholder, textarea::placeholder {
+#page-shop input::placeholder,
+#page-cart input::placeholder,
+#page-account input::placeholder,
+#page-search input::placeholder {
   color: #666 !important;
 }
 
-/* All white backgrounds → dark */
-.bg-white { background-color: #181818 !important; }
-.bg-gray-50, .bg-slate-50, .bg-gray-100 { background-color: #23262D !important; }
-.bg-gray-200 { background-color: #2d3038 !important; }
-.text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900 { color: #ccc !important; }
-.text-gray-400, .text-gray-500 { color: #888 !important; }
-.text-on-surface { color: #ffffff !important; }
-.border-gray-100, .border-gray-200 { border-color: rgba(255,255,255,0.08) !important; }
-.border-outline-variant { border-color: rgba(255,255,255,0.1) !important; }
-
-/* Section headers */
-.section-title, h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
-
-/* Premium shimmer skeleton override for dark containers */
-.shimmer-line {
-  background: linear-gradient(90deg, #23262D 25%, #2d3038 50%, #23262D 75%) !important;
-  background-size: 200% 100% !important;
-  animation: shimmerDark 1.6s infinite ease-in-out !important;
-}

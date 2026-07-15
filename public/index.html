@@ -2344,33 +2344,33 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         flex-shrink: 0;
       }
 
-      /* Tagline — left-aligned, sits in the lower-middle of the hero over the train */
+      /* Tagline — centered, small and clean so it fits perfectly without blocking the train */
       .rq-hero-tagline {
         position: absolute;
-        top: 49%;
-        left: 0; right: 0;
+        top: 52%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         z-index: 10;
-        text-align: left;
-        padding: 0 0 0 20px;
+        text-align: center;
+        width: 100%;
+        padding: 0 20px;
       }
       .rq-hero-tagline-sub {
         font-family: 'Outfit', sans-serif;
-        font-size: 15px; font-weight: 700;
-        color: rgba(255,255,255,0.92);
-        text-shadow: 0 1px 10px rgba(0,0,0,0.8);
+        font-size: 14px; font-weight: 600;
+        color: rgba(255,255,255,0.90);
+        text-shadow: 0 1px 8px rgba(0,0,0,0.6);
         margin: 0 0 2px 0;
         display: block;
       }
       .rq-hero-tagline-main {
         font-family: 'Outfit', sans-serif;
-        font-size: 46px; font-weight: 900;
+        font-size: 32px; font-weight: 900;
         color: #FFFFFF;
-        text-shadow: 0 2px 20px rgba(0,0,0,0.65);
-        line-height: 1.0;
+        text-shadow: 0 2px 14px rgba(0,0,0,0.65);
+        line-height: 1.1;
         display: block;
-        min-height: 50px;
       }
-
       /* ── Category nav ── */
       .rq-cat-row-dark {
         display: flex;

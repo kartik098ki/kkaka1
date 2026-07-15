@@ -2163,6 +2163,91 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
   const weightText = p.weight ? p.weight : 'Standard';
   const mrp = p.mrp || Math.round(p.price * 1.25);
   const discPct = Math.round(((mrp - p.price) / mrp) * 100);
+
+  const pax = appState.pnrData && appState.pnrData.passengerList && appState.pnrData.passengerList[0];
+  const coach = pax ? pax.coach : 'B2';
+  const seat = pax ? pax.berth : '34';
+  const station = appState.pnrData && appState.pnrData.boardingStation ? appState.pnrData.boardingStation.split(' - ')[0] : 'New Delhi';
+
+  if (appState.themeMode === 'dark') {
+    const vegDot = p.veg
+      ? `<span style="position:absolute;bottom:6px;right:6px;width:12px;height:12px;background:#ffffff;border-radius:3px;border:1px solid #2ecc71;display:flex;align-items:center;justify-content:center;z-index:2;">
+           <span style="width:5px;height:5px;background:#2ecc71;border-radius:50%;display:block;"></span>
+         </span>` : '';
+
+    let optionsText = '';
+    if (p.id === 1001) optionsText = '3 options';
+    else if (p.id === 1003 || p.id === 1004 || p.id === 1006 || p.id === 1008 || (p.name && p.name.includes('Red Rock Deli'))) {
+      optionsText = '2 options';
+    }
+
+    const buttonHTML = qty > 0
+      ? `<div style="display:flex;align-items:center;background:#1A1C22;border:1px solid #2ecc71;border-radius:8px;overflow:hidden;height:28px;min-width:60px;z-index:10;">
+           <button style="width:18px;height:100%;color:#2ecc71;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
+           <span style="flex:1;text-align:center;font-size:11px;font-weight:700;color:#ffffff;font-family:'Outfit',sans-serif;">${qty}</span>
+           <button style="width:18px;height:100%;color:#2ecc71;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
+         </div>`
+      : `<button style="background:transparent;border:1px solid #2ecc71;color:#2ecc71;border-radius:8px;height:28px;min-width:60px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.1s;padding:2px 4px;line-height:1.05;" onclick="event.stopPropagation();${addClickCode}">
+           <span style="font-size:10.5px;font-weight:800;letter-spacing:0.02em;">ADD</span>
+           ${optionsText ? `<span style="font-size:7px;font-weight:700;color:#2ecc71;display:block;margin-top:1px;line-height:1;">${optionsText}</span>` : ''}
+         </button>`;
+
+    return `
+      <div style="cursor:pointer; background:#1A1C22; border:1px solid #2C313A; border-radius:16px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; position:relative; box-shadow:none;" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
+        <div>
+          <!-- Image Container (55% Height feel) -->
+          <div style="position:relative; width:100%; height:120px; background:#22252D; border-radius:12px; border:1px solid #2C313A; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px;">
+            <img src="${p.img}" alt="${p.name}" style="max-width:85%; max-height:85%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
+            
+            <!-- Wishlist Heart Button -->
+            <button style="position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.3); border:none; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#9ca3af; z-index:5;" onclick="event.stopPropagation(); this.classList.toggle('active'); this.style.color = this.classList.contains('active') ? '#ef4444' : '#9ca3af';">
+              <span class="material-symbols-outlined" style="font-size:13px; font-variation-settings: 'FILL' 1;">favorite</span>
+            </button>
+
+            ${vegDot}
+            <!-- Slider dots (bottom left) -->
+            <div style="position:absolute; bottom:6px; left:6px; display:flex; gap:2.5px; align-items:center;">
+              <span style="width:4.5px; height:4.5px; border-radius:50%; background:#2ecc71; display:block;"></span>
+              <span style="width:3.5px; height:3.5px; border-radius:50%; background:#9ca3af; display:block;"></span>
+              <span style="width:3.5px; height:3.5px; border-radius:50%; background:#9ca3af; display:block;"></span>
+            </div>
+          </div>
+          
+          <!-- Weight and ADD button row -->
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; gap:4px; width:100%;">
+            <span style="font-size:11px; font-weight:600; color:#9ca3af; font-family:'Outfit',sans-serif;">${weightText}</span>
+            <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();" style="flex-shrink:0;">
+              ${buttonHTML}
+            </div>
+          </div>
+
+          <!-- Price Details -->
+          <div style="display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:4px; font-family:'Outfit',sans-serif;">
+            <span style="font-size:14px; font-weight:800; color:#ffffff;">₹${p.price}</span>
+            <span style="font-size:10px; font-weight:500; color:#9ca3af; text-decoration:line-through;">₹${mrp}</span>
+            <span style="font-size:9px; font-weight:800; color:#2ecc71; background:rgba(46,204,113,0.1); padding:1px 4px; border-radius:4px; margin-left:auto;">${discPct}% OFF</span>
+          </div>
+          
+          <!-- Product Name -->
+          <h4 style="font-size:11px; font-weight:700; color:#ffffff; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:28px;">${p.name}</h4>
+        </div>
+
+        <!-- Bottom Delivery Section (RailQuick specific) -->
+        <div style="margin-top:8px; display:flex; flex-direction:column; gap:4px; border-top:1px solid #2C313A; padding-top:8px;">
+          <div style="display:flex; align-items:center; gap:4px; background:#22252D; border-radius:6px; padding:3px 6px; font-size:8.5px; color:#9ca3af; font-family:'Outfit',sans-serif;">
+            <span style="font-size:9px;">📍</span>
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Available at: ${station}</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:4px; background:#22252D; border-radius:6px; padding:3px 6px; font-size:8.5px; color:#9ca3af; font-family:'Outfit',sans-serif;">
+            <span style="font-size:9px;">🚆</span>
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Delivered to Coach ${coach} Seat ${seat}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Light Mode Layout
   const vegDot = p.veg
     ? `<span style="position:absolute;bottom:4px;right:4px;width:12px;height:12px;background:#ffffff;border-radius:3px;border:1px solid #16a34a;display:flex;align-items:center;justify-content:center;z-index:2;">
          <span style="width:5px;height:5px;background:#16a34a;border-radius:50%;display:block;"></span>
@@ -2238,7 +2323,6 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc) {
         <span style="font-size:9px; font-weight:700; color:var(--product-name-color, #111827);">${p.rating || '4.8'}</span>
         <span style="font-size:8px; color:var(--product-weight-color, #9ca3af);">(${p.reviews || '120'})</span>
       </div>
-    </div>
   `;
 }
 
@@ -2344,7 +2428,9 @@ function renderDarkProductCardHTML(p, theme) {
 }
 
 function renderDarkCategoryProduct(p, theme) {
-  return renderDarkProductCardHTML(p, theme);
+  const inCart = appState.cart.find(c => c.id === p.id);
+  const qty = inCart ? inCart.qty : 0;
+  return getProductCardHTML(p, qty, `addToCart(${p.id})`, (delta) => `changeProductQty(${p.id},${delta})`);
 }
 
 function renderProducts(products) {
@@ -2374,7 +2460,7 @@ function renderProducts(products) {
             <div style="width:4px;height:15px;background:${sec.accentColor};border-radius:2px;"></div>
             <h4 style="font-size:13px;font-weight:800;color:var(--product-name-color, #1a1a1a);margin:0;font-family:'Outfit',sans-serif;">${sec.title}</h4>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px 6px;">
+          <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;">
             ${itemsHTML}
           </div>
         </div>
@@ -2390,12 +2476,12 @@ function renderProducts(products) {
     });
 
     if (!filtered.length) {
-      grid.innerHTML = `<div style="grid-column:span 3;text-align:center;padding:40px 0;color:rgba(255,255,255,0.35);font-size:12px;font-weight:600;">No products found.</div>`;
+      grid.innerHTML = `<div style="grid-column:span 2;text-align:center;padding:40px 0;color:rgba(255,255,255,0.35);font-size:12px;font-weight:600;">No products found.</div>`;
       return;
     }
 
     const itemsHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
-    grid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px 6px;">${itemsHTML}</div>`;
+    grid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;">${itemsHTML}</div>`;
   }
 }
 
@@ -2794,12 +2880,42 @@ function renderCategoryProducts(cat) {
 
 function addCategoryProductToCart(id, cat) {
   addToCart(id);
-  renderCategoryProducts(cat);
+  if (document.getElementById('category-products-grid')) {
+    renderCategoryProducts(cat);
+  } else if (cat === 'tech' && typeof renderTechCategoryProducts === 'function') {
+    renderTechCategoryProducts();
+  } else if (cat === 'pharmacy' && typeof renderPharmacyCategoryProducts === 'function') {
+    renderPharmacyCategoryProducts();
+  } else if (cat === 'beauty' && typeof renderBeautyCategoryProducts === 'function') {
+    renderBeautyCategoryProducts();
+  } else if (cat === 'babycare' && typeof renderBabyCategoryProducts === 'function') {
+    renderBabyCategoryProducts();
+  } else if (cat === 'monsoon' && typeof filterMonsoonSubcategory === 'function') {
+    const activeSubcat = document.querySelector('.monsoon-subcat.active')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+    if (activeSubcat) {
+      filterMonsoonSubcategory(activeSubcat);
+    }
+  }
 }
 
 function changeCategoryProductQty(id, delta, cat) {
   changeProductQty(id, delta);
-  renderCategoryProducts(cat);
+  if (document.getElementById('category-products-grid')) {
+    renderCategoryProducts(cat);
+  } else if (cat === 'tech' && typeof renderTechCategoryProducts === 'function') {
+    renderTechCategoryProducts();
+  } else if (cat === 'pharmacy' && typeof renderPharmacyCategoryProducts === 'function') {
+    renderPharmacyCategoryProducts();
+  } else if (cat === 'beauty' && typeof renderBeautyCategoryProducts === 'function') {
+    renderBeautyCategoryProducts();
+  } else if (cat === 'babycare' && typeof renderBabyCategoryProducts === 'function') {
+    renderBabyCategoryProducts();
+  } else if (cat === 'monsoon' && typeof filterMonsoonSubcategory === 'function') {
+    const activeSubcat = document.querySelector('.monsoon-subcat.active')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+    if (activeSubcat) {
+      filterMonsoonSubcategory(activeSubcat);
+    }
+  }
 }
 
 let isListening = false;
@@ -2982,8 +3098,6 @@ function applyPromoCode() {
   }
 }
 
-
-
 function updateSingleProductCardDOM(productId) {
   const cards = document.querySelectorAll(`.product-card-premium[data-product-id="${productId}"]`);
   cards.forEach(card => {
@@ -3001,15 +3115,44 @@ function updateSingleProductCardDOM(productId) {
       const addHandler = grid ? `addCategoryProductToCart` : `addToCart`;
       const changeArgsSuffix = grid ? `, '${cat}'` : '';
 
-      wrapper.innerHTML = qty > 0
-        ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:36px;min-width:76px;z-index:10;box-shadow:0 2px 4px rgba(22,163,74,0.08);">
-             <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${product.id},-1${changeArgsSuffix})">−</button>
-             <span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:#111827;font-family:'Outfit',sans-serif;">${qty}</span>
-             <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${product.id},1${changeArgsSuffix})">+</button>
-           </div>`
-        : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
-             <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:36px;width:100%;font-size:12px;font-weight:800;letter-spacing:0.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 2px 4px rgba(22,163,74,0.08);" onclick="event.stopPropagation();${addHandler}(${product.id}${changeArgsSuffix})">ADD</button>
-           </div>`;
+      const changeClickCodeFunc = (delta) => `${changeHandler}(${product.id},${delta}${changeArgsSuffix})`;
+      const addClickCode = `${addHandler}(${product.id}${changeArgsSuffix})`;
+
+      if (appState.themeMode === 'dark') {
+        let optionsLabel = '';
+        if (product.id === 1001) optionsLabel = '3 options';
+        else if (product.id === 1003 || product.id === 1004 || product.id === 1006 || product.id === 1008 || (product.name && product.name.includes('Red Rock Deli'))) {
+          optionsLabel = '2 options';
+        }
+
+        wrapper.innerHTML = qty > 0
+          ? `<div style="display:flex;align-items:center;background:#1A1C22;border:1px solid #2ecc71;border-radius:8px;overflow:hidden;height:28px;min-width:60px;z-index:10;">
+               <button style="width:18px;height:100%;color:#2ecc71;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
+               <span style="flex:1;text-align:center;font-size:11px;font-weight:700;color:#ffffff;font-family:'Outfit',sans-serif;">${qty}</span>
+               <button style="width:18px;height:100%;color:#2ecc71;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
+             </div>`
+          : `<button style="background:transparent;border:1px solid #2ecc71;color:#2ecc71;border-radius:8px;height:28px;min-width:60px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.1s;font-size:10.5px;font-weight:800;letter-spacing:0.02em;line-height:1.05;padding:2px 4px;" onclick="event.stopPropagation();${addClickCode}">
+               <span style="display:block;">ADD</span>
+               ${optionsLabel ? `<span style="font-size:7px;font-weight:700;color:#2ecc71;display:block;margin-top:1px;line-height:1;">${optionsLabel}</span>` : ''}
+             </button>`;
+      } else {
+        let optionsLabel = '';
+        if (product.id === 1001) optionsLabel = '<span style="font-size:7px;font-weight:700;color:#16a34a;margin-top:0px;display:block;line-height:1;">3 options</span>';
+        else if (product.id === 1003 || product.id === 1004 || product.id === 1006 || product.id === 1008 || (product.name && product.name.includes('Red Rock Deli'))) {
+          optionsLabel = '<span style="font-size:7px;font-weight:700;color:#16a34a;margin-top:0px;display:block;line-height:1;">2 options</span>';
+        }
+
+        wrapper.innerHTML = qty > 0
+          ? `<div style="display:flex;align-items:center;background:var(--qty-btn-bg, #ffffff);border:1px solid #16a34a;border-radius:8px;overflow:hidden;height:28px;min-width:54px;z-index:10;box-shadow:0 1px 3px rgba(22,163,74,0.06);">
+               <button style="width:16px;height:100%;color:#16a34a;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
+               <span style="flex:1;text-align:center;font-size:10.5px;font-weight:700;color:var(--product-name-color, #111827);font-family:'Outfit',sans-serif;">${qty}</span>
+               <button style="width:16px;height:100%;color:#16a34a;font-size:14px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
+             </div>`
+          : `<button style="background:var(--qty-btn-bg, #ffffff);border:1px solid #16a34a;color:#16a34a;border-radius:8px;height:28px;min-width:54px;padding:1px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 1px 3px rgba(22,163,74,0.06);line-height:1.05;" onclick="event.stopPropagation();${addClickCode}">
+               <span style="font-size:10px;font-weight:900;letter-spacing:0.01em;display:block;color:#16a34a;">ADD</span>
+               ${optionsLabel}
+             </button>`;
+      }
     }
   });
 }

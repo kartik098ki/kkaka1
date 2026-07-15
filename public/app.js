@@ -2217,6 +2217,105 @@ function renderSingleProductCardHTML(p) {
   return getProductCardHTML(p, qty, `addToCart(${p.id})`, (delta) => `changeProductQty(${p.id},${delta})`);
 }
 
+function renderDarkProductCardHTML(p, theme) {
+  const inCart = appState.cart.find(c => c.id === p.id);
+  const qty = inCart ? inCart.qty : 0;
+  
+  const weightText = p.weight ? p.weight : '1 Unit';
+  const mrp = p.mrp || Math.round(p.price * 1.25);
+  const discPct = Math.round(((mrp - p.price) / mrp) * 100);
+  
+  const vegDot = p.veg
+    ? `<span style="position:absolute;bottom:6px;right:6px;width:16px;height:16px;background:#ffffff;border-radius:4px;border:1.5px solid #16a34a;display:flex;align-items:center;justify-content:center;z-index:2;">
+         <span style="width:7px;height:7px;background:#16a34a;border-radius:50%;display:block;"></span>
+       </span>` : '';
+
+  let cardBg = '#152945';
+  let textMuted = '#94a3b8';
+  let badgeColor = '#38bdf8';
+  if (theme === 'tech') { cardBg = '#141923'; textMuted = '#94a3b8'; badgeColor = '#60a5fa'; }
+  else if (theme === 'pharmacy') { cardBg = '#122232'; textMuted = '#94a3b8'; badgeColor = '#38bdf8'; }
+  else if (theme === 'beauty') { cardBg = '#1c121b'; textMuted = '#c084fc'; badgeColor = '#f472b6'; }
+  else if (theme === 'babycare') { cardBg = '#182838'; textMuted = '#a5f3fc'; badgeColor = '#22d3ee'; }
+
+  const changeHandler = `changeCategoryProductQty`;
+  const addHandler = `addCategoryProductToCart`;
+  const changeArgsSuffix = `, '${p.category}'`;
+  
+  const buttonHTML = qty > 0
+    ? `<div style="display:flex;align-items:center;background:#ffffff;border:1.5px solid #16a34a;border-radius:10px;overflow:hidden;height:36px;min-width:76px;z-index:10;box-shadow:0 2px 4px rgba(22,163,74,0.08);">
+         <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${p.id},-1${changeArgsSuffix})">−</button>
+         <span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:#111827;font-family:'Outfit',sans-serif;">${qty}</span>
+         <button style="width:26px;height:100%;color:#16a34a;font-size:18px;font-weight:700;background:transparent;border:none;cursor:pointer;" onclick="event.stopPropagation();${changeHandler}(${p.id},1${changeArgsSuffix})">+</button>
+       </div>`
+    : `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
+         <button style="background:#ffffff;border:1.5px solid #16a34a;color:#16a34a;border-radius:10px;height:36px;width:100%;font-size:12px;font-weight:800;letter-spacing:0.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;box-shadow:0 2px 4px rgba(22,163,74,0.08);" onclick="event.stopPropagation();${addHandler}(${p.id}${changeArgsSuffix})">ADD</button>
+       </div>`;
+
+  const isUmbrella = p.subcategory === 'umbrella';
+  const subPillHTML = isUmbrella 
+    ? `<span style="font-size:9px; font-weight:700; color:${badgeColor}; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); margin-top:4px; max-width:fit-content; font-family:'Outfit',sans-serif;">${p.id === 503 ? 'Manual' : 'Auto Open'}</span>`
+    : `<span style="font-size:9px; font-weight:700; color:${badgeColor}; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); margin-top:4px; max-width:fit-content; font-family:'Outfit',sans-serif;">Top Deal</span>`;
+
+  return `
+    <div style="cursor:pointer; background:${cardBg}; border:1px solid rgba(255,255,255,0.06); border-radius:18px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; position:relative; box-shadow:0 4px 15px rgba(0,0,0,0.15);" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
+      <div>
+        <!-- Image Container -->
+        <div style="position:relative; width:100%; aspect-ratio:1; background:#ffffff; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px;">
+          <img src="${p.img}" alt="${p.name}" style="max-width:92%; max-height:92%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
+          ${vegDot}
+          <!-- Slider dots (bottom left) -->
+          <div style="position:absolute; bottom:4px; left:4px; display:flex; gap:2.5px; align-items:center;">
+            <span style="width:4px; height:4px; border-radius:50%; background:#94a3b8; display:block;"></span>
+            <span style="width:3.5px; height:3.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
+            <span style="width:3.5px; height:3.5px; border-radius:50%; background:#cbd5e1; display:block;"></span>
+          </div>
+        </div>
+        
+        <!-- Weight and ADD button row (Matches Photo 3) -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:6px;">
+          <div style="border:1px solid rgba(255,255,255,0.2); border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; color:#ffffff; font-family:'Outfit',sans-serif; text-align:center; min-width:48px; white-space:nowrap;">
+            ${weightText}
+          </div>
+          <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();" style="flex-shrink:0;">
+            ${buttonHTML}
+          </div>
+        </div>
+
+        <!-- Price Details -->
+        <div style="display:flex; align-items:baseline; gap:4px; margin-bottom:2px;">
+          <span style="font-size:16px; font-weight:850; color:#ffffff; font-family:'Outfit',sans-serif;">₹${p.price}</span>
+          <span style="font-size:10.5px; font-weight:500; color:${textMuted}; text-decoration:line-through; font-family:'Outfit',sans-serif;">₹${mrp}</span>
+        </div>
+        <div style="font-size:9.5px; font-weight:800; color:${badgeColor}; margin-bottom:6px; font-family:'Outfit',sans-serif;">${discPct}% OFF on MRP</div>
+        
+        <!-- Product Name -->
+        <h4 style="font-size:12px; font-weight:600; color:#ffffff; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:32px;">${p.name}</h4>
+        
+        <!-- Sub pill badge -->
+        ${subPillHTML}
+      </div>
+
+      <!-- Footer section (Delivery and "See more like this" button) -->
+      <div style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; display:flex; flex-direction:column; gap:6px;">
+        <!-- Delivery info -->
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:9px; color:${textMuted}; font-family:'Outfit',sans-serif; font-weight:600;">
+          <span style="display:flex; align-items:center; gap:2px;"><span class="material-symbols-outlined" style="font-size:11px;">schedule</span> 8 mins</span>
+          <span style="display:flex; align-items:center; gap:2px; color:#fbbf24;"><span class="material-symbols-outlined" style="font-size:11px;">warning</span> 1 left</span>
+        </div>
+        <!-- See more like this -->
+        <div style="background:rgba(34,197,94,0.12); color:#22c55e; border-radius:8px; padding:6px; font-size:9.5px; font-weight:800; text-align:center; font-family:'Outfit',sans-serif; cursor:pointer;" onclick="event.stopPropagation(); filterCategory('all', null); setRQCatByLabel('All');">
+          See more like this
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderDarkCategoryProduct(p, theme) {
+  return renderDarkProductCardHTML(p, theme);
+}
+
 function renderProducts(products) {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
@@ -2271,10 +2370,14 @@ function renderProducts(products) {
 
 
 
+
+
 function filterCategory(cat, el) {
   appState.currentFilter = cat;
-  document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
-  if (el) el.classList.add('active');
+  if (el) {
+    document.querySelectorAll('.rq-cdt').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+  }
   
   const snacksGrid = document.getElementById('home-snacks-drinks-container');
   const featuredSlider = document.getElementById('home-featured-container');
@@ -2282,12 +2385,14 @@ function filterCategory(cat, el) {
   const productsListSec = document.getElementById('products-list-section');
   const heroBlock = document.querySelector('.rq-hero-block');
 
+  // Hero block is kept visible!
+  if (heroBlock) heroBlock.style.display = 'block';
+
   if (cat === 'all') {
     if (snacksGrid) snacksGrid.style.display = 'block';
     if (featuredSlider) featuredSlider.style.display = 'block';
     if (productsListSec) productsListSec.style.display = 'block';
     if (customCategory) customCategory.classList.add('hidden');
-    if (heroBlock) heroBlock.style.display = 'block';
     
     renderProducts(PRODUCTS);
   } else {
@@ -2298,7 +2403,11 @@ function filterCategory(cat, el) {
       customCategory.classList.remove('hidden');
       renderCustomCategoryLayout(cat);
     }
-    if (heroBlock) heroBlock.style.display = 'none';
+    
+    setTimeout(() => {
+      const catRow = document.querySelector('.rq-cat-row-dark');
+      if (catRow) catRow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   }
 }
 
@@ -2331,7 +2440,7 @@ window.filterMonsoonSubcategory = function(subcat, element) {
     return;
   }
   
-  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+  grid.innerHTML = filtered.map(p => renderDarkCategoryProduct(p, 'monsoon')).join('');
 };
 
 window.renderTechCategoryProducts = function() {
@@ -2340,7 +2449,7 @@ window.renderTechCategoryProducts = function() {
   
   grid.dataset.activeCategory = 'tech';
   const filtered = PRODUCTS.filter(p => p.category === 'tech');
-  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+  grid.innerHTML = filtered.map(p => renderDarkCategoryProduct(p, 'tech')).join('');
 };
 
 window.renderPharmacyCategoryProducts = function() {
@@ -2349,7 +2458,7 @@ window.renderPharmacyCategoryProducts = function() {
   
   grid.dataset.activeCategory = 'pharmacy';
   const filtered = PRODUCTS.filter(p => p.category === 'pharmacy');
-  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+  grid.innerHTML = filtered.map(p => renderDarkCategoryProduct(p, 'pharmacy')).join('');
 };
 
 window.renderBeautyCategoryProducts = function() {
@@ -2358,7 +2467,7 @@ window.renderBeautyCategoryProducts = function() {
   
   grid.dataset.activeCategory = 'beauty';
   const filtered = PRODUCTS.filter(p => p.category === 'beauty');
-  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+  grid.innerHTML = filtered.map(p => renderDarkCategoryProduct(p, 'beauty')).join('');
 };
 
 window.renderBabyCategoryProducts = function() {
@@ -2367,7 +2476,8 @@ window.renderBabyCategoryProducts = function() {
   
   grid.dataset.activeCategory = 'babycare';
   const filtered = PRODUCTS.filter(p => p.category === 'babycare');
-  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+  grid.innerHTML = filtered.map(p => renderDarkCategoryProduct(p, 'babycare')).join('');
+
 };
 
 function renderCustomCategoryLayout(cat) {

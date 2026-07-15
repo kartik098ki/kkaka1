@@ -1141,13 +1141,15 @@ input, textarea, select { font-size: 16px !important; }
   color: #6B7280 !important;
 }
 #page-pnr .bg-surface { background-color: #ffffff !important; }
-/* PNR page restores dark text since it's a light page */
-#page-pnr { color: #111827 !important; }
-#page-pnr p, #page-pnr label, #page-pnr span:not(.material-symbols-outlined) { color: inherit; }
-#page-pnr h1, #page-pnr h2, #page-pnr h3, #page-pnr h4 { color: #111827 !important; }
-/* PNR tab: inactive = gray, active = white (over green indicator) */
-#tab-live { color: #6B7280 !important; }
-#tab-pnr { color: #ffffff !important; }
+/* PNR card/main content uses dark text — but NOT the hero header (which is white on green) */
+#page-pnr main { color: #111827; }
+#page-pnr main h3, #page-pnr main h4 { color: #111827; }
+/* Hero header text stays white — do NOT override */
+#page-pnr header { color: #ffffff; }
+/* Travel utility section text */
+#page-pnr #travel-utility-section { color: #111827; }
+/* Tab button colors are controlled by JS inline styles — no !important here */
+
 
 #page-account > .sticky {
   padding-top: calc(16px + var(--rq-safe-top)) !important;
@@ -2355,29 +2357,29 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         background-color: #0b0b0b !important;
       }
 
-      /* Theme application to all pages */
-      .page {
+      /* Theme application to all pages except PNR & Splash */
+      .page:not(#page-pnr):not(#page-splash) {
         background: var(--page-bg) !important;
       }
-      .page .sticky,
-      .page header,
-      .page > div[class*="sticky"] {
+      .page:not(#page-pnr):not(#page-splash) .sticky,
+      .page:not(#page-pnr):not(#page-splash) header,
+      .page:not(#page-pnr):not(#page-splash) > div[class*="sticky"] {
         background: var(--header-bg) !important;
         border-color: var(--border-color) !important;
       }
-      .page h1,
-      .page h2,
-      .page h3,
-      .page h4,
-      .page .text-on-surface {
+      .page:not(#page-pnr):not(#page-splash) h1,
+      .page:not(#page-pnr):not(#page-splash) h2,
+      .page:not(#page-pnr):not(#page-splash) h3,
+      .page:not(#page-pnr):not(#page-splash) h4,
+      .page:not(#page-pnr):not(#page-splash) .text-on-surface {
         color: var(--text-color) !important;
       }
-      .page input {
+      .page:not(#page-pnr):not(#page-splash) input {
         color: #ffffff !important;
         background: #181818 !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
       }
-      .page button:has(span) {
+      .page:not(#page-pnr):not(#page-splash) button:has(span) {
         background: #181818 !important;
         color: #ffffff !important;
       }

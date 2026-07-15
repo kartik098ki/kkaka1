@@ -284,17 +284,17 @@ function switchPNRTab(tab) {
   const indicator = document.getElementById('pnr-tab-indicator');
   
   if (tab === 'pnr') {
-    tabPnrBtn.className = 'relative z-10 flex-1 h-9 flex items-center justify-center text-[12px] font-semibold text-white transition-all duration-300 rounded-lg focus:outline-none';
-    tabLiveBtn.className = 'relative z-10 flex-1 h-9 flex items-center justify-center text-[12px] font-medium text-[#6B7280] hover:text-[#118A4E] transition-all duration-300 rounded-lg focus:outline-none';
-    if (indicator) {
-      indicator.style.transform = 'translateX(0)';
-    }
+    tabPnrBtn.style.color = '#ffffff';
+    tabPnrBtn.style.fontWeight = '600';
+    tabLiveBtn.style.color = '#6B7280';
+    tabLiveBtn.style.fontWeight = '500';
+    if (indicator) indicator.style.transform = 'translateX(0)';
   } else {
-    tabLiveBtn.className = 'relative z-10 flex-1 h-9 flex items-center justify-center text-[12px] font-semibold text-white transition-all duration-300 rounded-lg focus:outline-none';
-    tabPnrBtn.className = 'relative z-10 flex-1 h-9 flex items-center justify-center text-[12px] font-medium text-[#6B7280] hover:text-[#118A4E] transition-all duration-300 rounded-lg focus:outline-none';
-    if (indicator) {
-      indicator.style.transform = 'translateX(calc(100% + 6px))';
-    }
+    tabLiveBtn.style.color = '#ffffff';
+    tabLiveBtn.style.fontWeight = '600';
+    tabPnrBtn.style.color = '#6B7280';
+    tabPnrBtn.style.fontWeight = '500';
+    if (indicator) indicator.style.transform = 'translateX(calc(100% + 6px))';
   }
   const results = document.getElementById('pnr-results');
   if (results) { results.classList.add('hidden'); results.innerHTML = ''; }

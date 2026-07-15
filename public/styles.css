@@ -396,10 +396,7 @@
   100% { transform: translate(12px, 8px) scale(1.08); }
 }
 
-/* Premium dark background for real app look — excludes PNR page */
-.tab-page:not(#page-pnr) {
-  background: #0B0B0B !important;
-}
+
 
 /* Live Orders Feed Vertical Scroll Animation (Step-wise pauses for readability) */
 @keyframes scrollUp {
@@ -430,15 +427,9 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
-/* ===== SCOPED DARK MODE OVERRIDES (shop, cart, account, orders only) ===== */
-/* These are scoped so PNR page keeps its original light card look */
 
-#page-shop, #page-cart, #page-account, #page-orders,
-#page-live-tracking, #page-checkout, #page-search {
-  background-color: #0B0B0B;
-}
-
-/* Dark inputs only on dark pages */
+/* ===== DARK PAGES: Input fields ===== */
+/* The base .page bg is already #0B0B0B — inputs need to match on dark pages */
 #page-shop input, #page-shop textarea, #page-shop select,
 #page-cart input, #page-cart textarea,
 #page-account input, #page-account textarea,
@@ -454,4 +445,3 @@
 #page-search input::placeholder {
   color: #666 !important;
 }
-

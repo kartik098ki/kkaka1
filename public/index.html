@@ -2371,11 +2371,16 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         line-height: 1.1;
         display: block;
       }
-      /* ── Category nav ── */
+      /* ── Category nav (placed inside the hero block at bottom) ── */
       .rq-cat-row-dark {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 15;
         display: flex;
         overflow-x: auto;
-        background: #07091d;
+        background: linear-gradient(to top, rgba(2, 7, 29, 0.70) 0%, rgba(2, 7, 29, 0.0) 100%);
         scrollbar-width: none;
         flex-shrink: 0;
       }
@@ -2468,33 +2473,33 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         <span class="rq-hero-tagline-sub">Everything you need for</span>
         <span id="changing-word" class="rq-hero-tagline-main" style="transition: opacity 0.3s ease, transform 0.3s ease;">Travel</span>
       </div>
-    </div>
 
-    <!-- ── Category nav (dark navy, below hero) ── -->
-    <div class="rq-cat-row-dark">
-      <div class="rq-cdt active" onclick="filterCategory('all',null);setRQCat(this)">
-        <span class="material-symbols-outlined rq-cdt-ms">shopping_bag</span>
-        <span class="rq-cdt-label">All</span>
-      </div>
-      <div class="rq-cdt" onclick="filterCategory('monsoon',null);setRQCat(this)">
-        <span class="material-symbols-outlined rq-cdt-ms">umbrella</span>
-        <span class="rq-cdt-label">Monsoon</span>
-      </div>
-      <div class="rq-cdt" onclick="filterCategory('tech',null);setRQCat(this)">
-        <span class="material-symbols-outlined rq-cdt-ms">headphones</span>
-        <span class="rq-cdt-label">Electronics</span>
-      </div>
-      <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
-        <span class="material-symbols-outlined rq-cdt-ms">face_retouching_natural</span>
-        <span class="rq-cdt-label">Beauty</span>
-      </div>
-      <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
-        <span class="material-symbols-outlined rq-cdt-ms">medication</span>
-        <span class="rq-cdt-label">Pharmacy</span>
-      </div>
-      <div class="rq-cdt" onclick="filterCategory('comfort',null);setRQCat(this)">
-        <span class="material-symbols-outlined rq-cdt-ms">child_care</span>
-        <span class="rq-cdt-label">Baby Care</span>
+      <!-- ── Category nav (dark navy, now inside hero overlaying the reflections) ── -->
+      <div class="rq-cat-row-dark">
+        <div class="rq-cdt active" onclick="filterCategory('all',null);setRQCat(this)">
+          <span class="material-symbols-outlined rq-cdt-ms">shopping_bag</span>
+          <span class="rq-cdt-label">All</span>
+        </div>
+        <div class="rq-cdt" onclick="filterCategory('monsoon',null);setRQCat(this)">
+          <span class="material-symbols-outlined rq-cdt-ms">umbrella</span>
+          <span class="rq-cdt-label">Monsoon</span>
+        </div>
+        <div class="rq-cdt" onclick="filterCategory('tech',null);setRQCat(this)">
+          <span class="material-symbols-outlined rq-cdt-ms">headphones</span>
+          <span class="rq-cdt-label">Electronics</span>
+        </div>
+        <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
+          <span class="material-symbols-outlined rq-cdt-ms">face_retouching_natural</span>
+          <span class="rq-cdt-label">Beauty</span>
+        </div>
+        <div class="rq-cdt" onclick="filterCategory('hygiene',null);setRQCat(this)">
+          <span class="material-symbols-outlined rq-cdt-ms">medication</span>
+          <span class="rq-cdt-label">Pharmacy</span>
+        </div>
+        <div class="rq-cdt" onclick="filterCategory('comfort',null);setRQCat(this)">
+          <span class="material-symbols-outlined rq-cdt-ms">child_care</span>
+          <span class="rq-cdt-label">Baby Care</span>
+        </div>
       </div>
     </div>
 

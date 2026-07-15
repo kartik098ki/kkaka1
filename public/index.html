@@ -3143,60 +3143,17 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         </button>
       </div>
 
-      <!-- Phone Entry Screen -->
-      <div id="auth-phone-screen" class="flex flex-col items-center py-4">
+      <div class="flex flex-col items-center py-8">
         <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2ECC71]/20 to-[#2ECC71]/10 border border-[#2ECC71]/25 flex items-center justify-center mb-6">
-          <span class="material-symbols-outlined text-[32px]" style="color:#2ECC71;">phone_iphone</span>
+          <span class="material-symbols-outlined text-[32px]" style="color:#2ECC71;">account_circle</span>
         </div>
-        <h2 class="text-lg font-bold text-white font-sans text-center mb-1">Enter your Mobile Number</h2>
-        <p class="text-xs text-gray-400 text-center mb-8">We'll send an OTP to verify your account</p>
+        <h2 class="text-xl font-bold text-white font-sans text-center mb-2">Welcome to RailQuick</h2>
+        <p class="text-xs text-gray-400 text-center mb-8 px-4">Sign in to track orders, save preferences & checkout faster.</p>
         
-        <div class="w-full space-y-4">
-          <div class="flex items-center bg-[#181818] border border-white/10 rounded-xl px-4 py-3">
-            <span class="text-sm font-bold text-white font-sans pr-3 border-r border-white/10">+91</span>
-            <input type="tel" id="auth-phone-input" class="flex-1 bg-transparent border-0 text-sm text-white font-sans focus:ring-0 p-0 pl-3 focus:outline-none" placeholder="10-digit mobile number" maxlength="10" />
-          </div>
-          <button onclick="sendAuthOTP()" class="w-full bg-[#2ECC71] text-white py-3.5 rounded-xl font-bold font-sans text-xs uppercase tracking-wider active:scale-95 transition-all shadow-md shadow-[#2ECC71]/15">
-            Continue
-          </button>
-        </div>
-      </div>
-
-      <!-- OTP Verification Screen -->
-      <div id="auth-otp-screen" class="flex flex-col items-center py-4 hidden">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2ECC71]/20 to-[#2ECC71]/10 border border-[#2ECC71]/25 flex items-center justify-center mb-6">
-          <span class="material-symbols-outlined text-[32px]" style="color:#2ECC71;">lock_open</span>
-        </div>
-        <h2 class="text-lg font-bold text-white font-sans text-center mb-1">Verify OTP</h2>
-        <p id="auth-otp-subtitle" class="text-xs text-gray-400 text-center mb-8">OTP sent to +91 </p>
-        
-        <div class="w-full space-y-4">
-          <div class="flex justify-center gap-3">
-            <input type="text" id="auth-otp-input" class="w-full bg-[#181818] border border-white/10 rounded-xl px-4 py-3.5 text-center text-base font-bold text-white tracking-[1em] focus:outline-none" placeholder="OTP" maxlength="4" style="letter-spacing: 0.8rem; text-align: center; text-indent: 0.8rem;" />
-          </div>
-          <button onclick="verifyAuthOTP()" class="w-full bg-[#2ECC71] text-white py-3.5 rounded-xl font-bold font-sans text-xs uppercase tracking-wider active:scale-95 transition-all shadow-md shadow-[#2ECC71]/15">
-            Verify OTP
-          </button>
-          <button onclick="backToPhoneScreen()" class="w-full text-[10px] font-bold text-gray-400 uppercase tracking-wider text-center pt-2">
-            Change Mobile Number
-          </button>
-        </div>
-      </div>
-
-      <!-- Name Collection Screen -->
-      <div id="auth-name-screen" class="flex flex-col items-center py-4 hidden">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2ECC71]/20 to-[#2ECC71]/10 border border-[#2ECC71]/25 flex items-center justify-center mb-6">
-          <span class="material-symbols-outlined text-[32px]" style="color:#2ECC71;">person</span>
-        </div>
-        <h2 class="text-lg font-bold text-white font-sans text-center mb-1">What's your name?</h2>
-        <p class="text-xs text-gray-400 text-center mb-8">Please enter your full name to set up profile</p>
-        
-        <div class="w-full space-y-4">
-          <input type="text" id="auth-name-input" class="w-full bg-[#181818] border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-sans focus:outline-none" placeholder="Full Name" />
-          <button onclick="completeAuthProfile()" class="w-full bg-[#2ECC71] text-white py-3.5 rounded-xl font-bold font-sans text-xs uppercase tracking-wider active:scale-95 transition-all shadow-md shadow-[#2ECC71]/15">
-            Complete Setup
-          </button>
-        </div>
+        <button onclick="signInAsKartik()" class="w-full bg-[#2ECC71] text-white py-4 rounded-xl font-bold font-sans text-xs uppercase tracking-wider active:scale-95 transition-all shadow-md shadow-[#2ECC71]/15 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-sm font-bold">login</span>
+          Sign In as Kartik Guleria
+        </button>
       </div>
     </div>
 

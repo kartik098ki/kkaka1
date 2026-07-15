@@ -12,7 +12,13 @@ const API_BASE = (origin.startsWith('file://') || origin === 'null') ? 'http://l
 // ===== APP STATE =====
 let appState = {
   currentPage: 'page-pnr',
-  user: null,
+  user: {
+    name: 'Kartik Guleria',
+    phone: '88263 87844',
+    avatar: 'K',
+    provider: 'demo',
+    loginAt: new Date().toISOString()
+  },
   cart: [],
   orders: [],
   pnrData: null,
@@ -190,7 +196,13 @@ function loadState() {
     const saved = localStorage.getItem('railquick_state');
     if (!saved) return;
     const p = JSON.parse(saved);
-    appState.user = p.user || null;
+    appState.user = p.hasOwnProperty('user') ? p.user : {
+      name: 'Kartik Guleria',
+      phone: '88263 87844',
+      avatar: 'K',
+      provider: 'demo',
+      loginAt: new Date().toISOString()
+    };
     appState.cart = Array.isArray(p.cart) ? p.cart : [];
     appState.orders = Array.isArray(p.orders) ? p.orders : [];
     appState.pnrData = p.pnrData || null;
@@ -4128,176 +4140,25 @@ function initAccountPage() {
   } else { 
     if (login) login.classList.remove('hidden'); 
     if (logged) logged.classList.add('hidden');
-    backToPhoneScreen();
   }
 }
 
-function sendAuthOTP() {
-  const phoneInput = document.getElementById('auth-phone-input');
-  if (!phoneInput) return;
-  
-  const phoneVal = phoneInput.value.trim();
-  const phoneRegex = /^[6-9]\d{9}$/;
-  if (!phoneRegex.test(phoneVal)) {
-    showToast('Please enter a valid 10-digit mobile number', 'error');
-    return;
-  }
-  
-  authState.phone = phoneVal;
-  showLoading('Sending security code...');
-  
-  // Generate random 4-digit code
-  const code = Math.floor(1000 + Math.random() * 9000).toString();
-  authState.generatedOtp = code;
-  
+function signInAsKartik() {
+  showLoading('Signing in as Kartik Guleria...');
   setTimeout(() => {
-    hideLoading();
-    showToast(`OTP Code sent! Enter ${code} to verify.`, 'success', 6000);
-    
-    document.getElementById('auth-phone-screen').classList.add('hidden');
-    const otpScreen = document.getElementById('auth-otp-screen');
-    otpScreen.classList.remove('hidden');
-    document.getElementById('auth-otp-subtitle').textContent = `OTP sent to +91 ${phoneVal}`;
-    
-    const otpInput = document.getElementById('auth-otp-input');
-    if (otpInput) {
-      otpInput.value = '';
-      otpInput.focus();
-    }
-  }, 1000);
-}
-
-function backToPhoneScreen() {
-  document.getElementById('auth-phone-screen').classList.remove('hidden');
-  document.getElementById('auth-otp-screen').classList.add('hidden');
-  document.getElementById('auth-name-screen').classList.add('hidden');
-  
-  const phoneInput = document.getElementById('auth-phone-input');
-  if (phoneInput) {
-    phoneInput.value = authState.phone;
-  }
-}
-
-async function verifyAuthOTP() {
-  const otpInput = document.getElementById('auth-otp-input');
-  if (!otpInput) return;
-  
-  const otpVal = otpInput.value.trim();
-  if (otpVal !== authState.generatedOtp) {
-    showToast('Invalid verification code. Please try again.', 'error');
-    return;
-  }
-  
-  showLoading('Verifying session...');
-  initSupabase();
-  
-  let existingUser = null;
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('phone', authState.phone);
-      if (data && data.length > 0) {
-        existingUser = data[0];
-      }
-    } catch(err) {
-      console.warn('[Supabase] Failed to fetch profile, using fallback:', err);
-    }
-  }
-  
-  setTimeout(() => {
-    hideLoading();
-    if (existingUser) {
-      // User profile already exists in Supabase
-      appState.user = {
-        name: existingUser.name,
-        phone: existingUser.phone,
-        provider: 'supabase',
-        loginAt: new Date().toISOString()
-      };
-      
-      const userKey = existingUser.phone.replace(/\s+/g, '');
-      const savedOrdersStr = localStorage.getItem(`railquick_orders_${userKey}`);
-      if (savedOrdersStr) {
-        try {
-          appState.orders = JSON.parse(savedOrdersStr);
-        } catch(e) {}
-      }
-      
-      saveState();
-      showToast(`Welcome back, ${existingUser.name}!`);
-      initAccountPage();
-      
-      const returnPage = localStorage.getItem('railquick_return_after_login') || 'page-shop';
-      localStorage.removeItem('railquick_return_after_login');
-      
-      if (appState.cart.length > 0 && returnPage === 'page-cart') {
-        navigateTo('page-cart');
-      } else {
-        navigateTo('page-shop');
-      }
-    } else {
-      // New user, collect their name
-      document.getElementById('auth-otp-screen').classList.add('hidden');
-      document.getElementById('auth-name-screen').classList.remove('hidden');
-      const nameInput = document.getElementById('auth-name-input');
-      if (nameInput) {
-        nameInput.value = '';
-        nameInput.focus();
-      }
-    }
-  }, 800);
-}
-
-async function completeAuthProfile() {
-  const nameInput = document.getElementById('auth-name-input');
-  if (!nameInput) return;
-  
-  const nameVal = nameInput.value.trim();
-  if (nameVal.length < 2) {
-    showToast('Please enter your full name', 'error');
-    return;
-  }
-  
-  showLoading('Saving profile...');
-  initSupabase();
-  
-  const newProfile = {
-    phone: authState.phone,
-    name: nameVal,
-    created_at: new Date().toISOString()
-  };
-  
-  if (supabase) {
-    try {
-      await supabase.from('profiles').insert([newProfile]);
-    } catch(err) {
-      console.warn('[Supabase] Failed to insert profile, saved locally:', err);
-    }
-  }
-  
-  setTimeout(() => {
-    hideLoading();
     appState.user = {
-      name: newProfile.name,
-      phone: newProfile.phone,
-      provider: 'supabase',
-      loginAt: newProfile.created_at
+      name: 'Kartik Guleria',
+      phone: '88263 87844',
+      avatar: 'K',
+      provider: 'demo',
+      loginAt: new Date().toISOString()
     };
     saveState();
-    showToast(`Profile set up successfully! Welcome, ${nameVal}!`);
+    hideLoading();
+    showToast('Signed in successfully!', 'success');
     initAccountPage();
-    
-    const returnPage = localStorage.getItem('railquick_return_after_login') || 'page-shop';
-    localStorage.removeItem('railquick_return_after_login');
-    
-    if (appState.cart.length > 0 && returnPage === 'page-cart') {
-      navigateTo('page-cart');
-    } else {
-      navigateTo('page-shop');
-    }
-  }, 1000);
+    navigateTo('page-shop');
+  }, 800);
 }
 
 function signOut() {

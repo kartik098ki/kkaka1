@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html class="light" lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
   <title>RailQuick - Premium Journey Delivery</title>
   
-  <!-- Supabase Client JS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Clerk Authentication: Official JS SDK (Loaded via CDN with async execution, fallback checked in app.js) -->
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_test_c21vb3RoLWphY2thbC0xOC5jbGVyay5hY2NvdW50cy5kZXYk"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+    type="text/javascript"
+  ></script>
   
   <!-- Tailwind CSS CDN with Forms & Containers -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -171,9 +177,9 @@
       height: 100%;
       max-height: 892px;
       position: relative;
-      background: #0B0B0B;
+      background: #F8F9FA;
       overflow: hidden;
-      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      box-shadow: 0 0 40px rgba(0,0,0,0.6);
       display: flex;
       flex-direction: column;
       touch-action: none;
@@ -193,10 +199,9 @@
       transition: transform 0.35s cubic-bezier(0.32, 0.94, 0.6, 1), opacity 0.35s cubic-bezier(0.32, 0.94, 0.6, 1), visibility 0.35s;
       visibility: hidden;
       z-index: 5;
-      padding-bottom: 16px;
-      scrollbar-width: none;
-      background-color: #0B0B0B;
-      color: #ffffff;
+      padding-bottom: 16px; /* Minimal bottom padding */
+      scrollbar-width: none; /* Hide scrollbars */
+      background-color: #F8F9FA;
     }
 
     .page::-webkit-scrollbar {
@@ -508,16 +513,16 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: 412px;
-  background: rgba(11, 11, 11, 0.92);
-  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.97);
+  border-top: 1px solid rgba(0,0,0,0.06);
   display: flex;
   align-items: center;
   justify-content: space-around;
   padding: 8px 4px 14px;
   z-index: 50;
-  box-shadow: 0 -4px 30px rgba(0,0,0,0.4);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .bottom-nav.hidden-nav {
@@ -623,49 +628,34 @@
   border-radius: 12px;
 }
 .skeleton-card {
-  background: #181818;
-  border-radius: 12px;
-  padding: 8px;
-  border: 1px solid rgba(255,255,255,0.06);
+  background: white;
+  border-radius: 24px;
+  padding: 16px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 12px rgba(15,23,42,0.02);
 }
 .skeleton-img {
   width: 100%;
-  aspect-ratio: 1;
-  border-radius: 8px;
-  background: linear-gradient(110deg, #23262D 30%, #2d3038 50%, #23262D 70%);
-  background-size: 200% 100%;
-  animation: shimmerDark 1.6s infinite ease-in-out;
+  height: 128px;
+  border-radius: 18px;
 }
 .skeleton-text {
-  height: 12px;
-  margin-top: 10px;
+  height: 14px;
+  margin-top: 14px;
   width: 85%;
   border-radius: 6px;
-  background: linear-gradient(110deg, #23262D 30%, #2d3038 50%, #23262D 70%);
-  background-size: 200% 100%;
-  animation: shimmerDark 1.6s infinite ease-in-out;
 }
 .skeleton-text-sm {
   height: 10px;
-  margin-top: 6px;
+  margin-top: 8px;
   width: 55%;
   border-radius: 4px;
-  background: linear-gradient(110deg, #23262D 30%, #2d3038 50%, #23262D 70%);
-  background-size: 200% 100%;
-  animation: shimmerDark 1.6s infinite ease-in-out;
 }
 .skeleton-btn {
-  height: 26px;
-  margin-top: 8px;
-  width: 64px;
-  border-radius: 6px;
-  background: linear-gradient(110deg, #23262D 30%, #2d3038 50%, #23262D 70%);
-  background-size: 200% 100%;
-  animation: shimmerDark 1.6s infinite ease-in-out;
-}
-@keyframes shimmerDark {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  height: 40px;
+  margin-top: 16px;
+  width: 100%;
+  border-radius: 14px;
 }
 
 /* ===== FLOATING PARTICLES / BOKEH ===== */
@@ -884,7 +874,7 @@ input, textarea, select { font-size: 16px !important; }
 
 .bottom-nav {
   padding-bottom: calc(14px + var(--rq-safe-bottom));
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.08);
 }
 
 #continue-bar {
@@ -1125,13 +1115,6 @@ input, textarea, select { font-size: 16px !important; }
   padding-bottom: 100px !important;
   background: #0f1209 !important;
 }
-
-/* PNR page background — keep light */
-#page-pnr {
-  background: var(--rq-bg, #F6F7F8) !important;
-}
-
-
 #page-account > .sticky {
   padding-top: calc(16px + var(--rq-safe-top)) !important;
 }
@@ -1344,12 +1327,49 @@ body { background-color: #10151d; }
   padding: 8px 12px;
 }
 
-/* PNR page — main content area light styling */
+#page-pnr {
+  background: var(--rq-bg) !important;
+}
+#page-pnr header {
+  min-height: auto !important;
+  padding-top: calc(24px + var(--rq-safe-top)) !important;
+  padding-bottom: 24px !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  background: radial-gradient(circle at 80% 30%, rgba(17, 138, 78, 0.10) 0%, rgba(255, 255, 255, 0) 75%), #ffffff !important;
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+  box-shadow: none !important;
+  position: relative !important;
+}
+#page-pnr header button {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 999px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #ECECEC !important;
+  color: #111827 !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
+  transition: all 0.2s ease !important;
+}
+#page-pnr header h1 {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 28px !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.03em !important;
+  font-weight: 800 !important;
+  color: #111827 !important;
+}
+#page-pnr header p {
+  font-size: 13px !important;
+  color: #6B7280 !important;
+  margin-top: 6px !important;
+  line-height: 1.45 !important;
+}
 #page-pnr main {
   margin-top: 4px !important;
   padding-left: 16px !important;
   padding-right: 16px !important;
-  color: #111827;
 }
 #page-pnr main > section:first-child {
   border-radius: 28px !important;
@@ -1358,34 +1378,41 @@ body { background-color: #10151d; }
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03) !important;
   background: #FFFFFF !important;
 }
-/* Tab buttons: no forced background so green indicator shows properly */
 #page-pnr #tab-pnr,
 #page-pnr #tab-live {
   border: none !important;
   box-shadow: none !important;
   background: transparent !important;
 }
-/* PNR inputs: light styling */
-#page-pnr input,
-#page-pnr textarea {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #ECECEC !important;
+#page-pnr .pnr-panel input {
+  height: 54px !important;
+  min-height: 54px !important;
+  border-radius: 16px !important;
+  font-size: 15px !important;
+  padding: 12px 16px !important;
+  border: 1px solid #ECECEC !important;
+  box-shadow: none !important;
 }
-#page-pnr input::placeholder,
-#page-pnr textarea::placeholder {
-  color: #9CA3AF !important;
+#page-pnr .pnr-panel input:focus {
+  border-color: #118A4E !important;
+  box-shadow: 0 0 0 3px rgba(17, 138, 78, 0.08) !important;
 }
-#page-pnr .bg-surface { background-color: #ffffff !important; }
-/* PNR submit button: keep green */
+#page-pnr .pnr-panel label {
+  color: #118A4E !important;
+  letter-spacing: 0.05em !important;
+}
+#page-pnr .pnr-panel button {
+  height: 52px !important;
+  min-height: 52px !important;
+  border-radius: 16px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
 #page-pnr .pnr-panel button.bg-primary,
 #page-pnr .pnr-panel button[class*="bg-primary"] {
   background: #118A4E !important;
-  color: #ffffff !important;
   box-shadow: 0 6px 20px rgba(17, 138, 78, 0.15) !important;
 }
-/* Override the dark button:has(span) rule for PNR buttons */
-#page-pnr button { background: unset; color: unset; }
 .train-hero-img {
   position: absolute;
   right: 0px;
@@ -1502,7 +1529,7 @@ body { background-color: #10151d; }
   background: var(--bottom-nav-bg) !important;
   border: 1px solid var(--bottom-nav-border) !important;
   padding: 9px 8px !important;
-  box-shadow: 0 18px 45px rgba(0,0,0,0.5) !important;
+  box-shadow: 0 18px 45px rgba(15,23,42,0.18) !important;
 }
 .bottom-nav.hidden-nav,
 .bottom-nav.nav-scroll-hidden { transform: translateX(-50%) translateY(140%) !important; }
@@ -2267,31 +2294,47 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     <!-- ===== HERO — pixel match to reference ===== -->
     <style>
       :root {
-        --card-bg: #181818;
-        --card-border: 1px solid rgba(255, 255, 255, 0.08);
-        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-        --img-capsule-bg: #23262D;
+        --card-bg: #ffffff;
+        --card-border: 1px solid rgba(0, 0, 0, 0.05);
+        --card-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+        --img-capsule-bg: #f4f5f7;
+        --product-name-color: #111827;
+        --product-weight-color: #6b7280;
+        --product-price-color: #111827;
+        --product-mrp-color: #9ca3af;
+        --product-disc-color: #2563eb;
+        --qty-btn-bg: #ffffff;
+        --qty-btn-color: #16a34a;
+        --page-shop-bg: linear-gradient(180deg, #f5f7f6 0%, #ffffff 42%, #f8faf9 100%);
+        --products-list-bg: #f4f4f4;
+        --border-color: rgba(0,0,0,0.06);
+        --bottom-nav-bg: rgba(255, 255, 255, 0.95);
+        --bottom-nav-border: rgba(0,0,0,0.06);
+        --bottom-nav-text-active: #118A4E;
+        --bottom-nav-text-inactive: #9ca3af;
+        --page-bg: #ffffff;
+        --header-bg: #ffffff;
+        --text-color: #111827;
+      }
+      
+      body.dark-theme {
+        --img-capsule-bg: #1c1c1e;
         --product-name-color: #ffffff;
         --product-weight-color: #9ca3af;
         --product-price-color: #ffffff;
         --product-mrp-color: #6b7280;
-        --product-disc-color: #2ECC71;
-        --qty-btn-bg: #181818;
-        --qty-btn-color: #2ECC71;
-        --page-shop-bg: #0B0B0B;
-        --products-list-bg: #0B0B0B;
-        --border-color: rgba(255, 255, 255, 0.08);
-        --bottom-nav-bg: rgba(11, 11, 11, 0.98);
+        --product-disc-color: #3b82f6;
+        --qty-btn-bg: #1c1c1e;
+        --page-shop-bg: #121212;
+        --products-list-bg: #121212;
+        --border-color: rgba(255,255,255,0.06);
+        --bottom-nav-bg: rgba(18, 18, 18, 0.96);
         --bottom-nav-border: rgba(255, 255, 255, 0.08);
-        --bottom-nav-text-active: #2ECC71;
+        --bottom-nav-text-active: #fbbf24;
         --bottom-nav-text-inactive: #8e8e93;
-        --page-bg: #0B0B0B;
-        --header-bg: #0B0B0B;
+        --page-bg: #121212;
+        --header-bg: #121212;
         --text-color: #ffffff;
-      }
-      
-      body {
-        background-color: #0b0b0b !important;
       }
 
       /* Theme application to all pages except PNR & Splash */
@@ -2311,18 +2354,18 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       .page:not(#page-pnr):not(#page-splash) .text-on-surface {
         color: var(--text-color) !important;
       }
-      .page:not(#page-pnr):not(#page-splash) input {
+      body.dark-theme .page:not(#page-pnr):not(#page-splash) input {
         color: #ffffff !important;
-        background: #181818 !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background: #1c1c1e !important;
       }
-      .page:not(#page-pnr):not(#page-splash) button:has(span):not([class*="bg-"]):not([style*="background"]):not([class*="text-"]):not([style*="color"]) {
-        background: #181818 !important;
+      body.dark-theme .page:not(#page-pnr):not(#page-splash) button:has(span) {
+        background: #1c1c1e !important;
         color: #ffffff !important;
       }
 
-      .product-card-premium {
-        background: #181818 !important;
+      body.dark-theme .product-card-premium,
+      .dark-theme .product-card-premium {
+        background: #1D1F24 !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 12px !important;
         box-shadow: none !important;
@@ -2590,6 +2633,9 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
             <div id="shop-delivering-seat-coach" class="rq-hero-seat">Seat no/ caoch</div>
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
+            <button id="theme-toggle-btn" onclick="toggleThemeMode()" class="theme-toggle-pill" aria-label="Toggle theme">
+              <span class="material-symbols-outlined" style="font-size: 20px; color: #FFFFFF;">light_mode</span>
+            </button>
             <div class="rq-hero-avatar" onclick="navigateTo('page-account')">
               <!-- Plain white person silhouette matching reference -->
               <span class="material-symbols-outlined" style="font-size:30px; color:#FFFFFF; font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48;">person</span>
@@ -3133,111 +3179,82 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
   </div>
 
   <!-- ==================== ACCOUNT PAGE ==================== -->
-  <div id="page-account" class="page tab-page" style="background:#0B0B0B;overflow-y:auto;padding-bottom:90px;">
-    
-    <!-- Login / Authentication Flow -->
-    <div id="account-login-section" class="p-6">
-      <div class="mb-6">
-        <button style="width:36px;height:36px;border-radius:50%;background:#181818;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="navigateTo('page-shop')">
-          <span class="material-symbols-outlined" style="color:#fff;font-size:20px;">arrow_back</span>
-        </button>
-      </div>
+  <div id="page-account" class="page tab-page" style="background:#0f1209;overflow-y:auto;padding-bottom:90px;">
 
-      <div class="flex flex-col items-center py-8">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2ECC71]/20 to-[#2ECC71]/10 border border-[#2ECC71]/25 flex items-center justify-center mb-6">
-          <span class="material-symbols-outlined text-[32px]" style="color:#2ECC71;">account_circle</span>
+    <!-- Login section (shown when logged out) -->
+    <div id="account-login-section">
+      <div style="padding:16px 16px 0;"><button style="width:36px;height:36px;border-radius:50%;background:#1e2a14;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="navigateTo('page-shop')"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">arrow_back</span></button></div>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:32px 24px 24px;">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#3a6b24,#22c55e);display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 0 0 4px rgba(34,197,94,0.2);">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:40px;">person</span>
         </div>
-        <h2 class="text-xl font-bold text-white font-sans text-center mb-2">Welcome to RailQuick</h2>
-        <p class="text-xs text-gray-400 text-center mb-8 px-4">Sign in to track orders, save preferences & checkout faster.</p>
-        
-        <button onclick="signInAsKartik()" class="w-full bg-[#2ECC71] text-white py-4 rounded-xl font-bold font-sans text-xs uppercase tracking-wider active:scale-95 transition-all shadow-md shadow-[#2ECC71]/15 flex items-center justify-center gap-2">
-          <span class="material-symbols-outlined text-sm font-bold">login</span>
-          Sign In as Kartik Guleria
-        </button>
+        <h2 style="font-size:20px;font-weight:900;color:#fff;margin:0 0 6px;font-family:'Outfit',sans-serif;">Welcome to RailQuick</h2>
+        <p style="font-size:12px;color:rgba(255,255,255,0.5);text-align:center;margin:0 0 28px;line-height:1.5;">Sign in to track orders, save preferences &amp; checkout faster.</p>
+        <div id="clerk-sign-in-mount" style="width:100%;min-height:200px;">
+          <div style="display:flex;flex-direction:column;align-items:center;padding:32px 0;gap:12px;">
+            <div style="width:40px;height:40px;border:3px solid #22c55e;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+            <p style="font-size:11px;color:rgba(255,255,255,0.4);">Connecting to sign-in...</p>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:14px;">lock</span><span style="font-size:10px;color:rgba(255,255,255,0.3);">Secured by Clerk · End-to-end encrypted</span></div>
+        <button style="margin-top:20px;background:#1e2a14;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);padding:12px 20px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;" onclick="resetAppStateAndRestart()"><span class="material-symbols-outlined" style="font-size:16px;">restart_alt</span> Start Again / Reset App</button>
       </div>
     </div>
 
     <!-- Logged in section -->
-    <div id="account-logged-section" class="p-4 hidden">
-      <div class="flex items-center justify-between mb-4">
-        <button style="width:36px;height:36px;border-radius:50%;background:#181818;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="navigateTo('page-shop')">
-          <span class="material-symbols-outlined" style="color:#fff;font-size:20px;">arrow_back</span>
-        </button>
-        <span class="text-xs font-black text-[#2ECC71] uppercase tracking-widest">My Account</span>
-        <div class="w-9"></div>
+    <div id="account-logged-section" class="hidden">
+      <div style="padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;">
+        <button style="width:36px;height:36px;border-radius:50%;background:#1e2a14;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="navigateTo('page-shop')"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">arrow_back</span></button>
+        <div style="width:36px;"></div>
       </div>
-
-      <!-- Large Profile Card -->
-      <div class="bg-[#181818] border border-white/10 rounded-2xl p-5 flex items-center gap-4 mb-6 shadow-xl relative overflow-hidden">
-        <div class="absolute right-0 top-0 bg-[#2ECC71]/15 text-[#2ECC71] text-[9px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-wider flex items-center gap-1">
-          <span class="material-symbols-outlined text-[10px] font-bold">verified</span>
-          Verified
+      <div style="display:flex;flex-direction:column;align-items:center;padding:20px 24px 28px;">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#3a6b24,#22c55e);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 0 0 4px rgba(34,197,94,0.2);" id="profile-avatar"><span class="material-symbols-outlined" style="color:#fff;font-size:40px;">person</span></div>
+        <div style="font-size:20px;font-weight:900;color:#fff;font-family:'Outfit',sans-serif;" id="profile-name">My Account</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:3px;" id="profile-email"></div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;" id="profile-phone"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 16px 20px;">
+        <div onclick="navigateTo('page-orders')" style="background:#1e2a14;border-radius:16px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
+          <span class="material-symbols-outlined" style="color:#86efac;font-size:26px;">inventory_2</span>
+          <span style="font-size:12px;font-weight:800;color:#fff;text-align:center;">My Orders</span>
+          <span style="font-size:10px;color:rgba(255,255,255,0.4);text-align:center;">View your orders</span>
         </div>
-        
-        <div id="profile-avatar-container" class="w-14 h-14 rounded-full bg-gradient-to-br from-[#2ECC71] to-[#27ae60] flex items-center justify-center text-white font-black text-lg shadow-md shrink-0">
-          U
+        <div onclick="navigateTo('page-pnr')" style="background:#1e2a14;border-radius:16px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
+          <span class="material-symbols-outlined" style="color:#86efac;font-size:26px;">confirmation_number</span>
+          <span style="font-size:12px;font-weight:800;color:#fff;text-align:center;">My PNRs</span>
+          <span style="font-size:10px;color:rgba(255,255,255,0.4);text-align:center;">Check your PNRs</span>
         </div>
-        
-        <div class="min-w-0">
-          <h3 id="profile-name" class="text-sm font-extrabold text-white truncate">Kartik Guleria</h3>
-          <p id="profile-phone" class="text-xs text-gray-400 font-semibold mt-0.5">+91 88263 87844</p>
-          <span class="text-[9px] font-bold text-gray-500 block mt-1.5 uppercase tracking-wider">Passenger Account</span>
+        <div style="background:#1e2a14;border-radius:16px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
+          <span class="material-symbols-outlined" style="color:#86efac;font-size:26px;">card_giftcard</span>
+          <span style="font-size:12px;font-weight:800;color:#fff;text-align:center;">Refer &amp; Earn</span>
+          <span style="font-size:10px;color:rgba(255,255,255,0.4);text-align:center;">Earn rewards</span>
         </div>
       </div>
-
-      <!-- Menu Options Grid / List -->
-      <div class="space-y-3.5">
-        <div class="grid grid-cols-2 gap-3">
-          <div onclick="navigateTo('page-orders')" class="bg-[#181818] border border-white/10 rounded-2xl p-4 flex flex-col gap-2.5 cursor-pointer active:scale-95 transition-all hover:bg-white/[0.02]">
-            <span class="material-symbols-outlined text-[#2ECC71] text-2xl">local_mall</span>
-            <div class="text-xs font-bold text-white">My Orders</div>
-            <div class="text-[9px] text-gray-400 leading-none">View order history</div>
-          </div>
-          <div onclick="showToast('Saved Addresses feature coming soon!', 'info')" class="bg-[#181818] border border-white/10 rounded-2xl p-4 flex flex-col gap-2.5 cursor-pointer active:scale-95 transition-all hover:bg-white/[0.02]">
-            <span class="material-symbols-outlined text-[#2ECC71] text-2xl">home_pin</span>
-            <div class="text-xs font-bold text-white">Saved Addresses</div>
-            <div class="text-[9px] text-gray-400 leading-none">Manage delivery seats</div>
-          </div>
-          <div onclick="showToast('Saved Trains feature coming soon!', 'info')" class="bg-[#181818] border border-white/10 rounded-2xl p-4 flex flex-col gap-2.5 cursor-pointer active:scale-95 transition-all hover:bg-white/[0.02]">
-            <span class="material-symbols-outlined text-[#2ECC71] text-2xl">train</span>
-            <div class="text-xs font-bold text-white">Saved Trains</div>
-            <div class="text-[9px] text-gray-400 leading-none">Quick tracking list</div>
-          </div>
-          <div onclick="showToast('Payment Methods feature coming soon!', 'info')" class="bg-[#181818] border border-white/10 rounded-2xl p-4 flex flex-col gap-2.5 cursor-pointer active:scale-95 transition-all hover:bg-white/[0.02]">
-            <span class="material-symbols-outlined text-[#2ECC71] text-2xl">credit_card</span>
-            <div class="text-xs font-bold text-white">Payments</div>
-            <div class="text-[9px] text-gray-400 leading-none">Cards &amp; UPI details</div>
-          </div>
+      <div style="margin:0 16px 16px;background:#1e2a14;border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
+        <div style="width:44px;height:44px;border-radius:12px;background:#22c55e;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="material-symbols-outlined" style="color:#fff;font-size:22px;">train</span></div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:800;color:#fff;">About RailQuick</div><div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;line-height:1.4;">Your trusted travel companion for ordering essentials on train.</div></div>
+        <span class="material-symbols-outlined" style="color:rgba(255,255,255,0.35);font-size:20px;">chevron_right</span>
+      </div>
+      <div style="padding:0 16px 16px;">
+        <div style="font-size:12px;font-weight:800;color:#4ade80;margin-bottom:10px;letter-spacing:0.04em;">Support</div>
+        <div style="background:#1e2a14;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;" onclick="navigateTo('page-support')"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">chat_bubble</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Help Centre</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">phone</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Contact Us</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">help</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">FAQs</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
         </div>
-
-        <div class="bg-[#181818] border border-white/10 rounded-2xl overflow-hidden shadow-lg">
-          <div onclick="navigateTo('page-support')" class="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.06] cursor-pointer hover:bg-white/[0.02] active:bg-white/[0.04] transition-all">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-[#2ECC71] text-lg">support_agent</span>
-              <span class="text-xs font-bold text-white">Support &amp; Help Centre</span>
-            </div>
-            <span class="material-symbols-outlined text-gray-500 text-sm">chevron_right</span>
-          </div>
-          <div onclick="showToast('Privacy Policy details coming soon!', 'info')" class="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.06] cursor-pointer hover:bg-white/[0.02] active:bg-white/[0.04] transition-all">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-[#2ECC71] text-lg">gavel</span>
-              <span class="text-xs font-bold text-white">Privacy Policy</span>
-            </div>
-            <span class="material-symbols-outlined text-gray-500 text-sm">chevron_right</span>
-          </div>
-          <div onclick="showToast('Terms &amp; Conditions details coming soon!', 'info')" class="flex items-center justify-between px-4 py-3.5 cursor-pointer hover:bg-white/[0.02] active:bg-white/[0.04] transition-all">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-[#2ECC71] text-lg">article</span>
-              <span class="text-xs font-bold text-white">Terms &amp; Conditions</span>
-            </div>
-            <span class="material-symbols-outlined text-gray-500 text-sm">chevron_right</span>
-          </div>
+      </div>
+      <div style="padding:0 16px 16px;">
+        <div style="font-size:12px;font-weight:800;color:#4ade80;margin-bottom:10px;letter-spacing:0.04em;">More</div>
+        <div style="background:#1e2a14;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">star</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Rate RailQuick</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">group_add</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Refer &amp; Earn</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">shield</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Privacy Policy</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">description</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Terms &amp; Conditions</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">share</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Share RailQuick</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
         </div>
-
-        <button onclick="signOut()" class="w-full bg-red-500/10 border border-red-500/20 text-red-400 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md mt-4">
-          <span class="material-symbols-outlined text-sm font-bold">logout</span>
-          Logout
-        </button>
+      </div>
+      <div style="padding:0 16px 16px;">
+        <button style="width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;padding:14px;border-radius:16px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="signOut()"><span class="material-symbols-outlined" style="font-size:18px;">logout</span> Sign Out</button>
       </div>
     </div>
   </div>
@@ -3445,24 +3462,24 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
   <!-- ==================== PRODUCT DETAILS MODAL ==================== -->
   <div id="product-modal" class="modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end justify-center hidden" onclick="closeModal(event)">
-    <div class="modal-card rounded-t-[2rem] w-full max-w-[412px] max-h-[85vh] overflow-y-auto z-50 relative animate-fade-in-up" id="modal-card" style="background:#181818;">
-      <button class="modal-close w-8 h-8 rounded-full flex items-center justify-center absolute top-4 right-4 z-50" style="background:rgba(255,255,255,0.1);color:#aaa;" onclick="closeProductModal()">✕</button>
+    <div class="modal-card bg-white rounded-t-[2rem] w-full max-w-[412px] max-h-[85vh] overflow-y-auto z-50 relative animate-fade-in-up" id="modal-card">
+      <button class="modal-close w-8 h-8 rounded-full bg-black/5 flex items-center justify-center text-gray-600 absolute top-4 right-4 z-50" onclick="closeProductModal()">✕</button>
       
-      <div class="modal-img-wrapper h-52 w-full flex items-center justify-center p-6 relative" style="background:#23262D;border-radius:0 0 24px 24px;">
+      <div class="modal-img-wrapper bg-transparent h-52 w-full flex items-center justify-center p-6 relative">
         <img id="modal-img" src="" alt="" class="max-h-full max-w-full object-contain" />
       </div>
       
       <div class="modal-body p-6">
         <div class="modal-category text-[9px] font-black text-primary uppercase tracking-[0.25em] mb-1" id="modal-category">Category</div>
-        <h2 class="modal-product-name text-lg font-headline font-extrabold mb-2" id="modal-name" style="color:#fff;">Product Name</h2>
+        <h2 class="modal-product-name text-lg font-headline font-extrabold text-on-surface mb-2" id="modal-name">Product Name</h2>
         <div class="modal-price text-xl font-black text-primary mb-3" id="modal-price">₹0</div>
-        <p class="modal-description text-xs leading-relaxed mb-4 pb-4" id="modal-desc" style="color:#999;border-bottom:1px solid rgba(255,255,255,0.08);">Product description.</p>
+        <p class="modal-description text-xs text-gray-600 leading-relaxed mb-4 border-b border-gray-100 pb-4" id="modal-desc">Product description.</p>
         <div class="modal-tags flex flex-wrap gap-1.5 mb-5" id="modal-tags"></div>
         
-        <div class="modal-qty-row flex justify-between items-center pt-4 mb-6" style="border-top:1px solid rgba(255,255,255,0.08);">
-          <div class="qty-control flex items-center rounded-xl overflow-hidden" style="background:#23262D;border:1px solid rgba(255,255,255,0.1);">
+        <div class="modal-qty-row flex justify-between items-center border-t border-gray-100 pt-4 mb-6">
+          <div class="qty-control flex items-center bg-[#F4F6F5] border border-outline-variant/60 rounded-xl overflow-hidden">
             <button class="w-10 h-10 flex items-center justify-center font-bold text-lg text-primary" onclick="changeModalQty(-1)">−</button>
-            <span class="qty-val font-mono font-bold min-w-[36px] text-center" id="modal-qty" style="color:#fff;">1</span>
+            <span class="qty-val font-mono font-bold text-on-surface min-w-[36px] text-center" id="modal-qty">1</span>
             <button class="w-10 h-10 flex items-center justify-center font-bold text-lg text-primary" onclick="changeModalQty(1)">+</button>
           </div>
           <span class="modal-total text-base font-black text-secondary" id="modal-total">₹0</span>
@@ -3475,15 +3492,15 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
   <!-- ==================== LOGIN INTERCEPT MODAL ==================== -->
   <div id="modal-google-login" class="modal-overlay fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden" onclick="closeGoogleLoginModal(event)">
-    <div class="rounded-3xl w-[320px] p-7 text-center shadow-2xl relative" style="background:#181818;border:1px solid rgba(255,255,255,0.08);" onclick="event.stopPropagation()">
-      <button class="w-8 h-8 rounded-full flex items-center justify-center absolute top-4 right-4 text-sm font-bold transition-colors" style="background:rgba(255,255,255,0.1);color:#aaa;" onclick="closeGoogleLoginModal(true)">✕</button>
+    <div class="bg-white rounded-3xl w-[320px] p-7 text-center shadow-2xl relative border border-gray-100" onclick="event.stopPropagation()">
+      <button class="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center text-gray-400 absolute top-4 right-4 text-sm font-bold hover:bg-black/10 transition-colors" onclick="closeGoogleLoginModal(true)">✕</button>
       
-      <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 p-1.5" style="background:#23262D;border:1px solid rgba(255,255,255,0.1);">
+      <div class="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mx-auto mb-4 p-1.5">
         <img src="railquick_logo.png" alt="RailQuick" class="w-full h-full object-cover rounded-xl">
       </div>
       
-      <h3 class="text-lg font-headline font-extrabold mb-1" style="color:#fff;">Sign in to Order</h3>
-      <p class="text-[11px] mb-5 leading-relaxed px-3" style="color:#888;">You need to be signed in to place an order. Fast &amp; secure — just one tap.</p>
+      <h3 class="text-lg font-headline font-extrabold text-on-surface mb-1">Sign in to Order</h3>
+      <p class="text-[11px] text-gray-500 mb-5 leading-relaxed px-3">You need to be signed in to place an order. Fast &amp; secure — just one tap.</p>
       
       <button 
         class="w-full bg-primary hover:bg-primary-light text-white rounded-2xl py-3.5 px-5 flex items-center justify-center gap-2 font-bold text-sm active:scale-95 transition-all shadow-lg mb-3" 
@@ -3492,7 +3509,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         Sign In to Continue
       </button>
 
-      <p class="text-[9px] text-gray-500 mt-2">Secured by <span class="font-semibold" style="color: #2ECC71;">Supabase</span> · End-to-end encrypted</p>
+      <p class="text-[9px] text-gray-400 mt-2">Secured by <span class="font-semibold text-primary">Clerk</span> · End-to-end encrypted</p>
     </div>
   </div>
 
@@ -3516,13 +3533,13 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
   <!-- ==================== DEDICATED SEARCH OVERLAY PAGE ==================== -->
   <div id="page-search" class="page tab-page bg-background flex flex-col" style="overflow: hidden !important; padding-bottom: 0 !important;">
     <!-- Header Input Section -->
-    <div class="sticky top-0 border-b px-4 pt-4 pb-3 flex items-center gap-3 z-50 shrink-0" style="background:#0B0B0B;border-color:rgba(255,255,255,0.06);box-shadow:0 1px 0 rgba(0,0,0,0.3);">
-      <button class="w-9 h-9 flex items-center justify-center rounded-xl active:scale-90 transition-transform" style="background:#23262D;color:#2ECC71;" onclick="closeSearchOverlay()">
+    <div class="sticky top-0 bg-white border-b border-outline-variant/30 px-4 pt-4 pb-3 flex items-center gap-3 z-50 shrink-0" style="box-shadow: 0 1px 0 rgba(0,0,0,0.04);">
+      <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-primary active:scale-90 transition-transform" onclick="closeSearchOverlay()">
         <span class="material-symbols-outlined text-xl">arrow_back</span>
       </button>
-      <div class="flex-1 rounded-2xl px-3 flex items-center h-11 transition-all" style="background:#23262D;border:1px solid rgba(255,255,255,0.06);">
-        <span class="material-symbols-outlined text-lg mr-2" style="color:#666;">search</span>
-        <input type="text" id="overlay-search-input" class="w-full bg-transparent border-none focus:ring-0 text-xs font-semibold animate-fade-in-up" style="color:#fff;" placeholder="Search comfort, drinks, hygiene..." oninput="runOverlaySearch(this.value)" onkeydown="if(event.key==='Enter') { saveRecentSearch(this.value); this.blur(); }" />
+      <div class="flex-1 bg-gray-100 rounded-2xl px-3 flex items-center h-11 border border-transparent focus-within:border-primary/20 focus-within:bg-white transition-all">
+        <span class="material-symbols-outlined text-slate-400 text-lg mr-2">search</span>
+        <input type="text" id="overlay-search-input" class="w-full bg-transparent border-none focus:ring-0 text-xs font-semibold placeholder-gray-400 animate-fade-in-up" placeholder="Search comfort, drinks, hygiene..." oninput="runOverlaySearch(this.value)" onkeydown="if(event.key==='Enter') { saveRecentSearch(this.value); this.blur(); }" />
         <button onclick="clearOverlaySearch()" class="text-slate-400 hover:text-slate-600 hidden" id="search-clear-btn">✕</button>
       </div>
     </div>

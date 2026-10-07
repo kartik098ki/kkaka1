@@ -3064,16 +3064,16 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
   <!-- ==================== CHECKOUT PAGE ==================== -->
   <div id="page-checkout" class="page bg-background" style="display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 74px; overflow-y: auto;">
-    <div class="sticky top-0 bg-white border-b border-outline-variant/60 px-4 py-3 flex justify-between items-center z-40 shadow-sm">
-      <button class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-50 text-gray-700 active:scale-90 transition-all border border-gray-100" onclick="navigateTo('page-cart')">
+    <div class="sticky top-0 bg-[#0c0d12] border-b border-white/10 px-4 py-3 flex justify-between items-center z-40 shadow-md">
+      <button class="w-9 h-9 flex items-center justify-center rounded-full bg-[#181d27] text-white active:scale-90 transition-all border border-white/10" onclick="navigateTo('page-cart')">
         <span class="material-symbols-outlined text-xl font-bold">arrow_back</span>
       </button>
-      <h2 class="text-sm font-bold text-gray-800 font-sans" style="position: absolute; left: 50%; transform: translateX(-50%);">Checkout</h2>
+      <h2 class="text-sm font-bold text-white font-sans" style="position: absolute; left: 50%; transform: translateX(-50%);">Checkout</h2>
       <div class="flex items-center gap-1.5">
-        <button class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-50 text-gray-750 active:scale-90 transition-all border border-gray-100" onclick="showToast('Search product catalog', 'info')">
-          <span class="material-symbols-outlined text-xl">search</span>
+        <button class="w-9 h-9 flex items-center justify-center rounded-full bg-[#181d27] text-white active:scale-90 transition-all border border-white/10" onclick="openSearchOverlay()" title="Search Products">
+          <span class="material-symbols-outlined text-lg">search</span>
         </button>
-        <button class="h-9 px-3 flex items-center justify-center gap-1.5 rounded-full bg-gray-50 text-gray-750 active:scale-90 transition-all border border-gray-100 text-[11px] font-bold" onclick="showToast('Link copied to clipboard!', 'success')">
+        <button class="h-9 px-3 flex items-center justify-center gap-1.5 rounded-full bg-[#181d27] text-white active:scale-90 transition-all border border-white/10 text-[11px] font-bold" onclick="showToast('Link copied to clipboard!', 'success')">
           <span class="material-symbols-outlined text-sm">share</span>
           Share
         </button>
@@ -3092,23 +3092,23 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     <!-- Unified Single-Step Checkout Content -->
     <div class="checkout-section p-4 space-y-4" id="checkout-step-1">
       <!-- PNR / Train & Seat Delivery Card -->
-      <div class="bg-white border border-outline-variant/60 rounded-2xl p-4 shadow-sm relative overflow-hidden" id="checkout-pnr-details">
-        <div class="flex justify-between items-start pb-2.5 border-b border-gray-100">
+      <div class="bg-[#181d27] border border-white/10 rounded-2xl p-4 shadow-sm relative overflow-hidden text-white" id="checkout-pnr-details">
+        <div class="flex justify-between items-start pb-2.5 border-b border-white/10">
           <div>
-            <span class="text-[10px] font-black text-emerald-700 uppercase tracking-widest block">Delivering to</span>
-            <h4 class="text-xs font-black text-gray-800 mt-0.5" id="checkout-train">12301 Rajdhani Express</h4>
+            <span class="text-[10px] font-black text-[#22c55e] uppercase tracking-widest block">Delivering to</span>
+            <h4 class="text-xs font-black text-white mt-0.5" id="checkout-train">12301 Rajdhani Express</h4>
           </div>
-          <button onclick="openTrainSeatSelectorModal()" class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 active:scale-95 transition-all">Change Seat</button>
+          <button onclick="openTrainSeatSelectorModal()" class="text-[11px] font-bold text-[#22c55e] bg-[#22c55e]/10 px-2.5 py-1 rounded-lg border border-[#22c55e]/30 hover:bg-[#22c55e]/20 active:scale-95 transition-all">Change Seat</button>
         </div>
         
         <div class="grid grid-cols-2 gap-3 text-xs pt-2">
           <div>
             <span class="text-gray-400 font-semibold text-[10px] block mb-0.5">Coach &amp; Berth</span>
-            <strong class="text-gray-800 text-xs font-bold" id="checkout-seat">Coach B2, Seat 45 (Upper Berth)</strong>
+            <strong class="text-white text-xs font-bold" id="checkout-seat">Coach B2, Seat 45 (Upper Berth)</strong>
           </div>
           <div>
             <span class="text-gray-400 font-semibold text-[10px] block mb-0.5">Contact</span>
-            <strong class="text-gray-800 text-xs font-bold">8826387844</strong>
+            <strong class="text-white text-xs font-bold">8826387844</strong>
           </div>
         </div>
       </div>
@@ -3134,57 +3134,58 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
     <!-- Payment panel (Integrated directly on checkout page) -->
     <div class="checkout-section px-4 pb-24" id="checkout-step-2">
-      <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider mb-3">Choose Payment Mode</h3>
+      <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider mb-3">Choose Payment Mode</h3>
       
       <div class="payment-options space-y-2.5 mb-4">
         <!-- UPI Option -->
-        <div class="payment-option selected border-2 border-emerald-600 bg-emerald-50/50 rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer" onclick="selectPayment(this, 'upi')" id="pay-upi">
-          <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-base shadow-sm shrink-0">🇮🇳</div>
+        <div class="payment-option selected border-2 border-emerald-500 bg-[#1f2635] rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer text-white" onclick="selectPayment(this, 'upi')" id="pay-upi">
+          <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-base shadow-sm shrink-0">🇮🇳</div>
           <div class="flex-grow min-w-0">
-            <div class="text-xs font-bold text-gray-800">UPI Instant Pay</div>
-            <div class="text-[10px] text-gray-500">Google Pay, PhonePe, Paytm</div>
+            <div class="text-xs font-bold text-white">UPI Instant Pay</div>
+            <div class="text-[10px] text-gray-400">Google Pay, PhonePe, Paytm</div>
           </div>
-          <div class="pay-radio w-5 h-5 rounded-full border-2 border-emerald-600 flex items-center justify-center shrink-0">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+          <div class="pay-radio w-5 h-5 rounded-full border-2 border-emerald-500 flex items-center justify-center shrink-0">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
           </div>
         </div>
         <!-- COD Option -->
-        <div class="payment-option border border-outline-variant bg-white rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer" onclick="selectPayment(this, 'cod')" id="pay-cod">
-          <div class="w-9 h-9 rounded-xl bg-[#F4F6F5] flex items-center justify-center text-base shadow-sm shrink-0">💵</div>
+        <div class="payment-option border border-white/10 bg-[#181d27] rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer text-white" onclick="selectPayment(this, 'cod')" id="pay-cod">
+          <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-base shadow-sm shrink-0">💵</div>
           <div class="flex-grow min-w-0">
-            <div class="text-xs font-bold text-gray-800">Cash on Delivery (Pay at Seat)</div>
-            <div class="text-[10px] text-gray-500">Pay cash/UPI at seat when delivered</div>
+            <div class="text-xs font-bold text-white">Cash on Delivery (Pay at Seat)</div>
+            <div class="text-[10px] text-gray-400">Pay cash/UPI at seat when delivered</div>
           </div>
-          <div class="pay-radio w-5 h-5 rounded-full border-2 border-gray-200 shrink-0"></div>
+          <div class="pay-radio w-5 h-5 rounded-full border-2 border-white/20 shrink-0"></div>
         </div>
         <!-- Card Option -->
-        <div class="payment-option border border-outline-variant bg-white rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer" onclick="selectPayment(this, 'card')" id="pay-card">
-          <div class="w-9 h-9 rounded-xl bg-[#F4F6F5] flex items-center justify-center text-base shadow-sm shrink-0">💳</div>
+        <div class="payment-option border border-white/10 bg-[#181d27] rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer text-white" onclick="selectPayment(this, 'card')" id="pay-card">
+          <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-base shadow-sm shrink-0">💳</div>
           <div class="flex-grow min-w-0">
-            <div class="text-xs font-bold text-gray-800">Debit / Credit Card</div>
-            <div class="text-[10px] text-gray-500">Visa, Mastercard, RuPay cards</div>
+            <div class="text-xs font-bold text-white">Debit / Credit Card</div>
+            <div class="text-[10px] text-gray-400">Visa, Mastercard, RuPay cards</div>
           </div>
-          <div class="pay-radio w-5 h-5 rounded-full border-2 border-gray-200 shrink-0"></div>
+          <div class="pay-radio w-5 h-5 rounded-full border-2 border-white/20 shrink-0"></div>
+        </div>
       </div>
 
       <!-- UPI input box -->
-      <div id="upi-input-section" class="bg-white border border-outline-variant rounded-2xl p-4 space-y-4 mb-6">
+      <div id="upi-input-section" class="bg-[#181d27] border border-white/10 rounded-2xl p-4 space-y-4 mb-6">
         <div class="relative">
-          <input type="text" class="w-full bg-[#F4F6F5] border border-outline-variant rounded-xl py-3 px-4 pr-12 text-xs font-medium focus:outline-none" placeholder="Enter UPI ID (e.g. name@okaxis)" id="upi-id-input" />
+          <input type="text" class="w-full bg-[#131720] border border-white/10 rounded-xl py-3 px-4 pr-12 text-xs font-medium text-white focus:outline-none focus:border-emerald-500" placeholder="Enter UPI ID (e.g. name@okaxis)" id="upi-id-input" />
           <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">@</span>
         </div>
         <div class="upi-apps flex gap-3.5 justify-center">
           <div class="upi-app flex flex-col items-center cursor-pointer" onclick="selectUPIApp(this)">
             <div class="w-11 h-11 rounded-xl bg-blue-500 text-white flex items-center justify-center font-bold text-sm shadow">G</div>
-            <span class="text-[9px] font-bold text-gray-500 mt-1">GPay</span>
+            <span class="text-[9px] font-bold text-gray-300 mt-1">GPay</span>
           </div>
           <div class="upi-app flex flex-col items-center cursor-pointer" onclick="selectUPIApp(this)">
             <div class="w-11 h-11 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-sm shadow">P</div>
-            <span class="text-[9px] font-bold text-gray-500 mt-1">PhonePe</span>
+            <span class="text-[9px] font-bold text-gray-300 mt-1">PhonePe</span>
           </div>
           <div class="upi-app flex flex-col items-center cursor-pointer" onclick="selectUPIApp(this)">
             <div class="w-11 h-11 rounded-xl bg-cyan-500 text-white flex items-center justify-center font-bold text-sm shadow">Pt</div>
-            <span class="text-[9px] font-bold text-gray-500 mt-1">Paytm</span>
+            <span class="text-[9px] font-bold text-gray-300 mt-1">Paytm</span>
           </div>
         </div>
       </div>
@@ -3224,23 +3225,23 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       </div>
     </div>
     <!-- Sticky Bottom Bar -->
-    <div id="checkout-sticky-bar" class="fixed bottom-4 left-1/2 -translate-x-1/2 w-11/12 max-w-[385px] z-50 flex justify-between items-center px-4 py-2 rounded-[20px] border transition-all duration-300" style="box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15); height: 60px;">
+    <div id="checkout-sticky-bar" class="fixed bottom-4 left-1/2 -translate-x-1/2 w-11/12 max-w-[385px] z-50 flex justify-between items-center px-4 py-2 rounded-[20px] border border-white/10 transition-all duration-300" style="background: #12151d; box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7); height: 62px;">
       <!-- Left side: Payment Method Selector/Indicator -->
       <div class="flex items-center gap-3 cursor-pointer active:scale-98 transition-all shrink min-w-0" onclick="scrollToPaymentMethods()">
         <img id="sticky-payment-icon" src="https://img.icons8.com/color/48/google-pay.png" class="w-8 h-8 object-contain shrink-0" onerror="this.src='https://img.icons8.com/color/48/wallet.png'" />
         <div class="text-left leading-tight min-w-0">
           <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">PAY USING</span>
-          <span id="sticky-payment-name" class="text-xs font-bold text-gray-800 flex items-center gap-0.5 truncate">
+          <span id="sticky-payment-name" class="text-xs font-bold text-white flex items-center gap-0.5 truncate">
             Google Pay UPI
-            <span class="material-symbols-outlined text-[12px] font-bold text-gray-505">keyboard_arrow_up</span>
+            <span class="material-symbols-outlined text-[12px] font-bold text-gray-400">keyboard_arrow_up</span>
           </span>
         </div>
       </div>
       
       <!-- Right side: Green Place Order Button -->
-      <button onclick="handleCheckoutPrimaryAction()" class="flex items-center justify-between bg-[#0C8346] text-white px-4 py-2 rounded-xl active:scale-95 transition-all font-sans font-bold shadow-md hover:bg-[#0b733e] shrink-0" style="height: 38px; width: 175px;">
+      <button onclick="handleCheckoutPrimaryAction()" class="flex items-center justify-between bg-[#0C8346] text-white px-4 py-2 rounded-xl active:scale-95 transition-all font-sans font-bold shadow-md hover:bg-[#0b733e] shrink-0" style="height: 40px; width: 175px;">
         <div class="text-left leading-none">
-          <span id="sticky-total-price" class="text-xs font-extrabold block text-white">₹0</span>
+          <span id="sticky-total-price" class="text-xs font-black block text-white font-mono">₹0</span>
           <span class="text-[8px] font-semibold text-emerald-100 uppercase tracking-widest mt-0.5 block">TOTAL</span>
         </div>
         <div class="flex items-center gap-0.5">
@@ -3252,12 +3253,12 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
   </div>
 
   <!-- ==================== ORDERS PAGE ==================== -->
-  <div id="page-orders" class="page tab-page bg-background">
-    <div class="sticky top-0 bg-white border-b border-outline-variant/60 px-5 py-4 flex justify-between items-center z-40 shadow-sm">
-      <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-primary active:scale-90 transition-transform" onclick="navigateTo('page-account')">
-        <span class="material-symbols-outlined text-xl">arrow_back</span>
+  <div id="page-orders" class="page tab-page" style="background: #0c0d12 !important;">
+    <div class="sticky top-0 bg-[#0c0d12] border-b border-white/10 px-4 py-3.5 flex justify-between items-center z-40 shadow-md">
+      <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-[#181d27] text-white border border-white/10 active:scale-90 transition-transform" onclick="navigateTo('page-account')">
+        <span class="material-symbols-outlined text-lg">arrow_back</span>
       </button>
-      <h2 class="text-base font-headline font-bold text-on-surface">My Orders</h2>
+      <h2 class="text-sm font-bold text-white font-sans">My Orders</h2>
       <div class="w-9 h-9"></div>
     </div>
     
@@ -3497,12 +3498,12 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
   </div>
 
   <!-- ==================== TRACK ORDER PAGE ==================== -->
-  <div id="page-track-order" class="page bg-background">
-    <div class="sticky top-0 bg-white/90 backdrop-blur-xl border-b border-outline-variant/60 px-5 py-4 flex justify-between items-center z-40 shadow-sm">
-      <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-primary active:scale-90 transition-transform" onclick="navigateTo('page-orders')">
-        <span class="material-symbols-outlined text-xl">arrow_back</span>
+  <div id="page-track-order" class="page" style="background: #0c0d12 !important;">
+    <div class="sticky top-0 bg-[#0c0d12] border-b border-white/10 px-4 py-3.5 flex justify-between items-center z-40 shadow-md">
+      <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-[#181d27] text-white border border-white/10 active:scale-90 transition-transform" onclick="navigateTo('page-orders')">
+        <span class="material-symbols-outlined text-lg">arrow_back</span>
       </button>
-      <h2 class="text-base font-headline font-black text-on-surface">Live Order Tracking</h2>
+      <h2 class="text-sm font-bold text-white font-sans">Live Order Tracking</h2>
       <div class="w-9 h-9"></div>
     </div>
     <div id="track-premium-dash" class="track-premium-dash p-5 space-y-5"></div>
@@ -3724,6 +3725,10 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
         <input type="text" id="overlay-search-input" class="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-sm font-semibold placeholder-gray-400 text-white" style="color: #ffffff !important; caret-color: #22c55e;" placeholder='Search "dandiya", "chips", "earbuds"...' oninput="runOverlaySearch(this.value)" onkeydown="if(event.key==='Enter') { saveRecentSearch(this.value); this.blur(); }" />
         <button onclick="clearOverlaySearch()" class="text-gray-400 hover:text-white px-1.5 font-bold text-sm hidden" id="search-clear-btn">✕</button>
         <span class="material-symbols-outlined text-emerald-400 text-xl ml-2 shrink-0 cursor-pointer active:scale-95" onclick="showToast('Listening for voice search...', 'info')">mic</span>
+      </div>
+      <div onclick="navigateTo('page-cart')" class="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-[#181d27] border border-white/10 text-white active:scale-90 transition-transform shrink-0 cursor-pointer hover:border-emerald-500/40" title="View Cart">
+        <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+        <span id="search-cart-badge" class="absolute -top-1 -right-1 bg-emerald-500 text-white font-mono font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#12151d] hidden">0</span>
       </div>
     </div>
 

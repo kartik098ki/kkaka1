@@ -54,7 +54,7 @@ const PRODUCTS = [
     mrp: 25,
     discountText: '16% OFF on MRP',
     category: 'all',
-    subcategories: ['all', 'beverages', 'navratri'],
+    subcategories: ['all', 'chips-namkeen', 'beverages', 'navratri'],
     weight: '58 g',
     optionsLabel: '2 options',
     options: [
@@ -75,7 +75,7 @@ const PRODUCTS = [
     mrp: 20,
     discountText: 'Special Price',
     category: 'all',
-    subcategories: ['all', 'beverages'],
+    subcategories: ['all', 'chips-namkeen', 'beverages'],
     weight: '53 g',
     optionsLabel: '3 options',
     options: [
@@ -97,7 +97,7 @@ const PRODUCTS = [
     mrp: 20,
     discountText: 'Trending',
     category: 'all',
-    subcategories: ['all', 'beverages'],
+    subcategories: ['all', 'chips-namkeen', 'beverages'],
     weight: '75 g',
     optionsLabel: '2 options',
     options: [
@@ -3225,46 +3225,13 @@ function toggleProductLike(productId) {
 
 // ===== ADD TO CART & VARIANT HANDLERS =====
 function handleAddProductClick(productId, variantIndex = 0) {
-  const p = PRODUCTS.find(x => x.id === productId);
-  if (!p) return;
-
-  const inCart = appState.cart.find(c => c.id === productId);
-  if (inCart) {
-    inCart.qty += 1;
-  } else {
-    let weight = p.weight;
-    let price = p.price;
-    let mrp = p.mrp;
-    if (p.options && p.options[variantIndex]) {
-      weight = p.options[variantIndex].weight;
-      price = p.options[variantIndex].price;
-      mrp = p.options[variantIndex].mrp;
-    }
-    appState.cart.push({
-      id: p.id,
-      name: p.name,
-      price: price,
-      mrp: mrp,
-      weight: weight,
-      img: p.img,
-      category: p.category,
-      veg: p.veg,
-      qty: 1
-    });
-  }
-
-  saveState();
-  showToast(`${p.name} added to cart!`, 'success');
-  renderProducts(PRODUCTS);
-  updateCartBadge();
-  updateCartFAB();
-  if (appState.currentPage === 'page-cart') initCartPage();
+  addToCart(productId, 1, variantIndex);
 }
 
 function changeProductQty(productId, delta) {
   const inCart = appState.cart.find(c => c.id === productId);
   if (!inCart) {
-    if (delta > 0) handleAddProductClick(productId);
+    if (delta > 0) addToCart(productId, delta);
     return;
   }
 
@@ -3278,12 +3245,14 @@ function changeProductQty(productId, delta) {
 
   saveState();
   renderProducts(PRODUCTS);
-  if (typeof updateSingleProductCardDOM === 'function') {
-    try { updateSingleProductCardDOM(productId); } catch(e) {}
-  }
+  try { updateSingleProductCardDOM(productId); } catch(e) {}
   updateCartBadge();
   updateCartFAB();
   if (appState.currentPage === 'page-cart') initCartPage();
+  if (appState.currentPage === 'page-search') {
+    const qInput = document.getElementById('overlay-search-input');
+    if (qInput && qInput.value) runOverlaySearch(qInput.value);
+  }
 }
 
 // ===== VARIANT OPTIONS MODAL =====
@@ -3411,7 +3380,18 @@ function updateCartBadge() {
     }
   }
 
-  // 3. Floating cart bar
+  // 3. Search overlay cart badge
+  const searchBadge = document.getElementById('search-cart-badge');
+  if (searchBadge) {
+    if (totalQty > 0) {
+      searchBadge.textContent = totalQty > 99 ? '99+' : totalQty;
+      searchBadge.classList.remove('hidden');
+    } else {
+      searchBadge.classList.add('hidden');
+    }
+  }
+
+  // 4. Floating cart bar
   updateCartFAB();
 }
 
@@ -4341,36 +4321,84 @@ function updateSingleProductCardDOM(productId) {
   });
 }
 
-function addToCart(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  if (!product) return;
-  const existing = appState.cart.find(c => c.id === productId);
-  if (existing) existing.qty++; else appState.cart.push({ ...product, qty: 1 });
+function addToCart(productId, qtyToAdd = 1, variantIndex = 0) {
+  const count = (typeof qtyToAdd === 'number' && qtyToAdd > 0) ? qtyToAdd : 1;
+  const p = PRODUCTS.find(x => x.id === productId);
+  if (!p) return;
+
+  const inCart = appState.cart.find(c => c.id === productId);
+  if (inCart) {
+    inCart.qty += count;
+  } else {
+    let weight = p.weight;
+    let price = p.price;
+    let mrp = p.mrp || Math.round(p.price * 1.25);
+    if (p.options && p.options[variantIndex]) {
+      weight = p.options[variantIndex].weight || weight;
+      price = p.options[variantIndex].price || price;
+      mrp = p.options[variantIndex].mrp || mrp;
+    }
+    appState.cart.push({
+      id: p.id,
+      name: p.name,
+      price: price,
+      mrp: mrp,
+      weight: weight || 'Standard',
+      img: p.img,
+      category: p.category,
+      veg: !!p.veg,
+      qty: count
+    });
+  }
+
   saveState(); 
+  showToast(`✓ Added ${p.name} to cart!`, 'success');
+  updateCartBadge();
   updateCartFAB();
-  updateSingleProductCardDOM(productId);
-  
+  renderProducts(PRODUCTS);
+  try { updateSingleProductCardDOM(productId); } catch(e) {}
+  if (appState.currentPage === 'page-cart') initCartPage();
+  if (appState.currentPage === 'page-search') {
+    const qInput = document.getElementById('overlay-search-input');
+    if (qInput && qInput.value) runOverlaySearch(qInput.value);
+  }
   if (navigator.vibrate) navigator.vibrate(30);
 }
 
 function addToCartById(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  if (!product) return;
   addToCart(productId);
-  // Quiet add — no toast message
 }
 
 function addComboToCart(productIds) {
   productIds.forEach(id => {
-    const product = PRODUCTS.find(p => p.id === id);
-    if (!product) return;
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return;
     const existing = appState.cart.find(c => c.id === id);
-    if (existing) existing.qty++; else appState.cart.push({ ...product, qty: 1 });
+    if (existing) {
+      existing.qty++;
+    } else {
+      appState.cart.push({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        mrp: p.mrp || Math.round(p.price * 1.25),
+        weight: p.weight || 'Standard',
+        img: p.img,
+        category: p.category,
+        veg: !!p.veg,
+        qty: 1
+      });
+    }
   });
   saveState(); 
+  showToast('✓ Combo items added to cart!', 'success');
+  updateCartBadge();
   updateCartFAB();
-  productIds.forEach(id => updateSingleProductCardDOM(id));
-  // Quiet add — no toast message
+  renderProducts(PRODUCTS);
+  productIds.forEach(id => {
+    try { updateSingleProductCardDOM(id); } catch(e) {}
+  });
+  if (appState.currentPage === 'page-cart') initCartPage();
   if (navigator.vibrate) navigator.vibrate(50);
 }
 
@@ -4396,6 +4424,8 @@ function initCartPage() {
     cartPage.style.setProperty('--cart-accent-bg', isDark ? 'rgba(12,131,70,0.12)' : '#ecfdf5');
     cartPage.style.setProperty('--cart-img-bg', isDark ? '#23262D' : '#f3f4f6');
   }
+  
+  updateCartBadge();
   
   if (appState.cart.length === 0) {
     if (cartList) cartList.innerHTML = ''; 
@@ -4537,16 +4567,26 @@ function updateCartItemQty(id, delta) {
   const item = appState.cart.find(c => c.id === id);
   if (!item) return;
   item.qty += delta;
-  if (item.qty <= 0) appState.cart = appState.cart.filter(c => c.id !== id);
+  if (item.qty <= 0) {
+    appState.cart = appState.cart.filter(c => c.id !== id);
+    showToast('Item removed from cart', 'info');
+  }
   saveState(); 
+  updateCartBadge();
+  updateCartFAB();
+  renderProducts(PRODUCTS);
+  try { updateSingleProductCardDOM(id); } catch(e) {}
   initCartPage();
 }
 
 function removeCartItem(id) {
   appState.cart = appState.cart.filter(c => c.id !== id);
   saveState(); 
-  initCartPage(); 
+  updateCartBadge();
   updateCartFAB(); 
+  renderProducts(PRODUCTS);
+  try { updateSingleProductCardDOM(id); } catch(e) {}
+  initCartPage(); 
   showToast('Item removed', 'info');
 }
 
@@ -4554,8 +4594,11 @@ function clearCart() {
   if (!appState.cart.length) return;
   appState.cart = []; 
   saveState(); 
-  initCartPage(); 
+  updateCartBadge();
   updateCartFAB();
+  renderProducts(PRODUCTS);
+  initCartPage(); 
+  showToast('Cart cleared', 'info');
 }
 
 function updateCartSummary() {
@@ -4707,30 +4750,30 @@ function renderCheckoutMiniItems() {
   
   mini.innerHTML = `
     <!-- Delivery Header Card -->
-    <div class="bg-white border border-outline-variant/65 rounded-2xl p-4 shadow-sm space-y-4 mb-4">
+    <div class="bg-[#181d27] border border-white/10 rounded-2xl p-4 shadow-sm space-y-4 mb-4 text-white">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-amber-500 font-bold" style="font-size: 20px;">schedule</span>
+        <div class="w-10 h-10 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-amber-400 font-bold" style="font-size: 20px;">schedule</span>
         </div>
         <div>
-          <h4 class="text-sm font-bold text-gray-800 leading-tight">Delivery in 15 minutes</h4>
+          <h4 class="text-sm font-bold text-white leading-tight">Delivery in 11 minutes</h4>
           <p class="text-[11px] text-gray-400 font-medium mt-0.5">${shipmentText}</p>
         </div>
       </div>
       
       <!-- Items List -->
-      <div class="divide-y divide-gray-100">
+      <div class="divide-y divide-white/5">
         ${appState.cart.map(item => {
           const mrp = item.mrp || Math.round(item.price * 1.25);
           return `
             <div class="flex gap-4 py-3 first:pt-0 last:pb-0 items-start">
-              <div class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-center p-1.5 shrink-0 overflow-hidden">
+              <div class="w-16 h-16 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center p-1.5 shrink-0 overflow-hidden">
                 <img class="max-h-full max-w-full object-contain" src="${item.img}" alt="${item.name}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150&h=150&fit=crop';" />
               </div>
               <div class="flex-grow min-w-0 py-0.5">
-                <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 leading-tight">${item.name}</h4>
+                <h4 class="text-xs font-semibold text-white line-clamp-2 leading-tight">${item.name}</h4>
                 <p class="text-[11px] text-gray-400 mt-1">${item.weight || 'Standard'}</p>
-                <button class="text-[10px] text-gray-450 font-bold mt-2 hover:text-red-500 active:scale-95 transition-all" onclick="removeCheckoutCartItem(${item.id})">Move to wishlist</button>
+                <button class="text-[10px] text-gray-400 font-bold mt-2 hover:text-red-400 active:scale-95 transition-all" onclick="removeCheckoutCartItem(${item.id})">Move to wishlist</button>
               </div>
               <div class="flex flex-col items-end justify-between self-stretch shrink-0 py-0.5">
                 <div style="display:flex;align-items:center;background:#0C8346;border:1px solid #0C8346;border-radius:6px;overflow:hidden;height:26px;width:64px;">
@@ -4739,7 +4782,7 @@ function renderCheckoutMiniItems() {
                   <button style="width:20px;height:100%;color:#ffffff;font-size:14px;font-weight:800;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" onclick="event.stopPropagation();changeCheckoutProductQty(${item.id},1)">+</button>
                 </div>
                 <div class="flex items-center gap-1.5 mt-2">
-                  <span class="text-xs font-extrabold text-gray-800">₹${item.price}</span>
+                  <span class="text-xs font-extrabold text-[#22c55e] font-mono">₹${item.price}</span>
                   <span class="text-[10px] text-gray-400 line-through">₹${mrp}</span>
                 </div>
               </div>
@@ -5184,7 +5227,9 @@ function placeOrder() {
     appState.giftPackaging = false;
     appState.cart = []; 
     saveState(); 
+    updateCartBadge();
     updateCartFAB();
+    renderProducts(PRODUCTS);
     
     showToast('🎉 Order placed successfully! Tracking live delivery.', 'success');
     navigateTo('page-track-order');
@@ -5573,20 +5618,20 @@ function initOrdersPage() {
       : `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[13px] text-emerald-600">check_circle</span>Delivered</span>`;
 
     const itemsSummary = (order.items || []).map(it => `
-      <div class="flex items-center justify-between text-xs py-1 border-b border-gray-50 last:border-b-0">
+      <div class="flex items-center justify-between text-xs py-1.5 border-b border-white/5 last:border-b-0">
         <div class="flex items-center gap-2">
-          <span class="w-5 h-5 rounded-md bg-gray-100 flex items-center justify-center font-bold text-[10px] text-gray-700 shrink-0">${it.qty || 1}x</span>
-          <span class="font-semibold text-gray-800 line-clamp-1">${it.name}</span>
+          <span class="w-5 h-5 rounded-md bg-white/10 flex items-center justify-center font-bold text-[10px] text-white shrink-0">${it.qty || 1}x</span>
+          <span class="font-semibold text-white line-clamp-1">${it.name}</span>
         </div>
-        <span class="font-bold text-gray-800 shrink-0 font-mono">₹${(it.price || 0) * (it.qty || 1)}</span>
+        <span class="font-bold text-[#22c55e] shrink-0 font-mono">₹${(it.price || 0) * (it.qty || 1)}</span>
       </div>
     `).join('');
 
     return `
-      <div class="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm space-y-3">
-        <div class="flex items-center justify-between border-b border-gray-100 pb-2.5">
+      <div class="bg-[#181d27] border border-white/10 rounded-2xl p-4 shadow-sm space-y-3 text-white">
+        <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
           <div>
-            <div class="text-xs font-mono font-bold text-gray-800">Order #${order.id}</div>
+            <div class="text-xs font-mono font-bold text-white">Order #${order.id}</div>
             <div class="text-[10px] text-gray-400 font-medium mt-0.5">${order.date || 'Today'} · ${order.seat || 'Coach B2, Seat 45'}</div>
           </div>
           ${statusBadge}
@@ -5596,10 +5641,10 @@ function initOrdersPage() {
           ${itemsSummary}
         </div>
 
-        <div class="flex items-center justify-between border-t border-gray-100 pt-2.5">
+        <div class="flex items-center justify-between border-t border-white/10 pt-2.5">
           <div>
             <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Total Amount</span>
-            <div class="text-sm font-black text-gray-900 font-headline font-mono">₹${order.total || 0}</div>
+            <div class="text-sm font-black text-white font-headline font-mono">₹${order.total || 0}</div>
           </div>
           <div class="flex items-center gap-2">
             ${isLive ? `
@@ -5608,7 +5653,7 @@ function initOrdersPage() {
                 Track Live
               </button>
             ` : `
-              <button onclick="reorderItems('${order.id}')" class="bg-emerald-50 hover:bg-emerald-100 text-primary border border-emerald-200 text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1 active:scale-95 transition-all">
+              <button onclick="reorderItems('${order.id}')" class="bg-white/10 hover:bg-white/15 text-white border border-white/15 text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1 active:scale-95 transition-all">
                 <span class="material-symbols-outlined text-sm">refresh</span>
                 Reorder
               </button>
@@ -7820,11 +7865,15 @@ function runOverlaySearch(q) {
   if (defaultView) defaultView.classList.add('hidden');
   if (resultsView) resultsView.classList.remove('hidden');
   
-  const filtered = PRODUCTS.filter(p => 
-    p.name.toLowerCase().includes(query) || 
-    p.category.toLowerCase().includes(query) ||
-    (p.desc && p.desc.toLowerCase().includes(query))
-  );
+  const filtered = PRODUCTS.filter(p => {
+    const nameMatch = p.name && p.name.toLowerCase().includes(query);
+    const catMatch = p.category && p.category.toLowerCase().includes(query);
+    const descMatch = (p.description && p.description.toLowerCase().includes(query)) ||
+                      (p.desc && p.desc.toLowerCase().includes(query));
+    const subcatMatch = Array.isArray(p.subcategories) && p.subcategories.some(s => s.toLowerCase().includes(query));
+    const tagsMatch = Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase().includes(query));
+    return nameMatch || catMatch || descMatch || subcatMatch || tagsMatch;
+  });
   
   const title = document.getElementById('search-results-title');
   if (title) title.textContent = `Found ${filtered.length} matching items`;

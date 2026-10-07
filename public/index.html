@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html class="dark" lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
@@ -177,9 +177,9 @@
       height: 100%;
       max-height: 892px;
       position: relative;
-      background: #F8F9FA;
+      background: #0c0d12 !important;
       overflow: hidden;
-      box-shadow: 0 0 40px rgba(0,0,0,0.6);
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
       display: flex;
       flex-direction: column;
       touch-action: none;
@@ -201,7 +201,7 @@
       z-index: 5;
       padding-bottom: 16px; /* Minimal bottom padding */
       scrollbar-width: none; /* Hide scrollbars */
-      background-color: #F8F9FA;
+      background-color: #0c0d12 !important;
     }
 
     .page::-webkit-scrollbar {
@@ -1799,7 +1799,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     box-shadow: none !important;
   }
   html, body {
-    background-color: #F8F9FA !important;
+    background-color: #0c0d12 !important;
   }
   .bottom-nav {
     width: 90% !important;
@@ -1821,7 +1821,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 <div id="app" class="app-wrapper">
 
   <!-- ==================== PNR & TRAIN STATUS PAGE ==================== -->
-  <div id="page-pnr" class="page tab-page bg-background active">
+  <div id="page-pnr" class="page tab-page active bg-background">
     <!-- Header Section (Elegant & Minimal Compact Hero) -->
     <header class="relative overflow-hidden px-5 pt-6 pb-5 flex flex-row items-center justify-between min-h-[165px]" style="background: linear-gradient(135deg, #118A4E 0%, #0A5C35 100%); border-bottom: 1px solid rgba(255,255,255,0.08);">
       <!-- Masked Train Image container on the right -->
@@ -1874,10 +1874,16 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
         <!-- PNR Input Panel -->
         <div id="panel-pnr" class="pnr-panel space-y-4">
+          <!-- Quick Demo Chip -->
+          <div class="flex items-center justify-between px-1">
+            <span class="text-[11px] text-gray-500 font-medium">Quick Demo PNR:</span>
+            <button type="button" onclick="document.getElementById('pnr-input').value='2345678901'; checkPNRStatus();" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-full flex items-center gap-1 active:scale-95 transition-all">✨ 2345678901 (Rajdhani B2/45)</button>
+          </div>
+
           <!-- Premium Input Capsule (Scanner Removed) -->
           <div class="relative flex items-center bg-white border border-[#ECECEC] rounded-2xl px-4 py-0.5 focus-within:border-[#118A4E] focus-within:ring-4 focus-within:ring-[#118A4E]/5 transition-all duration-200 shadow-sm">
             <span class="material-symbols-outlined text-[#6B7280] text-lg select-none shrink-0">confirmation_number</span>
-            <input class="w-full bg-transparent border-0 py-4 pl-3 pr-3 font-sans font-semibold text-[#111827] focus:outline-none focus:ring-0 text-sm placeholder:text-[#6B7280]/60 placeholder:font-normal" placeholder="Enter 10-digit PNR Number" type="text" inputmode="numeric" pattern="\d*" maxlength="10" id="pnr-input" oninput="validatePNR(this)" />
+            <input class="w-full bg-transparent border-0 py-4 pl-3 pr-3 font-sans font-semibold text-[#111827] focus:outline-none focus:ring-0 text-sm placeholder:text-[#6B7280]/60 placeholder:font-normal" placeholder="Enter 10-digit PNR Number" type="text" inputmode="numeric" pattern="\d*" maxlength="10" id="pnr-input" oninput="validatePNR(this)" value="2345678901" />
           </div>
           
           <!-- CTA Button -->
@@ -2294,46 +2300,46 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     <!-- ===== HERO — pixel match to reference ===== -->
     <style>
       :root {
-        --card-bg: #ffffff;
-        --card-border: 1px solid rgba(0, 0, 0, 0.05);
-        --card-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
-        --img-capsule-bg: #f4f5f7;
-        --product-name-color: #111827;
-        --product-weight-color: #6b7280;
-        --product-price-color: #111827;
-        --product-mrp-color: #9ca3af;
-        --product-disc-color: #2563eb;
-        --qty-btn-bg: #ffffff;
-        --qty-btn-color: #16a34a;
-        --page-shop-bg: linear-gradient(180deg, #f5f7f6 0%, #ffffff 42%, #f8faf9 100%);
-        --products-list-bg: #f4f4f4;
-        --border-color: rgba(0,0,0,0.06);
-        --bottom-nav-bg: rgba(255, 255, 255, 0.95);
-        --bottom-nav-border: rgba(0,0,0,0.06);
-        --bottom-nav-text-active: #118A4E;
-        --bottom-nav-text-inactive: #9ca3af;
-        --page-bg: #ffffff;
-        --header-bg: #ffffff;
-        --text-color: #111827;
-      }
-      
-      body.dark-theme {
-        --img-capsule-bg: #1c1c1e;
+        --card-bg: #14151a;
+        --card-border: 1px solid rgba(255, 255, 255, 0.08);
+        --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        --img-capsule-bg: #101116;
         --product-name-color: #ffffff;
         --product-weight-color: #9ca3af;
         --product-price-color: #ffffff;
-        --product-mrp-color: #6b7280;
-        --product-disc-color: #3b82f6;
-        --qty-btn-bg: #1c1c1e;
-        --page-shop-bg: #121212;
-        --products-list-bg: #121212;
-        --border-color: rgba(255,255,255,0.06);
-        --bottom-nav-bg: rgba(18, 18, 18, 0.96);
+        --product-mrp-color: #71717a;
+        --product-disc-color: #38bdf8;
+        --qty-btn-bg: #14151a;
+        --qty-btn-color: #22c55e;
+        --page-shop-bg: #0c0d12;
+        --products-list-bg: #0c0d12;
+        --border-color: rgba(255, 255, 255, 0.08);
+        --bottom-nav-bg: rgba(16, 17, 22, 0.98);
         --bottom-nav-border: rgba(255, 255, 255, 0.08);
-        --bottom-nav-text-active: #fbbf24;
-        --bottom-nav-text-inactive: #8e8e93;
-        --page-bg: #121212;
-        --header-bg: #121212;
+        --bottom-nav-text-active: #22c55e;
+        --bottom-nav-text-inactive: #9ca3af;
+        --page-bg: #0c0d12;
+        --header-bg: #101116;
+        --text-color: #ffffff;
+      }
+      
+      body.dark-theme, body {
+        --img-capsule-bg: #101116;
+        --product-name-color: #ffffff;
+        --product-weight-color: #9ca3af;
+        --product-price-color: #ffffff;
+        --product-mrp-color: #71717a;
+        --product-disc-color: #38bdf8;
+        --qty-btn-bg: #14151a;
+        --page-shop-bg: #0c0d12;
+        --products-list-bg: #0c0d12;
+        --border-color: rgba(255,255,255,0.08);
+        --bottom-nav-bg: rgba(16, 17, 22, 0.98);
+        --bottom-nav-border: rgba(255, 255, 255, 0.08);
+        --bottom-nav-text-active: #22c55e;
+        --bottom-nav-text-inactive: #9ca3af;
+        --page-bg: #0c0d12;
+        --header-bg: #101116;
         --text-color: #ffffff;
       }
 
@@ -2628,17 +2634,17 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
         <!-- Train name + profile icon -->
         <div class="rq-hero-info-row">
-          <div onclick="resetAppStateAndLogin()" style="cursor:pointer; flex:1; padding-left: 0px;" class="active:scale-[0.98] transition-all">
-            <div id="shop-delivering-train-name" class="rq-hero-train-name">Train name</div>
-            <div id="shop-delivering-seat-coach" class="rq-hero-seat">Seat no/ caoch</div>
+          <div onclick="openTrainSeatSelectorModal()" style="cursor:pointer; flex:1; padding-left: 0px;" class="active:scale-[0.98] transition-all" title="Change train & seat">
+            <div class="flex items-center gap-1">
+              <div id="shop-delivering-train-name" class="rq-hero-train-name">12301 Rajdhani Express</div>
+              <span class="material-symbols-outlined" style="font-size:16px; color:rgba(255,255,255,0.7);">expand_more</span>
+            </div>
+            <div id="shop-delivering-seat-coach" class="rq-hero-seat">Coach B2, Seat 45 (Upper Berth)</div>
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <button id="theme-toggle-btn" onclick="toggleThemeMode()" class="theme-toggle-pill" aria-label="Toggle theme">
-              <span class="material-symbols-outlined" style="font-size: 20px; color: #FFFFFF;">light_mode</span>
-            </button>
-            <div class="rq-hero-avatar" onclick="navigateTo('page-account')">
+            <div class="rq-hero-avatar" onclick="navigateTo('page-account')" title="Your Account">
               <!-- Plain white person silhouette matching reference -->
-              <span class="material-symbols-outlined" style="font-size:30px; color:#FFFFFF; font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48;">person</span>
+              <span class="material-symbols-outlined" style="font-size:26px; color:#FFFFFF; font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48;">person</span>
             </div>
           </div>
         </div>
@@ -2665,178 +2671,302 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     </div>
 
     <!-- ── Category nav (outside and below the hero) ── -->
-    <div class="rq-cat-row-dark">
-      <div class="rq-cdt active" onclick="filterCategory('all',this)">
-        <span class="material-symbols-outlined rq-cdt-ms">shopping_bag</span>
-        <span class="rq-cdt-label">All</span>
-      </div>
-      <div class="rq-cdt" onclick="filterCategory('monsoon',this)">
-        <span class="material-symbols-outlined rq-cdt-ms">umbrella</span>
-        <span class="rq-cdt-label">Monsoon</span>
-      </div>
-      <div class="rq-cdt" onclick="filterCategory('tech',this)">
-        <span class="material-symbols-outlined rq-cdt-ms">headphones</span>
-        <span class="rq-cdt-label">Electronics</span>
-      </div>
-      <div class="rq-cdt" onclick="filterCategory('hygiene',this)">
-        <span class="material-symbols-outlined rq-cdt-ms">face_retouching_natural</span>
-        <span class="rq-cdt-label">Beauty</span>
-      </div>
-      <div class="rq-cdt" onclick="filterCategory('hygiene',this)">
-        <span class="material-symbols-outlined rq-cdt-ms">medication</span>
-        <span class="rq-cdt-label">Pharmacy</span>
-      </div>
-      <div class="rq-cdt" onclick="filterCategory('comfort',this)">
-        <span class="material-symbols-outlined rq-cdt-ms">child_care</span>
-        <span class="rq-cdt-label">Baby Care</span>
-      </div>
-    </div>
+    <!-- ── PHOTO 1: CATEGORY NAVIGATION ROW ── -->
+    <div class="rq-cat-strip-container">
+      <div class="rq-cat-strip">
+        <!-- Tab 1: All -->
+        <div class="rq-cat-tab active" data-cat="all" onclick="filterCategory('all', this)">
+          <div class="rq-cat-icon-wrap">
+            <svg class="cat-icon" viewBox="0 0 28 28" fill="none">
+              <!-- Grocery bag with bottles inside matching Photo 1 -->
+              <path d="M7 6a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v6H7V6z" fill="currentColor"/>
+              <path d="M15 4a1.5 1.5 0 0 1 1.5-1.5h1A1.5 1.5 0 0 1 19 4v8h-4V4z" fill="currentColor"/>
+              <path d="M4 11h20l-1.5 12a2 2 0 0 1-2 1.8H7.5a2 2 0 0 1-2-1.8L4 11z" fill="currentColor"/>
+              <ellipse cx="14" cy="15" rx="3.5" ry="1.5" fill="#0c0d12"/>
+            </svg>
+          </div>
+          <span class="cat-name">All</span>
+        </div>
 
-    <script>
-      /* Cycling tagline words — workable, clean, no emojis */
-      const rqWords = ['Travel', 'Monsoon', 'Comfort', 'Snacks', 'Your Journey'];
-      let rqWordIdx = 0;
-      const rqWordEl = document.getElementById('changing-word');
-      if (rqWordEl) {
-        setInterval(() => {
-          rqWordEl.style.opacity = '0';
-          rqWordEl.style.transform = 'translateY(-10px)';
-          setTimeout(() => {
-            rqWordIdx = (rqWordIdx + 1) % rqWords.length;
-            rqWordEl.textContent = rqWords[rqWordIdx];
-            rqWordEl.style.transform = 'translateY(10px)';
-            requestAnimationFrame(() => {
-              setTimeout(() => {
-                rqWordEl.style.opacity = '1';
-                rqWordEl.style.transform = 'translateY(0)';
-              }, 20);
-            });
-          }, 280);
-        }, 3000);
-      }
+        <!-- Tab 2: Navratri (with red "New" badge) -->
+        <div class="rq-cat-tab" data-cat="navratri" onclick="filterCategory('navratri', this)">
+          <div class="rq-cat-icon-wrap">
+            <svg class="cat-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <line x1="6" y1="5" x2="22" y2="23"/>
+              <line x1="22" y1="5" x2="6" y2="23"/>
+              <!-- Dandiya stick grip bands -->
+              <line x1="8" y1="13" x2="11" y2="10" stroke-width="1.8"/>
+              <line x1="17" y1="10" x2="20" y2="13" stroke-width="1.8"/>
+            </svg>
+            <span class="rq-badge-new">New</span>
+          </div>
+          <span class="cat-name">Navratri</span>
+        </div>
 
-      function setRQCatByLabel(label) {
-        document.querySelectorAll('.rq-cdt').forEach(t => {
-          const text = t.querySelector('.rq-cdt-label')?.textContent?.trim() || '';
-          if (text.toLowerCase() === label.toLowerCase()) {
-            document.querySelectorAll('.rq-cdt').forEach(x => x.classList.remove('active'));
-            t.classList.add('active');
-          }
-        });
-      }
-    </script>
+        <!-- Tab 3: Electronics -->
+        <div class="rq-cat-tab" data-cat="electronics" onclick="filterCategory('electronics', this)">
+          <div class="rq-cat-icon-wrap">
+            <svg class="cat-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 14v-2a10 10 0 0 1 20 0v2"/>
+              <rect x="3" y="14" width="4.5" height="8" rx="2.25" fill="currentColor"/>
+              <rect x="20.5" y="14" width="4.5" height="8" rx="2.25" fill="currentColor"/>
+            </svg>
+          </div>
+          <span class="cat-name">Electronics</span>
+        </div>
 
-    <!-- Snacks & Drinks Category Grid (First Photo) -->
-    <div id="home-snacks-drinks-container" style="padding:18px 14px; border-bottom:1px solid var(--border-color, rgba(255,255,255,0.06));">
-      <h3 style="font-size:16px; font-weight:800; color:var(--product-name-color, #ffffff); margin:0 0 16px 0; font-family:'Outfit',sans-serif;">Snacks & Drinks</h3>
-      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px 8px;">
-        <!-- Card 1: Chips & Namkeen -->
-        <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <img src="https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
+        <!-- Tab 4: Beauty -->
+        <div class="rq-cat-tab" data-cat="beauty" onclick="filterCategory('beauty', this)">
+          <div class="rq-cat-icon-wrap">
+            <svg class="cat-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- Lipstick -->
+              <rect x="4" y="12" width="7" height="12" rx="1.5" stroke-width="2"/>
+              <path d="M6 12V7l3-3v8" stroke-width="2"/>
+              <!-- Makeup Brush -->
+              <line x1="20" y1="13" x2="20" y2="24" stroke-width="2.2"/>
+              <path d="M17 13c0-4 1.5-6.5 3-6.5s3 2.5 3 6.5z" stroke-width="2"/>
+            </svg>
           </div>
-          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Chips &<br>Namkeen</span>
+          <span class="cat-name">Beauty</span>
         </div>
-        <!-- Card 2: Sweets & Chocolates -->
-        <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <img src="https://images.unsplash.com/photo-1581798459219-318e76aecc7b?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
+
+        <!-- Tab 5: Pharmacy -->
+        <div class="rq-cat-tab" data-cat="pharmacy" onclick="filterCategory('pharmacy', this)">
+          <div class="rq-cat-icon-wrap">
+            <svg class="cat-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- Medicine bottle with + cross -->
+              <rect x="3.5" y="8" width="12" height="15" rx="2.5" stroke-width="2"/>
+              <path d="M6 5h7a1 1 0 0 1 1 1v2H5V6a1 1 0 0 1 1-1z" stroke-width="1.8"/>
+              <line x1="9.5" y1="12" x2="9.5" y2="19" stroke-width="2.2"/>
+              <line x1="6" y1="15.5" x2="13" y2="15.5" stroke-width="2.2"/>
+              <!-- Pill capsule -->
+              <rect x="18" y="9" width="6.5" height="14" rx="3.25" stroke-width="2"/>
+              <line x1="18" y1="16" x2="24.5" y2="16" stroke-width="1.8"/>
+            </svg>
           </div>
-          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Sweets &<br>Chocolates</span>
-        </div>
-        <!-- Card 3: Drinks & Juices -->
-        <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
-          </div>
-          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Drinks &<br>Juices</span>
-        </div>
-        <!-- Card 4: Tea, Coffee & Milk Drinks -->
-        <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
-          </div>
-          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Tea, Coffee<br>& Milk Drin...</span>
-        </div>
-        <!-- Card 5: Instant Food -->
-        <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <img src="cat_instant_food.png" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
-          </div>
-          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Instant<br>Food</span>
-        </div>
-        <!-- Card 6: Sauces & Spreads -->
-        <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <img src="https://images.unsplash.com/photo-1596701062351-df5f8af54b85?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
-          </div>
-          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Sauces &<br>Spreads</span>
-        </div>
-        <!-- Card 7: Paan Corner -->
-        <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <img src="https://images.unsplash.com/photo-1600857062241-98e5dba7f214?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
-          </div>
-          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Paan<br>Corner</span>
-        </div>
-        <!-- Card 8: Ice Creams & More -->
-        <div onclick="filterCategory('beverages', this); setRQCatByLabel('Monsoon')" style="display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;">
-          <div style="width:100%; aspect-ratio:1; background:var(--img-capsule-bg); border:1px solid var(--border-color, rgba(255,255,255,0.05)); border-radius:16px; padding:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <img src="https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=120&h=120&fit=crop" style="max-width:92%; max-height:92%; object-fit:contain; border-radius:8px;">
-          </div>
-          <span style="font-size:10px; font-weight:700; color:var(--product-name-color, rgba(255,255,255,0.9)); margin-top:6px; line-height:1.2; font-family:'Outfit',sans-serif; display:block; min-height:24px;">Ice Creams<br>& More</span>
+          <span class="cat-name">Pharmacy</span>
         </div>
       </div>
     </div>
 
-    <!-- Featured This Week (Second Photo) -->
-    <div id="home-featured-container" style="padding:18px 14px; border-bottom:1px solid var(--border-color, rgba(255,255,255,0.06)); overflow:hidden;">
-      <h3 style="font-size:16px; font-weight:800; color:var(--product-name-color, #ffffff); margin:0 0 14px 0; font-family:'Outfit',sans-serif;">Featured this week</h3>
-      <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:6px;" class="scrollbar-none">
+    <!-- ── 1. ALL / HOME CATEGORY VIEW (Snacks & Drinks + Featured Carousel) ── -->
+    <div id="home-main-view">
+      <!-- ── BLINKIT-STYLE SNACKS & DRINKS CATEGORY GRID (CLICKABLE & WORKABLE) ── -->
+      <div id="snacks-drinks-section" class="px-3 pt-3 pb-1" style="background: #0c0d12;">
+        <div class="flex items-center justify-between px-1 mb-2.5">
+          <h3 class="text-base font-extrabold text-white tracking-tight font-headline flex items-center gap-1.5">
+            <span>Snacks &amp; Drinks</span>
+          </h3>
+          <button onclick="filterCategory('all', null)" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition-colors">
+            See All
+          </button>
+        </div>
+
+        <!-- 8 Categories (4 columns x 2 rows) matching Photo 1 exactly -->
+        <div class="grid grid-cols-4 gap-2 mb-2">
+          <!-- 1. Chips & Namkeen -->
+          <div class="cat-grid-card group" onclick="selectSnacksCategory('chips-namkeen')" title="Chips & Namkeen">
+            <div class="cat-grid-thumb">
+              <img src="cat_box_chips.png" alt="Chips & Namkeen" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200" />
+            </div>
+            <span class="cat-grid-label">Chips &amp;<br/>Namkeen</span>
+          </div>
+
+          <!-- 2. Sweets & Chocolates -->
+          <div class="cat-grid-card group" onclick="selectSnacksCategory('sweets-chocolates')" title="Sweets & Chocolates">
+            <div class="cat-grid-thumb">
+              <img src="cat_box_sweets.png" alt="Sweets & Chocolates" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200" />
+            </div>
+            <span class="cat-grid-label">Sweets &amp;<br/>Chocolates</span>
+          </div>
+
+          <!-- 3. Drinks & Juices -->
+          <div class="cat-grid-card group" onclick="selectSnacksCategory('drinks-juices')" title="Drinks & Juices">
+            <div class="cat-grid-thumb">
+              <img src="cat_box_drinks.png" alt="Drinks & Juices" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200" />
+            </div>
+            <span class="cat-grid-label">Drinks &amp;<br/>Juices</span>
+          </div>
+
+          <!-- 4. Tea, Coffee & Milk Drinks -->
+          <div class="cat-grid-card group" onclick="selectSnacksCategory('tea-coffee')" title="Tea, Coffee & Milk Drinks">
+            <div class="cat-grid-thumb">
+              <img src="cat_box_tea.png" alt="Tea, Coffee & Milk Drinks" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200" />
+            </div>
+            <span class="cat-grid-label">Tea, Coffee<br/>&amp; Milk Drinks</span>
+          </div>
+
+          <!-- 5. Instant Food -->
+          <div class="cat-grid-card group" onclick="selectSnacksCategory('instant-food')" title="Instant Food">
+            <div class="cat-grid-thumb">
+              <img src="cat_box_instant.png" alt="Instant Food" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200" />
+            </div>
+            <span class="cat-grid-label">Instant<br/>Food</span>
+          </div>
+
+          <!-- 6. Sauces & Spreads -->
+          <div class="cat-grid-card group" onclick="selectSnacksCategory('sauces-spreads')" title="Sauces & Spreads">
+            <div class="cat-grid-thumb">
+              <img src="cat_box_sauces.png" alt="Sauces & Spreads" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200" />
+            </div>
+            <span class="cat-grid-label">Sauces &amp;<br/>Spreads</span>
+          </div>
+
+          <!-- 7. Paan Corner -->
+          <div class="cat-grid-card group" onclick="selectSnacksCategory('paan-corner')" title="Paan Corner">
+            <div class="cat-grid-thumb">
+              <img src="cat_box_paan.png" alt="Paan Corner" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200" />
+            </div>
+            <span class="cat-grid-label">Paan<br/>Corner</span>
+          </div>
+
+          <!-- 8. Ice Creams & More -->
+          <div class="cat-grid-card group" onclick="selectSnacksCategory('ice-creams')" title="Ice Creams & More">
+            <div class="cat-grid-thumb">
+              <img src="cat_box_icecream.png" alt="Ice Creams & More" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200" />
+            </div>
+            <span class="cat-grid-label">Ice Creams<br/>&amp; More</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── FEATURED THIS WEEK SECTION ── -->
+      <div id="home-featured-container" class="featured-section">
+        <div class="featured-header-row">
+          <h3 class="featured-title">Featured this week</h3>
+        </div>
         
-        <!-- Banner 1: Rainy Day Essentials -->
-        <div onclick="filterCategory('monsoon', this); setRQCatByLabel('Monsoon')" style="flex:0 0 200px; height:150px; background:linear-gradient(180deg, rgba(16,28,21,0.9) 0%, rgba(5,15,9,0.95) 100%), url('https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&fit=crop'); background-size:cover; border-radius:18px; border:2px solid #2563eb; position:relative; overflow:hidden; cursor:pointer; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
-          <span style="background:#ffffff; color:#dc2626; font-size:9px; font-weight:900; padding:3px 8px; border-radius:6px; max-width:fit-content; text-transform:uppercase; font-family:'Outfit',sans-serif;">Featured</span>
-          <div>
-            <h4 style="font-size:15px; font-weight:900; color:#ffffff; margin:0; line-height:1.25; font-family:'Outfit',sans-serif;">Rainy Day<br>Essentials</h4>
-            <p style="font-size:8px; color:rgba(255,255,255,0.65); margin:2px 0 0 0; font-family:'Outfit',sans-serif;">Everything you need</p>
+        <!-- 3 Featured Cards Horizontal Carousel -->
+        <div class="featured-cards-carousel">
+          <!-- Card 1: Newly Launched / Travel Essentials Kit (PowerBank + Earphones + Travel Pillow) -->
+          <div class="featured-card-wrapper" onclick="openGadgetSpotlightModal()" title="Newly Launched - Travel Essentials Kit">
+            <img src="featured_card_1.jpg" alt="Newly Launched - Travel Essentials Kit" />
+          </div>
+
+          <!-- Card 2: Brand in Focus (Portronics) -->
+          <div class="featured-card-wrapper" onclick="filterCategory('electronics', null)" title="Brand In Focus - Portronics">
+            <img src="featured_card_2.jpg" alt="Brand In Focus - Portronics" />
+          </div>
+
+          <!-- Card 3: Featured (Pitru Paksha) -->
+          <div class="featured-card-wrapper" onclick="filterCategory('navratri', null)" title="Featured - Pitru Paksha">
+            <img src="featured_card_3.jpg" alt="Featured - Pitru Paksha" />
           </div>
         </div>
 
-        <!-- Banner 2: Newly Launched -->
-        <div onclick="filterCategory('tech', this); setRQCatByLabel('Electronics')" style="flex:0 0 200px; height:150px; background:linear-gradient(180deg, rgba(217, 119, 6, 0.45) 0%, rgba(180, 83, 9, 0.95) 100%), url('https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=300&fit=crop'); background-size:cover; border-radius:18px; border:2px solid #fbbf24; position:relative; overflow:hidden; cursor:pointer; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
-          <span style="background:#ffffff; color:#d97706; font-size:9px; font-weight:900; padding:3px 8px; border-radius:6px; max-width:fit-content; text-transform:uppercase; font-family:'Outfit',sans-serif;">Newly Launched</span>
-          <div>
-            <h4 style="font-size:15px; font-weight:900; color:#ffffff; margin:0; line-height:1.25; font-family:'Outfit',sans-serif;">For You</h4>
-            <p style="font-size:8px; color:rgba(255,255,255,0.8); margin:2px 0 0 0; font-family:'Outfit',sans-serif;">Hot Wheels & more</p>
-          </div>
+        <!-- ── GRAND FESTIVE READY BANNER ── -->
+        <div class="festive-ready-container" title="Get Festive Ready Powered by L'Oreal and BBlunt">
+          <img src="festive_ready_banner.jpg" alt="Get Festive Ready powered by L'Oreal Paris and BBLUNT" />
+          
+          <!-- Interactive Hotspot Click Overlays for the 4 Festive Sub-Tiles -->
+          <div class="festive-hotspot" style="top:36%; left:3%; width:22%; height:48%;" onclick="filterCategory('navratri', null); showToast('Viewing Dandiya & Festive Essentials', 'info');" title="Dandiya Ready"></div>
+          <div class="festive-hotspot" style="top:36%; left:27%; width:22%; height:48%;" onclick="filterCategory('beauty', null); showToast('Viewing Hair Colour & Styling Essentials', 'info');" title="Hair Colour & Styling"></div>
+          <div class="festive-hotspot" style="top:36%; left:51%; width:22%; height:48%;" onclick="filterCategory('beauty', null); showToast('Viewing Skincare & Grooming', 'info');" title="Skincare & Grooming"></div>
+          <div class="festive-hotspot" style="top:36%; left:75%; width:22%; height:48%;" onclick="filterCategory('navratri', null); showToast('Viewing Pooja & Vrat Needs', 'info');" title="Pooja & Vrat Needs"></div>
+          
+          <!-- Interactive Hotspot for Exclusive Payment Offers Bar -->
+          <div class="festive-hotspot" style="bottom:0; left:0; width:100%; height:14%;" onclick="openPaymentOffersModal()" title="Exclusive Payment Offers"></div>
         </div>
-
-        <!-- Banner 3: Magazine Corner -->
-        <div onclick="filterCategory('tech', this); setRQCatByLabel('Electronics')" style="flex:0 0 200px; height:150px; background:linear-gradient(180deg, rgba(31, 41, 55, 0.45) 0%, rgba(17, 24, 39, 0.95) 100%), url('https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=300&fit=crop'); background-size:cover; border-radius:18px; border:2px solid #2563eb; position:relative; overflow:hidden; cursor:pointer; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
-          <span style="background:#ffffff; color:#2563eb; font-size:9px; font-weight:900; padding:3px 8px; border-radius:6px; max-width:fit-content; text-transform:uppercase; font-family:'Outfit',sans-serif;">Featured</span>
-          <div>
-            <h4 style="font-size:15px; font-weight:900; color:#ffffff; margin:0; line-height:1.25; font-family:'Outfit',sans-serif;">Magazine<br>Corner</h4>
-            <p style="font-size:8px; color:rgba(255,255,255,0.65); margin:2px 0 0 0; font-family:'Outfit',sans-serif;">GQ, LifeRaksha & more</p>
-          </div>
-        </div>
-
       </div>
     </div>
 
-    <!-- Custom Category Content Zone (Third, Fourth, Fifth, Sixth Photos render here) -->
-    <div id="custom-category-content-container" class="hidden"></div>
+    <!-- ── 2. NAVRATRI TOP CATEGORY VIEW (MATCHING USER SCREENSHOT 1 EXACTLY) ── -->
+    <div id="navratri-main-view" class="hidden" style="background: #0c0d12;">
+      <!-- Full Celebrate Navratri banner with 5 clickable cards -->
+      <div class="relative w-full overflow-hidden select-none" style="background: #5a0715;">
+        <img src="navratri_hero_section.png" alt="Celebrate Navratri" class="w-full h-auto block pointer-events-none" />
+        
+        <!-- Interactive Hotspots for the 5 Sub-Cards -->
+        <!-- Card 1: Dandiya Ready - Left Tall Card (Ethnic Necklace Set) -->
+        <div class="absolute cursor-pointer rounded-2xl active:scale-[0.98] transition-transform" 
+             style="top: 22%; left: 3%; width: 29%; height: 72%;" 
+             onclick="openNavratriSpotlight('necklace')" title="Dandiya Ready - Ethnic Necklace Set ₹299"></div>
+        
+        <!-- Card 2: Flowers & Pooja Needs - Middle Top Card -->
+        <div class="absolute cursor-pointer rounded-2xl active:scale-[0.98] transition-transform" 
+             style="top: 22%; left: 34%; width: 31%; height: 35%;" 
+             onclick="filterNavratriSub('pooja')" title="Flowers & Pooja Needs"></div>
+        
+        <!-- Card 3: Kanjak Corner - Middle Bottom Card -->
+        <div class="absolute cursor-pointer rounded-2xl active:scale-[0.98] transition-transform" 
+             style="top: 59%; left: 34%; width: 31%; height: 35%;" 
+             onclick="filterNavratriSub('kanjak')" title="Kanjak Corner"></div>
+        
+        <!-- Card 4: Fasting Essentials - Right Top Card -->
+        <div class="absolute cursor-pointer rounded-2xl active:scale-[0.98] transition-transform" 
+             style="top: 22%; left: 67%; width: 31%; height: 35%;" 
+             onclick="filterNavratriSub('fasting')" title="Fasting Essentials"></div>
+        
+        <!-- Card 5: Kids Mela - Right Bottom Card -->
+        <div class="absolute cursor-pointer rounded-2xl active:scale-[0.98] transition-transform" 
+             style="top: 59%; left: 67%; width: 31%; height: 35%;" 
+             onclick="filterNavratriSub('kids')" title="Kids Mela"></div>
+      </div>
+    </div>
 
-    <!-- Products List Section -->
-    <section style="background:var(--products-list-bg, #f4f4f4);padding:16px 14px 0;" id="products-list-section">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <h3 style="font-size:15px;font-weight:800;color:var(--product-name-color, #1a1a1a);margin:0;" id="products-section">Trending Essentials</h3>
-        <button style="font-size:11px;font-weight:700;color:#118A4E;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:2px;" onclick="filterCategory('all', null)">
-          See All <span class="material-symbols-outlined" style="font-size:16px;">chevron_right</span>
+    <!-- ── 3. ELECTRONICS TOP CATEGORY VIEW (MATCHING USER SCREENSHOT 2 EXACTLY) ── -->
+    <div id="electronics-main-view" class="hidden px-3 pt-3 pb-2" style="background: #0c0d12;">
+      <!-- 4 Cards Horizontal Carousel matching Screenshot 2 -->
+      <div class="flex gap-2.5 overflow-x-auto pb-1 scrollbar-none" style="scroll-snap-type: x mandatory;">
+        <!-- Card 1: Earbuds & Headsets -->
+        <div class="shrink-0 w-28 cursor-pointer active:scale-95 transition-all rounded-2xl overflow-hidden border border-white/10 hover:border-sky-500/50" onclick="filterElectronicsSub('earbuds')" title="Earbuds & Headsets">
+          <img src="elec_card_earbuds.png" alt="Earbuds & Headsets" class="w-full h-auto block" />
+        </div>
+        <!-- Card 2: fire tv -->
+        <div class="shrink-0 w-28 cursor-pointer active:scale-95 transition-all rounded-2xl overflow-hidden border border-white/10 hover:border-sky-500/50" onclick="filterElectronicsSub('firetv')" title="fire tv">
+          <img src="elec_card_firetv.png" alt="fire tv" class="w-full h-auto block" />
+        </div>
+        <!-- Card 3: Power Banks & Chargers -->
+        <div class="shrink-0 w-28 cursor-pointer active:scale-95 transition-all rounded-2xl overflow-hidden border border-white/10 hover:border-sky-500/50" onclick="filterElectronicsSub('powerbanks')" title="Power Banks & Chargers">
+          <img src="elec_card_powerbanks.png" alt="Power Banks & Chargers" class="w-full h-auto block" />
+        </div>
+        <!-- Card 4: Brand in focus Portronics -->
+        <div class="shrink-0 w-28 cursor-pointer active:scale-95 transition-all rounded-2xl overflow-hidden border border-white/10 hover:border-sky-500/50" onclick="filterElectronicsSub('portronics')" title="Portronics">
+          <img src="elec_card_portronics.png" alt="Brand In Focus Portronics" class="w-full h-auto block" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. BEAUTY TOP CATEGORY VIEW ── -->
+    <div id="beauty-main-view" class="hidden px-3 pt-3 pb-1" style="background: #0c0d12;">
+      <div class="festive-ready-container rounded-2xl overflow-hidden border border-white/10" title="Beauty & Grooming Store">
+        <img src="festive_ready_banner.jpg" alt="Beauty Essentials" />
+      </div>
+    </div>
+
+    <!-- ── 5. PHARMACY TOP CATEGORY VIEW ── -->
+    <div id="pharmacy-main-view" class="hidden px-3 pt-3 pb-2" style="background: #0c0d12;">
+      <div class="p-4 rounded-2xl bg-[#141d24] border border-cyan-500/30 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xl">
+            <span class="material-symbols-outlined">medical_services</span>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-white font-headline">Railway Station 24x7 Pharmacy</h4>
+            <p class="text-[10px] text-gray-400">First-aid, motion sickness, ORS &amp; headache relief delivered to coach</p>
+          </div>
+        </div>
+        <span class="text-[10px] font-bold text-cyan-400 bg-cyan-400/10 px-2.5 py-1 rounded-full border border-cyan-400/20">10 Min</span>
+      </div>
+    </div>
+
+    <!-- ── PHOTO 3: 3-COLUMN PRODUCT CARDS GRID (DARK THEME) ── -->
+    <section class="products-section-wrap" id="products-list-section">
+      <div class="products-section-header">
+        <div>
+          <h3 class="products-section-title" id="products-section">Trending Essentials</h3>
+          <div style="font-size:11px; color:#9ca3af; font-family:'Outfit',sans-serif; display:flex; align-items:center; gap:4px; margin-top:2px;">
+            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#22c55e;"></span>
+            Delivered in 12 mins to your seat
+          </div>
+        </div>
+        <button style="font-size:11px; font-weight:700; color:#22c55e; background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); padding:4px 10px; border-radius:12px; cursor:pointer; display:flex; align-items:center; gap:2px;" onclick="filterCategory('all', null)">
+          See All <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span>
         </button>
       </div>
-      <!-- Grid Items (sectioned layout rendered via Javascript) -->
-      <div id="products-grid" style="padding-bottom:110px;"></div>
+
+      <!-- 3-Column Products Grid -->
+      <div id="products-grid" class="products-grid-3col"></div>
     </section>
   </div>
 
@@ -2946,130 +3076,91 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       </div>
     </div>
 
-    <!-- Step Indicators -->
-    <div class="checkout-steps flex items-center justify-center gap-1.5 py-5 px-5 bg-white border-b border-outline-variant/40">
-      <div class="step flex items-center gap-1 active" id="step-1">
-        <span class="w-6 h-6 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center" id="step-circle-1">1</span>
-        <span class="text-[10px] font-bold text-primary">Details</span>
+    <!-- Express Delivery Top Banner -->
+    <div class="px-4 py-2.5 bg-emerald-500/10 border-b border-emerald-500/20 flex items-center justify-between text-xs font-bold text-emerald-400">
+      <div class="flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm font-bold">bolt</span>
+        <span>Express Delivery in 11 Mins to your Coach</span>
       </div>
-      <span class="w-6 h-[1px] bg-gray-200 step-line"></span>
-      <div class="step flex items-center gap-1" id="step-2">
-        <span class="w-6 h-6 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold flex items-center justify-center" id="step-circle-2">2</span>
-        <span class="text-[10px] font-bold text-gray-500">Payment</span>
-      </div>
-      <span class="w-6 h-[1px] bg-gray-200 step-line"></span>
-      <div class="step flex items-center gap-1" id="step-3">
-        <span class="w-6 h-6 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold flex items-center justify-center" id="step-circle-3">3</span>
-        <span class="text-[10px] font-bold text-gray-500">Done</span>
-      </div>
+      <span class="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">Fast Track</span>
     </div>
 
-    <!-- Step 1 details panel -->
-    <div class="checkout-section p-5" id="checkout-step-1">
-      <h3 class="text-xs font-bold text-primary uppercase tracking-wider mb-4 flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-base">directions_railway</span>
-        Delivery Seat Details
-      </h3>
+    <!-- Unified Single-Step Checkout Content -->
+    <div class="checkout-section p-4 space-y-4" id="checkout-step-1">
+      <!-- PNR / Train & Seat Delivery Card -->
+      <div class="bg-white border border-outline-variant/60 rounded-2xl p-4 shadow-sm relative overflow-hidden" id="checkout-pnr-details">
+        <div class="flex justify-between items-start pb-2.5 border-b border-gray-100">
+          <div>
+            <span class="text-[10px] font-black text-emerald-700 uppercase tracking-widest block">Delivering to</span>
+            <h4 class="text-xs font-black text-gray-800 mt-0.5" id="checkout-train">12301 Rajdhani Express</h4>
+          </div>
+          <button onclick="openTrainSeatSelectorModal()" class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 active:scale-95 transition-all">Change Seat</button>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3 text-xs pt-2">
+          <div>
+            <span class="text-gray-400 font-semibold text-[10px] block mb-0.5">Coach &amp; Berth</span>
+            <strong class="text-gray-800 text-xs font-bold" id="checkout-seat">Coach B2, Seat 45 (Upper Berth)</strong>
+          </div>
+          <div>
+            <span class="text-gray-400 font-semibold text-[10px] block mb-0.5">Contact</span>
+            <strong class="text-gray-800 text-xs font-bold">8826387844</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden manual input fallback (pre-filled) -->
+      <div id="checkout-manual-details" class="hidden">
+        <input type="text" id="manual-train" value="12301 Rajdhani Express" />
+        <input type="text" id="manual-coach" value="B2" />
+        <input type="text" id="manual-seat" value="45" />
+        <input type="text" id="contact-name" value="Kartik Guleria" />
+        <input type="tel" id="contact-phone" value="8826387844" />
+      </div>
+
+      <!-- Items Mini List -->
+      <div id="checkout-items-mini" class="space-y-4"></div>
       
-      <!-- PNR delivery card -->
-      <div class="bg-white border border-outline-variant/60 rounded-[2rem] p-5 shadow-premium space-y-4 mb-5 relative overflow-hidden" id="checkout-pnr-details">
-        <!-- Accent line -->
-        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary"></div>
-        
-        <div class="flex justify-between items-start pb-3 border-b border-gray-100">
-          <div>
-            <div class="text-[10px] font-black text-primary uppercase tracking-widest">Delivery Target</div>
-            <h4 class="text-sm font-serif-display font-black text-on-surface mt-0.5" id="checkout-train">—</h4>
-          </div>
-          <span class="bg-primary/10 text-primary text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 select-none">
-            <span class="material-symbols-outlined text-[10px]">verified</span> Confirmed
-          </span>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4 text-xs pt-1">
-          <div>
-            <span class="text-gray-400 font-semibold block mb-0.5">Seat & Berth</span>
-            <strong class="text-on-surface text-xs font-bold" id="checkout-seat">—</strong>
-          </div>
-          <div>
-            <span class="text-gray-400 font-semibold block mb-0.5">Delivery Station</span>
-            <strong class="text-on-surface text-xs font-bold" id="checkout-station">New Delhi (NDLS)</strong>
-          </div>
-          <div>
-            <span class="text-gray-400 font-semibold block mb-0.5">Delivery Window</span>
-            <strong class="text-on-surface text-xs font-bold" id="checkout-time">On-Time Arrival</strong>
-          </div>
-          <div>
-            <span class="text-gray-400 font-semibold block mb-0.5">Estimated ETA</span>
-            <strong class="text-primary text-xs font-black" id="checkout-eta">~15 mins</strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- Manual delivery card if no PNR details -->
-      <div id="checkout-manual-details" class="bg-white border border-outline-variant/60 rounded-2xl p-4 shadow-sm space-y-4 mb-5 hidden">
-        <div class="text-xs font-bold text-on-surface">Set Details Manually</div>
-        <div>
-          <input type="text" class="w-full bg-[#F4F6F5] border border-outline-variant rounded-xl py-3 px-4 text-xs font-medium focus:outline-none" placeholder="Train Number / Name (e.g. 12002)" id="manual-train" />
-        </div>
-        <div class="flex gap-3">
-          <input type="text" class="w-1/2 bg-[#F4F6F5] border border-outline-variant rounded-xl py-3 px-4 text-xs font-medium focus:outline-none" placeholder="Coach (e.g. B2)" id="manual-coach" />
-          <input type="text" class="w-1/2 bg-[#F4F6F5] border border-outline-variant rounded-xl py-3 px-4 text-xs font-medium focus:outline-none" placeholder="Seat No (e.g. 45)" id="manual-seat" />
-        </div>
-      </div>
-
-      <h3 class="text-xs font-bold text-primary uppercase tracking-wider mb-4 flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-base">person</span>
-        Contact Information
-      </h3>
-      <div class="bg-white border border-outline-variant/60 rounded-2xl p-4 shadow-sm space-y-4 mb-5">
-        <div>
-          <input type="text" class="w-full bg-[#F4F6F5] border border-outline-variant rounded-xl py-3 px-4 text-xs font-medium focus:outline-none" placeholder="Full Name" id="contact-name" />
-        </div>
-        <div>
-          <input type="tel" class="w-full bg-[#F4F6F5] border border-outline-variant rounded-xl py-3 px-4 text-xs font-medium focus:outline-none" placeholder="Phone Number" id="contact-phone" />
-        </div>
-      </div>
-
-      <div id="checkout-items-mini" class="space-y-4 mb-4"></div>
+      <!-- Recommended Add-ons -->
       <div id="checkout-recommended-container"></div>
+      
+      <!-- Bill Details & Tips & Donations -->
       <div id="checkout-bill-details-container"></div>
     </div>
 
-    <!-- Step 2 Payment panel -->
-    <div class="checkout-section p-5 hidden" id="checkout-step-2">
-      <h3 class="text-xs font-bold text-primary uppercase tracking-wider mb-4">Choose Payment Mode</h3>
+    <!-- Payment panel (Integrated directly on checkout page) -->
+    <div class="checkout-section px-4 pb-24" id="checkout-step-2">
+      <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider mb-3">Choose Payment Mode</h3>
       
-      <div class="payment-options space-y-3 mb-6">
+      <div class="payment-options space-y-2.5 mb-4">
         <!-- UPI Option -->
-        <div class="payment-option selected border-2 border-primary bg-emerald-50/40 rounded-2xl p-4 flex items-center gap-4 cursor-pointer" onclick="selectPayment(this, 'upi')" id="pay-upi">
-          <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-lg shadow-sm">🇮🇳</div>
-          <div class="flex-grow">
-            <div class="text-xs font-bold text-on-surface">UPI Instant Pay</div>
-            <div class="text-[10px] text-gray-500">Pay via Google Pay, PhonePe, Paytm</div>
+        <div class="payment-option selected border-2 border-emerald-600 bg-emerald-50/50 rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer" onclick="selectPayment(this, 'upi')" id="pay-upi">
+          <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-base shadow-sm shrink-0">🇮🇳</div>
+          <div class="flex-grow min-w-0">
+            <div class="text-xs font-bold text-gray-800">UPI Instant Pay</div>
+            <div class="text-[10px] text-gray-500">Google Pay, PhonePe, Paytm</div>
           </div>
-          <div class="pay-radio w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center">
-            <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+          <div class="pay-radio w-5 h-5 rounded-full border-2 border-emerald-600 flex items-center justify-center shrink-0">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
           </div>
-        </div>
-        <!-- Card Option -->
-        <div class="payment-option border border-outline-variant bg-white rounded-2xl p-4 flex items-center gap-4 cursor-pointer" onclick="selectPayment(this, 'card')" id="pay-card">
-          <div class="w-10 h-10 rounded-xl bg-[#F4F6F5] flex items-center justify-center text-lg shadow-sm">💳</div>
-          <div class="flex-grow">
-            <div class="text-xs font-bold text-on-surface">Debit / Credit Card</div>
-            <div class="text-[10px] text-gray-500">Visa, Mastercard, RuPay cards</div>
-          </div>
-          <div class="pay-radio w-5 h-5 rounded-full border-2 border-gray-200"></div>
         </div>
         <!-- COD Option -->
-        <div class="payment-option border border-outline-variant bg-white rounded-2xl p-4 flex items-center gap-4 cursor-pointer" onclick="selectPayment(this, 'cod')" id="pay-cod">
-          <div class="w-10 h-10 rounded-xl bg-[#F4F6F5] flex items-center justify-center text-lg shadow-sm">💵</div>
-          <div class="flex-grow">
-            <div class="text-xs font-bold text-on-surface">Cash on Delivery (COD)</div>
-            <div class="text-[10px] text-gray-500">Pay cash/UPI at seat on delivery</div>
+        <div class="payment-option border border-outline-variant bg-white rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer" onclick="selectPayment(this, 'cod')" id="pay-cod">
+          <div class="w-9 h-9 rounded-xl bg-[#F4F6F5] flex items-center justify-center text-base shadow-sm shrink-0">💵</div>
+          <div class="flex-grow min-w-0">
+            <div class="text-xs font-bold text-gray-800">Cash on Delivery (Pay at Seat)</div>
+            <div class="text-[10px] text-gray-500">Pay cash/UPI at seat when delivered</div>
           </div>
-          <div class="pay-radio w-5 h-5 rounded-full border-2 border-gray-200"></div>
+          <div class="pay-radio w-5 h-5 rounded-full border-2 border-gray-200 shrink-0"></div>
         </div>
+        <!-- Card Option -->
+        <div class="payment-option border border-outline-variant bg-white rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer" onclick="selectPayment(this, 'card')" id="pay-card">
+          <div class="w-9 h-9 rounded-xl bg-[#F4F6F5] flex items-center justify-center text-base shadow-sm shrink-0">💳</div>
+          <div class="flex-grow min-w-0">
+            <div class="text-xs font-bold text-gray-800">Debit / Credit Card</div>
+            <div class="text-[10px] text-gray-500">Visa, Mastercard, RuPay cards</div>
+          </div>
+          <div class="pay-radio w-5 h-5 rounded-full border-2 border-gray-200 shrink-0"></div>
       </div>
 
       <!-- UPI input box -->
@@ -3182,7 +3273,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
   <div id="page-account" class="page tab-page" style="background:#0f1209;overflow-y:auto;padding-bottom:90px;">
 
     <!-- Login section (shown when logged out) -->
-    <div id="account-login-section">
+    <div id="account-login-section" class="hidden">
       <div style="padding:16px 16px 0;"><button style="width:36px;height:36px;border-radius:50%;background:#1e2a14;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="navigateTo('page-shop')"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">arrow_back</span></button></div>
       <div style="display:flex;flex-direction:column;align-items:center;padding:32px 24px 24px;">
         <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#3a6b24,#22c55e);display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 0 0 4px rgba(34,197,94,0.2);">
@@ -3201,60 +3292,136 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       </div>
     </div>
 
-    <!-- Logged in section -->
-    <div id="account-logged-section" class="hidden">
-      <div style="padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;">
-        <button style="width:36px;height:36px;border-radius:50%;background:#1e2a14;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="navigateTo('page-shop')"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">arrow_back</span></button>
-        <div style="width:36px;"></div>
+    <!-- Logged in section (Blinkit style matching Photo 5) -->
+    <div id="account-logged-section" class="p-4 space-y-4" style="background:#0c0d12; min-height:100vh;">
+      <!-- Header -->
+      <div class="flex items-center justify-between pt-1">
+        <button class="w-9 h-9 rounded-full bg-[#181d27] text-white flex items-center justify-center active:scale-90 transition-all border border-white/10" onclick="navigateTo('page-shop')">
+          <span class="material-symbols-outlined text-lg">arrow_back</span>
+        </button>
+        <span class="text-xs font-bold text-gray-400">Account</span>
+        <div class="w-9"></div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;padding:20px 24px 28px;">
-        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#3a6b24,#22c55e);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 0 0 4px rgba(34,197,94,0.2);" id="profile-avatar"><span class="material-symbols-outlined" style="color:#fff;font-size:40px;">person</span></div>
-        <div style="font-size:20px;font-weight:900;color:#fff;font-family:'Outfit',sans-serif;" id="profile-name">My Account</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:3px;" id="profile-email"></div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;" id="profile-phone"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 16px 20px;">
-        <div onclick="navigateTo('page-orders')" style="background:#1e2a14;border-radius:16px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
-          <span class="material-symbols-outlined" style="color:#86efac;font-size:26px;">inventory_2</span>
-          <span style="font-size:12px;font-weight:800;color:#fff;text-align:center;">My Orders</span>
-          <span style="font-size:10px;color:rgba(255,255,255,0.4);text-align:center;">View your orders</span>
+
+      <!-- Avatar & User Info -->
+      <div class="flex flex-col items-center text-center pt-2 pb-3">
+        <div class="w-20 h-20 rounded-full flex items-center justify-center shadow-xl mb-3 border-2 border-[#b07d2b]/40" style="background: radial-gradient(circle, #b07d2b 0%, #785317 100%);" id="profile-avatar">
+          <span class="material-symbols-outlined text-white" style="font-size: 44px; font-variation-settings: 'FILL' 1;">person</span>
         </div>
-        <div onclick="navigateTo('page-pnr')" style="background:#1e2a14;border-radius:16px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
-          <span class="material-symbols-outlined" style="color:#86efac;font-size:26px;">confirmation_number</span>
-          <span style="font-size:12px;font-weight:800;color:#fff;text-align:center;">My PNRs</span>
-          <span style="font-size:10px;color:rgba(255,255,255,0.4);text-align:center;">Check your PNRs</span>
-        </div>
-        <div style="background:#1e2a14;border-radius:16px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
-          <span class="material-symbols-outlined" style="color:#86efac;font-size:26px;">card_giftcard</span>
-          <span style="font-size:12px;font-weight:800;color:#fff;text-align:center;">Refer &amp; Earn</span>
-          <span style="font-size:10px;color:rgba(255,255,255,0.4);text-align:center;">Earn rewards</span>
-        </div>
+        <h2 class="text-lg font-black text-white font-headline" id="profile-name">Your account</h2>
+        <div class="text-xs font-bold text-gray-400 mt-1 font-mono tracking-wider" id="profile-phone">8826387844</div>
+        <div class="text-[10px] text-gray-500 mt-0.5" id="profile-email">kartik.railquick@gmail.com</div>
       </div>
-      <div style="margin:0 16px 16px;background:#1e2a14;border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);">
-        <div style="width:44px;height:44px;border-radius:12px;background:#22c55e;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="material-symbols-outlined" style="color:#fff;font-size:22px;">train</span></div>
-        <div style="flex:1;"><div style="font-size:13px;font-weight:800;color:#fff;">About RailQuick</div><div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;line-height:1.4;">Your trusted travel companion for ordering essentials on train.</div></div>
-        <span class="material-symbols-outlined" style="color:rgba(255,255,255,0.35);font-size:20px;">chevron_right</span>
-      </div>
-      <div style="padding:0 16px 16px;">
-        <div style="font-size:12px;font-weight:800;color:#4ade80;margin-bottom:10px;letter-spacing:0.04em;">Support</div>
-        <div style="background:#1e2a14;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
-          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;" onclick="navigateTo('page-support')"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">chat_bubble</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Help Centre</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
-          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">phone</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Contact Us</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
-          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">help</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">FAQs</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+
+      <!-- 3 Primary Action Cards -->
+      <div class="grid grid-cols-3 gap-2.5">
+        <div onclick="navigateTo('page-orders')" class="bg-[#181d27] border border-white/10 rounded-2xl p-3.5 flex flex-col items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all text-center">
+          <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white">
+            <span class="material-symbols-outlined text-2xl">shopping_basket</span>
+          </div>
+          <span class="text-[11px] font-black text-white leading-tight">Your orders</span>
         </div>
-      </div>
-      <div style="padding:0 16px 16px;">
-        <div style="font-size:12px;font-weight:800;color:#4ade80;margin-bottom:10px;letter-spacing:0.04em;">More</div>
-        <div style="background:#1e2a14;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
-          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">star</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Rate RailQuick</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
-          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">group_add</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Refer &amp; Earn</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
-          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">shield</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Privacy Policy</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
-          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">description</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Terms &amp; Conditions</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
-          <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;cursor:pointer;"><span class="material-symbols-outlined" style="color:#86efac;font-size:20px;">share</span><span style="flex:1;font-size:13px;font-weight:600;color:#fff;">Share RailQuick</span><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.3);font-size:18px;">chevron_right</span></div>
+
+        <div onclick="openWalletModal()" class="bg-[#181d27] border border-white/10 rounded-2xl p-3.5 flex flex-col items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all text-center">
+          <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white">
+            <span class="material-symbols-outlined text-2xl">account_balance_wallet</span>
+          </div>
+          <span class="text-[11px] font-black text-white leading-tight">RailQuick Mon...</span>
+        </div>
+
+        <div onclick="navigateTo('page-support')" class="bg-[#181d27] border border-white/10 rounded-2xl p-3.5 flex flex-col items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all text-center">
+          <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white">
+            <span class="material-symbols-outlined text-2xl">chat_bubble</span>
+          </div>
+          <span class="text-[11px] font-black text-white leading-tight">Need help?</span>
         </div>
       </div>
-      <div style="padding:0 16px 16px;">
-        <button style="width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;padding:14px;border-radius:16px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="signOut()"><span class="material-symbols-outlined" style="font-size:18px;">logout</span> Sign Out</button>
+
+      <!-- App Update Available Banner -->
+      <div class="bg-[#181d27] border border-white/10 rounded-2xl p-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white">
+            <span class="material-symbols-outlined text-xl">stay_current_portrait</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white">App update available</div>
+            <div class="text-[10px] text-gray-400">bug fixes and improvements</div>
+          </div>
+        </div>
+        <span class="text-[10px] font-bold text-[#38bdf8] bg-[#38bdf8]/15 px-2 py-0.5 rounded-lg border border-[#38bdf8]/30">v18.9.3</span>
+      </div>
+
+      <!-- Appearance Row -->
+      <div class="bg-[#181d27] border border-white/10 rounded-2xl p-3.5 flex items-center justify-between cursor-pointer" onclick="cycleThemeMode()">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-gray-300 text-xl">dark_mode</span>
+          <span class="text-xs font-bold text-white">Appearance</span>
+        </div>
+        <div class="flex items-center gap-1 text-xs font-bold text-gray-400">
+          <span id="account-theme-label">DARK</span>
+          <span class="material-symbols-outlined text-sm">expand_more</span>
+        </div>
+      </div>
+
+      <!-- Hide Sensitive Items Toggle -->
+      <div class="bg-[#181d27] border border-white/10 rounded-2xl p-3.5 flex items-center justify-between">
+        <div class="flex items-start gap-3 max-w-[80%]">
+          <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+            <span class="material-symbols-outlined text-base">visibility_off</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white">Hide sensitive items</div>
+            <div class="text-[10px] text-gray-400 mt-0.5 leading-tight">Sexual wellness, nicotine products and other sensitive items will be hidden</div>
+            <span class="text-[9px] font-bold text-emerald-400 underline mt-1 inline-block cursor-pointer">Know more</span>
+          </div>
+        </div>
+        <label class="switch-toggle shrink-0">
+          <input type="checkbox" id="sensitive-items-toggle" onchange="toggleSensitiveItems(this.checked)" />
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+
+      <!-- Your Information List -->
+      <div class="space-y-2 pt-1">
+        <div class="text-xs font-black text-gray-300 font-headline uppercase tracking-wider px-1">Your information</div>
+        <div class="bg-[#181d27] border border-white/10 rounded-2xl divide-y divide-white/5 overflow-hidden">
+          <div class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-white/5 active:bg-white/10 transition-colors" onclick="openTrainSeatSelectorModal()">
+            <div class="flex items-center gap-3 text-xs font-bold text-white">
+              <span class="material-symbols-outlined text-gray-400 text-lg">menu_book</span>
+              <span>Address book &amp; Seat details</span>
+            </div>
+            <span class="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+          </div>
+
+          <div class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-white/5 active:bg-white/10 transition-colors" onclick="showToast('Showing your saved recipes & favorite train snacks', 'info')">
+            <div class="flex items-center gap-3 text-xs font-bold text-white">
+              <span class="material-symbols-outlined text-gray-400 text-lg">soup_kitchen</span>
+              <span>Bookmarked recipes</span>
+            </div>
+            <span class="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+          </div>
+
+          <div class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-white/5 active:bg-white/10 transition-colors" onclick="showToast('Your journey wishlist has 3 items', 'info')">
+            <div class="flex items-center gap-3 text-xs font-bold text-white">
+              <span class="material-symbols-outlined text-gray-400 text-lg">favorite_border</span>
+              <span>Your wishlist</span>
+            </div>
+            <span class="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+          </div>
+
+          <div class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-white/5 active:bg-white/10 transition-colors" onclick="showToast('GST invoicing active for business travel', 'info')">
+            <div class="flex items-center gap-3 text-xs font-bold text-white">
+              <span class="material-symbols-outlined text-gray-400 text-lg">description</span>
+              <span>GST details</span>
+            </div>
+            <span class="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sign Out / Reset button -->
+      <div class="pt-2 pb-8">
+        <button style="width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;padding:12px;border-radius:16px;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="resetAppStateAndRestart()"><span class="material-symbols-outlined" style="font-size:18px;">restart_alt</span> Reset Demo Data</button>
       </div>
     </div>
   </div>
@@ -3514,7 +3681,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
   </div>
 
   <!-- ==================== BOTTOM NAVIGATION BAR ==================== -->
-  <nav id="bottom-nav" class="bottom-nav hidden-nav">
+  <nav id="bottom-nav" class="bottom-nav">
     <div class="nav-item active" data-page="page-shop" onclick="navTo('page-shop')">
       <span class="material-symbols-outlined nav-icon fill-1">home</span>
       <span class="nav-label">Home</span>
@@ -3528,29 +3695,34 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       <span class="nav-label">Orders</span>
       <span class="nav-badge" id="nav-orders-badge" style="display:none;">0</span>
     </div>
+    <div class="nav-item" data-page="page-account" onclick="navTo('page-account')">
+      <span class="material-symbols-outlined nav-icon">account_circle</span>
+      <span class="nav-label">Account</span>
+    </div>
   </nav>
 
   <!-- ==================== DEDICATED SEARCH OVERLAY PAGE ==================== -->
-  <div id="page-search" class="page tab-page bg-background flex flex-col" style="overflow: hidden !important; padding-bottom: 0 !important;">
-    <!-- Header Input Section -->
-    <div class="sticky top-0 bg-white border-b border-outline-variant/30 px-4 pt-4 pb-3 flex items-center gap-3 z-50 shrink-0" style="box-shadow: 0 1px 0 rgba(0,0,0,0.04);">
-      <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-primary active:scale-90 transition-transform" onclick="closeSearchOverlay()">
+  <div id="page-search" class="page tab-page flex flex-col" style="background: #0c0d12 !important; overflow: hidden !important; padding-bottom: 0 !important;">
+    <!-- Sleek Blinkit Dark Search Header -->
+    <div class="sticky top-0 z-50 shrink-0 px-4 pt-4 pb-3 flex items-center gap-3 border-b border-white/10" style="background: #0c0d12; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+      <button class="w-10 h-10 flex items-center justify-center rounded-full bg-[#181d27] border border-white/10 text-white active:scale-90 transition-transform shrink-0" onclick="closeSearchOverlay()">
         <span class="material-symbols-outlined text-xl">arrow_back</span>
       </button>
-      <div class="flex-1 bg-gray-100 rounded-2xl px-3 flex items-center h-11 border border-transparent focus-within:border-primary/20 focus-within:bg-white transition-all">
-        <span class="material-symbols-outlined text-slate-400 text-lg mr-2">search</span>
-        <input type="text" id="overlay-search-input" class="w-full bg-transparent border-none focus:ring-0 text-xs font-semibold placeholder-gray-400 animate-fade-in-up" placeholder="Search comfort, drinks, hygiene..." oninput="runOverlaySearch(this.value)" onkeydown="if(event.key==='Enter') { saveRecentSearch(this.value); this.blur(); }" />
-        <button onclick="clearOverlaySearch()" class="text-slate-400 hover:text-slate-600 hidden" id="search-clear-btn">✕</button>
+      <div class="flex-1 bg-[#181d27] rounded-2xl px-3.5 flex items-center h-12 border border-white/15 focus-within:border-emerald-500 focus-within:bg-[#1f2533] transition-all">
+        <span class="material-symbols-outlined text-gray-400 text-xl mr-2.5 shrink-0">search</span>
+        <input type="text" id="overlay-search-input" class="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-sm font-semibold placeholder-gray-400 text-white" style="color: #ffffff !important; caret-color: #22c55e;" placeholder='Search "dandiya", "chips", "earbuds"...' oninput="runOverlaySearch(this.value)" onkeydown="if(event.key==='Enter') { saveRecentSearch(this.value); this.blur(); }" />
+        <button onclick="clearOverlaySearch()" class="text-gray-400 hover:text-white px-1.5 font-bold text-sm hidden" id="search-clear-btn">✕</button>
+        <span class="material-symbols-outlined text-emerald-400 text-xl ml-2 shrink-0 cursor-pointer active:scale-95" onclick="showToast('Listening for voice search...', 'info')">mic</span>
       </div>
     </div>
 
     <!-- Search Contents -->
-    <div class="flex-grow overflow-y-auto p-5 space-y-6" onscroll="document.getElementById('overlay-search-input')?.blur();">
+    <div class="flex-grow overflow-y-auto p-4 space-y-6" onscroll="document.getElementById('overlay-search-input')?.blur();" style="background: #0c0d12;">
       <!-- Recent Searches (Injected dynamically) -->
       <div id="search-recent-container" class="space-y-3 hidden">
         <div class="flex justify-between items-center">
-          <h4 class="text-[10px] font-black text-secondary uppercase tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-xs text-gray-400">history</span> Recent Searches</h4>
-          <button onclick="clearRecentSearches()" class="text-[9px] font-black uppercase text-red-500/80 hover:text-red-500 hover:opacity-75 transition-colors">Clear</button>
+          <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-xs text-gray-400">history</span> Recent Searches</h4>
+          <button onclick="clearRecentSearches()" class="text-[9px] font-black uppercase text-red-400 hover:text-red-300 transition-colors">Clear</button>
         </div>
         <div class="flex flex-wrap gap-2" id="search-recent-list"></div>
       </div>
@@ -3558,54 +3730,55 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       <!-- Popular Searches (Default view when empty) -->
       <div id="search-default-view" class="space-y-5">
         <div>
-          <h4 class="text-[10px] font-black text-secondary uppercase tracking-widest mb-3 flex items-center gap-1"><span class="material-symbols-outlined text-xs text-amber-500 animate-pulse">local_fire_department</span> Popular Searches</h4>
+          <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-1"><span class="material-symbols-outlined text-xs text-amber-500 animate-pulse">local_fire_department</span> Trending Searches</h4>
           <div class="flex flex-wrap gap-2">
-            <button onclick="prefillSearch('Samosa')" class="bg-white border border-outline-variant/60 rounded-full px-3.5 py-2 text-[10px] font-bold text-on-surface hover:border-primary/40 active:scale-95 transition-all">Samosa</button>
-            <button onclick="prefillSearch('Chai')" class="bg-white border border-outline-variant/60 rounded-full px-3.5 py-2 text-[10px] font-bold text-on-surface hover:border-primary/40 active:scale-95 transition-all">Chai</button>
-            <button onclick="prefillSearch('Water')" class="bg-white border border-outline-variant/60 rounded-full px-3.5 py-2 text-[10px] font-bold text-on-surface hover:border-primary/40 active:scale-95 transition-all">Water</button>
-            <button onclick="prefillSearch('Pepsi')" class="bg-white border border-outline-variant/60 rounded-full px-3.5 py-2 text-[10px] font-bold text-on-surface hover:border-primary/40 active:scale-95 transition-all">Pepsi</button>
-            <button onclick="prefillSearch('Maggie')" class="bg-white border border-outline-variant/60 rounded-full px-3.5 py-2 text-[10px] font-bold text-on-surface hover:border-primary/40 active:scale-95 transition-all">Maggie</button>
-            <button onclick="prefillSearch('Charger')" class="bg-white border border-outline-variant/60 rounded-full px-3.5 py-2 text-[10px] font-bold text-on-surface hover:border-primary/40 active:scale-95 transition-all">Charger</button>
+            <button onclick="prefillSearch('Dandiya')" class="bg-[#181d27] border border-white/10 rounded-full px-3.5 py-2 text-xs font-bold text-white hover:border-emerald-500/50 active:scale-95 transition-all">✨ Dandiya Sticks</button>
+            <button onclick="prefillSearch('Earbuds')" class="bg-[#181d27] border border-white/10 rounded-full px-3.5 py-2 text-xs font-bold text-white hover:border-emerald-500/50 active:scale-95 transition-all">🎧 Earbuds</button>
+            <button onclick="prefillSearch('Chips')" class="bg-[#181d27] border border-white/10 rounded-full px-3.5 py-2 text-xs font-bold text-white hover:border-emerald-500/50 active:scale-95 transition-all">🥔 Magic Masala</button>
+            <button onclick="prefillSearch('Power Bank')" class="bg-[#181d27] border border-white/10 rounded-full px-3.5 py-2 text-xs font-bold text-white hover:border-emerald-500/50 active:scale-95 transition-all">🔋 Power Bank</button>
+            <button onclick="prefillSearch('Chai')" class="bg-[#181d27] border border-white/10 rounded-full px-3.5 py-2 text-xs font-bold text-white hover:border-emerald-500/50 active:scale-95 transition-all">☕️ Kulhad Chai</button>
+            <button onclick="prefillSearch('Samosa')" class="bg-[#181d27] border border-white/10 rounded-full px-3.5 py-2 text-xs font-bold text-white hover:border-emerald-500/50 active:scale-95 transition-all">🥟 Samosa</button>
+            <button onclick="prefillSearch('Neck Pillow')" class="bg-[#181d27] border border-white/10 rounded-full px-3.5 py-2 text-xs font-bold text-white hover:border-emerald-500/50 active:scale-95 transition-all">😴 Neck Pillow</button>
           </div>
         </div>
 
         <div>
-          <h4 class="text-[10px] font-black text-secondary uppercase tracking-widest mb-3">Shop By Category</h4>
+          <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Explore Categories</h4>
           <div class="grid grid-cols-2 gap-2.5">
-            <div onclick="prefillCategorySearch('comfort')" class="bg-gradient-to-br from-amber-50 to-orange-50 p-3.5 rounded-2xl border border-amber-100 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:shadow-sm">
+            <div onclick="prefillCategorySearch('navratri')" class="bg-[#181d27] p-3.5 rounded-2xl border border-white/10 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:border-amber-500/40">
               <div>
-                <div class="text-[10px] font-black text-amber-900 font-headline">Travel &amp; Comfort</div>
-                <div class="text-[8px] text-amber-700/60 mt-0.5">10+ items</div>
+                <div class="text-[11px] font-black text-amber-400 font-headline">Celebrate Navratri</div>
+                <div class="text-[9px] text-gray-400 mt-0.5">Dandiya, Pooja, Vrat</div>
               </div>
-              <div class="w-9 h-9 bg-amber-100 rounded-xl flex items-center justify-center">
-                <span class="material-symbols-outlined text-amber-600 text-lg">weekend</span>
+              <div class="w-9 h-9 bg-amber-500/15 rounded-xl flex items-center justify-center text-amber-400">
+                <span class="material-symbols-outlined text-lg">celebration</span>
               </div>
             </div>
-            <div onclick="prefillCategorySearch('beverages')" class="bg-gradient-to-br from-sky-50 to-blue-50 p-3.5 rounded-2xl border border-sky-100 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:shadow-sm">
+            <div onclick="prefillCategorySearch('electronics')" class="bg-[#181d27] p-3.5 rounded-2xl border border-white/10 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:border-sky-500/40">
               <div>
-                <div class="text-[10px] font-black text-sky-900 font-headline">Drinks &amp; Tea</div>
-                <div class="text-[8px] text-sky-700/60 mt-0.5">15+ items</div>
+                <div class="text-[11px] font-black text-sky-400 font-headline">Electronics &amp; Gear</div>
+                <div class="text-[9px] text-gray-400 mt-0.5">Earphones, Chargers</div>
               </div>
-              <div class="w-9 h-9 bg-sky-100 rounded-xl flex items-center justify-center">
-                <span class="material-symbols-outlined text-sky-600 text-lg">local_cafe</span>
+              <div class="w-9 h-9 bg-sky-500/15 rounded-xl flex items-center justify-center text-sky-400">
+                <span class="material-symbols-outlined text-lg">headphones</span>
               </div>
             </div>
-            <div onclick="prefillCategorySearch('hygiene')" class="bg-gradient-to-br from-emerald-50 to-green-50 p-3.5 rounded-2xl border border-emerald-100 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:shadow-sm">
+            <div onclick="prefillCategorySearch('drinks-juices')" class="bg-[#181d27] p-3.5 rounded-2xl border border-white/10 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:border-emerald-500/40">
               <div>
-                <div class="text-[10px] font-black text-emerald-900 font-headline">Hygiene</div>
-                <div class="text-[8px] text-emerald-700/60 mt-0.5">12+ items</div>
+                <div class="text-[11px] font-black text-emerald-400 font-headline">Drinks &amp; Juices</div>
+                <div class="text-[9px] text-gray-400 mt-0.5">Cold drinks, Energy</div>
               </div>
-              <div class="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center">
-                <span class="material-symbols-outlined text-emerald-600 text-lg">clean_hands</span>
+              <div class="w-9 h-9 bg-emerald-500/15 rounded-xl flex items-center justify-center text-emerald-400">
+                <span class="material-symbols-outlined text-lg">local_cafe</span>
               </div>
             </div>
-            <div onclick="prefillCategorySearch('tech')" class="bg-gradient-to-br from-purple-50 to-indigo-50 p-3.5 rounded-2xl border border-purple-100 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:shadow-sm">
+            <div onclick="prefillCategorySearch('chips-namkeen')" class="bg-[#181d27] p-3.5 rounded-2xl border border-white/10 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:border-purple-500/40">
               <div>
-                <div class="text-[10px] font-black text-purple-900 font-headline">Tech &amp; Gadgets</div>
-                <div class="text-[8px] text-purple-700/60 mt-0.5">8+ items</div>
+                <div class="text-[11px] font-black text-purple-400 font-headline">Snacks &amp; Munchies</div>
+                <div class="text-[9px] text-gray-400 mt-0.5">Chips, Namkeen, Biscuits</div>
               </div>
-              <div class="w-9 h-9 bg-purple-100 rounded-xl flex items-center justify-center">
-                <span class="material-symbols-outlined text-purple-600 text-lg">devices</span>
+              <div class="w-9 h-9 bg-purple-500/15 rounded-xl flex items-center justify-center text-purple-400">
+                <span class="material-symbols-outlined text-lg">lunch_dining</span>
               </div>
             </div>
           </div>
@@ -3614,7 +3787,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
 
       <!-- Results Grid -->
       <div id="search-results-view" class="hidden">
-        <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3" id="search-results-title">Search Results</div>
+        <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3" id="search-results-title">Search Results</div>
         <div class="grid grid-cols-2 gap-3 pb-32" id="search-results-grid">
           <!-- Injected items -->
         </div>
@@ -3632,23 +3805,30 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
     </div>
   </div>
 
-  <!-- Sticky Bottom Cart Bar on Shopping Front -->
-  <div id="cart-fab" class="fixed bottom-[94px] left-1/2 -translate-x-1/2 z-50 flex items-center justify-between w-11/12 max-w-[380px] px-4 py-2 rounded-[20px] border transition-all duration-300 hidden" style="box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15); height: 60px;">
+  <!-- Unified Blinkit Floating Cart Bar (Single, High Standard) -->
+  <div id="cart-fab" class="fixed bottom-[84px] left-1/2 -translate-x-1/2 z-50 flex items-center justify-between w-11/12 max-w-[390px] px-3.5 py-2.5 rounded-[22px] bg-[#12151d] text-white border border-emerald-500/40 transition-all duration-300 hidden" style="box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7); height: 62px;">
     <!-- Left side: Items preview & stacked thumbnails -->
     <div class="flex items-center gap-3 min-w-0" onclick="navigateTo('page-cart')" style="cursor: pointer;">
-      <div id="cart-fab-preview" class="flex items-center shrink-0">
+      <div id="cart-fab-preview" class="flex items-center -space-x-2 shrink-0">
         <!-- Dynamic thumbs injected here -->
       </div>
       <div class="flex flex-col text-left justify-center min-w-0 leading-tight">
-        <span id="cart-fab-title" class="text-xs font-extrabold font-sans text-gray-800">View Cart</span>
-        <span id="cart-fab-count" class="text-[10px] mt-0.5 font-bold text-gray-500">0 items</span>
+        <div class="flex items-center gap-1.5">
+          <span id="cart-fab-count" class="text-xs font-black uppercase tracking-wide text-white font-sans">0 ITEMS</span>
+          <span class="text-white/40 text-[10px]">•</span>
+          <span id="cart-fab-total" class="text-sm font-black text-[#22c55e] font-mono">₹0</span>
+        </div>
+        <span class="text-[9px] font-bold text-gray-400 mt-0.5 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          Delivering to your seat in 11 mins
+        </span>
       </div>
     </div>
     
     <!-- Right side: Green CTA Button -->
-    <button onclick="navigateTo('page-cart')" class="bg-[#0C8346] text-white px-4 py-2 rounded-xl font-sans font-bold flex items-center gap-1.5 active:scale-95 transition-all text-xs shrink-0 hover:bg-[#0a723d] shadow-sm" style="height: 38px;">
+    <button onclick="navigateTo('page-cart')" class="bg-[#0C8346] hover:bg-[#0a723d] text-white px-4 py-2 rounded-xl font-sans font-black flex items-center gap-1.5 active:scale-95 transition-all text-xs shrink-0 shadow-lg" style="height: 40px;">
       <span>View Cart</span>
-      <span class="material-symbols-outlined text-[15px] font-bold">play_arrow</span>
+      <span class="material-symbols-outlined text-[16px] font-bold">arrow_forward</span>
     </button>
   </div>
 
@@ -3851,7 +4031,7 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
       </div>
 
       <!-- Coach Blueprint visualization container -->
-      <div id="seatmap-layout-container" class="border border-slate-100 rounded-3xl p-4 bg-[#F8F9FA] min-h-[220px] flex flex-col justify-center transition-all duration-300">
+      <div id="seatmap-layout-container" class="border border-white/10 rounded-3xl p-4 bg-[#14151a] min-h-[220px] flex flex-col justify-center transition-all duration-300">
         <!-- Render seat grid blueprint dynamically inside app.js -->
       </div>
 
@@ -3911,6 +4091,246 @@ input[type='text'], input[type='number'], input[type='tel'], input[type='date'] 
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PRODUCT OPTIONS VARIANT MODAL ==================== -->
+  <div id="product-options-backdrop" class="options-modal-backdrop" onclick="closeProductOptionsModal()">
+    <div class="options-modal-sheet" onclick="event.stopPropagation()">
+      <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-3"></div>
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <img id="options-modal-img" src="product_lays.png" class="w-12 h-12 object-contain bg-[#101116] rounded-xl p-1 border border-white/10" alt="Product" />
+          <div>
+            <h4 id="options-modal-title" class="text-sm font-bold text-white font-headline line-clamp-1">Product Options</h4>
+            <p id="options-modal-subtitle" class="text-[11px] text-gray-400">Select your preferred pack size</p>
+          </div>
+        </div>
+        <button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:text-white" onclick="closeProductOptionsModal()">✕</button>
+      </div>
+      
+      <!-- Options List -->
+      <div id="options-modal-list" class="flex flex-col gap-2.5 mt-3 max-h-[320px] overflow-y-auto">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== EXCLUSIVE PAYMENT OFFERS MODAL ==================== -->
+  <div id="payment-offers-modal" class="options-modal-backdrop" onclick="closePaymentOffersModal()">
+    <div class="options-modal-sheet" onclick="event.stopPropagation()" style="max-height: 85vh; overflow-y: auto;">
+      <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-3"></div>
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div>
+          <span class="text-[10px] font-bold text-[#eab308] uppercase tracking-wider">Festive Ready Specials</span>
+          <h4 class="text-base font-bold text-white font-headline">Exclusive Bank Offers</h4>
+        </div>
+        <button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:text-white" onclick="closePaymentOffersModal()">✕</button>
+      </div>
+
+      <div class="flex flex-col gap-3 mt-3">
+        <!-- Offer 1: Axis Bank -->
+        <div class="p-3.5 rounded-2xl bg-[#1c1d24] border border-[#800020]/40 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#800020] flex items-center justify-center font-bold text-white text-xs">AXIS</div>
+            <div>
+              <div class="text-xs font-bold text-white">Flat ₹150 OFF on Axis Bank</div>
+              <div class="text-[10px] text-gray-400">On min. order of ₹499 · Use code <span class="text-[#f59e0b] font-mono font-bold">AXIS150</span></div>
+            </div>
+          </div>
+          <button onclick="applyPaymentOffer('AXIS150', 150)" class="text-xs font-bold text-white bg-[#800020] hover:bg-[#a0002a] px-3 py-1.5 rounded-lg active:scale-95 transition-all">Apply</button>
+        </div>
+
+        <!-- Offer 2: American Express -->
+        <div class="p-3.5 rounded-2xl bg-[#1c1d24] border border-[#0070d2]/40 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#0070d2] flex items-center justify-center font-bold text-white text-xs">AMEX</div>
+            <div>
+              <div class="text-xs font-bold text-white">20% Instant OFF up to ₹200</div>
+              <div class="text-[10px] text-gray-400">All Amex Cards · Use code <span class="text-[#f59e0b] font-mono font-bold">AMEX200</span></div>
+            </div>
+          </div>
+          <button onclick="applyPaymentOffer('AMEX200', 200)" class="text-xs font-bold text-white bg-[#0070d2] hover:bg-[#0088ff] px-3 py-1.5 rounded-lg active:scale-95 transition-all">Apply</button>
+        </div>
+
+        <!-- Offer 3: Visa -->
+        <div class="p-3.5 rounded-2xl bg-[#1c1d24] border border-[#1a1f71]/40 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center font-black text-[#1a1f71] text-xs">VISA</div>
+            <div>
+              <div class="text-xs font-bold text-white">Instant ₹50 Cashback</div>
+              <div class="text-[10px] text-gray-400">Visa Platinum & Signature · Code <span class="text-[#f59e0b] font-mono font-bold">VISA50</span></div>
+            </div>
+          </div>
+          <button onclick="applyPaymentOffer('VISA50', 50)" class="text-xs font-bold text-white bg-[#1a1f71] hover:bg-[#252c96] px-3 py-1.5 rounded-lg active:scale-95 transition-all">Apply</button>
+        </div>
+
+        <!-- Offer 4: AU Bank -->
+        <div class="p-3.5 rounded-2xl bg-[#1c1d24] border border-[#f58220]/40 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#6c2c8f] flex items-center justify-center font-bold text-[#f58220] text-xs">AU</div>
+            <div>
+              <div class="text-xs font-bold text-white">Flat ₹100 OFF with AU Bank</div>
+              <div class="text-[10px] text-gray-400">On festive orders above ₹399 · Code <span class="text-[#f59e0b] font-mono font-bold">AUFESTIVE</span></div>
+            </div>
+          </div>
+          <button onclick="applyPaymentOffer('AUFESTIVE', 100)" class="text-xs font-bold text-white bg-[#f58220] hover:bg-[#ff9533] px-3 py-1.5 rounded-lg active:scale-95 transition-all">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== RAILQUICK MONEY WALLET MODAL ==================== -->
+  <div id="wallet-modal" class="options-modal-backdrop" onclick="closeWalletModal()">
+    <div class="options-modal-sheet" onclick="event.stopPropagation()" style="background:#141720; border:1px solid rgba(255,255,255,0.12); color:#fff; max-height:85vh; overflow-y:auto;">
+      <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-3"></div>
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+          </div>
+          <div>
+            <h3 class="text-sm font-black text-white font-headline">RailQuick Money</h3>
+            <p class="text-[10px] text-gray-400">Seat-side balance for fast orders</p>
+          </div>
+        </div>
+        <button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:text-white" onclick="closeWalletModal()">✕</button>
+      </div>
+
+      <div class="p-4 my-3 bg-gradient-to-r from-emerald-950 to-slate-900 border border-emerald-500/30 rounded-2xl flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-bold text-emerald-300 uppercase tracking-widest">Active Balance</span>
+          <div class="text-2xl font-black text-white font-headline mt-0.5">₹250.00</div>
+        </div>
+        <span class="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2.5 py-1 rounded-full">100% Usable</span>
+      </div>
+
+      <div class="space-y-2 mt-4">
+        <div class="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-1">Recent Activity</div>
+        <div class="bg-[#1c202d] border border-white/10 rounded-2xl p-3 divide-y divide-white/5 space-y-1">
+          <div class="flex items-center justify-between py-2 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-emerald-400 text-sm">add_circle</span>
+              <div>
+                <div class="font-bold text-white">Welcome Bonus</div>
+                <div class="text-[10px] text-gray-400">RailQuick Onboarding</div>
+              </div>
+            </div>
+            <span class="font-bold text-emerald-400 font-mono">+₹100</span>
+          </div>
+          <div class="flex items-center justify-between py-2 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-emerald-400 text-sm">savings</span>
+              <div>
+                <div class="font-bold text-white">Festive Promo Cashback</div>
+                <div class="text-[10px] text-gray-400">Auto-credited</div>
+              </div>
+            </div>
+            <span class="font-bold text-emerald-400 font-mono">+₹150</span>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="closeWalletModal(); showToast('₹250 will be auto-applied at checkout!', 'success');" class="w-full mt-4 bg-primary hover:bg-[#16a35e] text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider active:scale-95 transition-all shadow-md">
+        Use at Checkout
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== GADGET SPOTLIGHT MODAL (TRAIN TRAVEL ESSENTIALS) ==================== -->
+  <div id="gadget-spotlight-modal" class="options-modal-backdrop" onclick="closeGadgetSpotlightModal()">
+    <div class="options-modal-sheet" onclick="event.stopPropagation()">
+      <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-3"></div>
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div>
+          <span class="text-[10px] font-bold text-[#eab308] uppercase tracking-wider">✦ Newly Launched ✦</span>
+          <h4 class="text-base font-bold text-white font-headline">RailQuick Express Power &amp; Comfort Kit</h4>
+        </div>
+        <button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:text-white" onclick="closeGadgetSpotlightModal()">✕</button>
+      </div>
+      <div class="mt-4 flex flex-col items-center text-center">
+        <img src="featured_card_1.jpg" class="w-40 h-52 object-cover rounded-2xl border-2 border-[#eab308] shadow-[0_8px_25px_rgba(234,179,8,0.3)] mb-3" alt="Newly Launched Travel Kit" />
+        <h3 class="text-base font-bold text-white">RailQuick 3-in-1 Journey Essentials Kit</h3>
+        <p class="text-xs text-gray-400 mt-1 max-w-[290px]">Sleek Matte Black GaN Power Bank (98% LED display), Active Noise Cancelling Earphones, and Memory Foam Neck Pillow. Fast 10-15 min coach delivery!</p>
+        <div class="flex items-center gap-2 my-3">
+          <span class="text-lg font-black text-white font-mono">₹1,499</span>
+          <span class="text-xs text-gray-500 line-through">₹2,499</span>
+          <span class="text-[10px] font-bold text-[#22c55e] bg-[#22c55e]/15 px-2 py-0.5 rounded-full">Save ₹1,000 (40% OFF)</span>
+        </div>
+        <button onclick="addSpotlightKitToCart(); closeGadgetSpotlightModal();" class="w-full bg-[#16a34a] hover:bg-[#15803d] text-white font-bold py-3.5 rounded-xl transition-all active:scale-95 text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-base">shopping_bag</span>
+          Add To Journey Cart
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TRAIN & SEAT SELECTOR MODAL ==================== -->
+  <div id="train-seat-selector-modal" class="options-modal-backdrop" onclick="closeTrainSeatSelectorModal()">
+    <div class="options-modal-sheet" onclick="event.stopPropagation()" style="max-height: 85vh; overflow-y: auto;">
+      <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-3"></div>
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div>
+          <span class="text-[10px] font-bold text-[#22c55e] uppercase tracking-wider">Seat Delivery Setup</span>
+          <h4 class="text-base font-bold text-white font-headline">Change Train &amp; Seat</h4>
+        </div>
+        <button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:text-white" onclick="closeTrainSeatSelectorModal()">✕</button>
+      </div>
+
+      <div class="flex flex-col gap-3.5 mt-4">
+        <!-- Train Select -->
+        <div>
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">Train Name / Number</label>
+          <div class="relative">
+            <select id="modal-train-select" class="w-full bg-[#1c1d24] border border-white/15 rounded-xl px-3.5 py-3 text-xs text-white font-semibold focus:outline-none focus:border-[#22c55e]">
+              <option value="12301 Rajdhani Express">12301 - New Delhi - Howrah Rajdhani Express</option>
+              <option value="12002 Shatabdi Express">12002 - New Delhi - Bhopal Shatabdi Express</option>
+              <option value="22436 Vande Bharat Express">22436 - Varanasi Vande Bharat Express</option>
+              <option value="12952 Mumbai Tejas Rajdhani">12952 - New Delhi - Mumbai Central Tejas Rajdhani</option>
+              <option value="12424 Dibrugarh Rajdhani">12424 - New Delhi - Dibrugarh Rajdhani</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Coach and Seat Row -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">Coach</label>
+            <input type="text" id="modal-coach-input" value="B2" placeholder="e.g. B2, S4, A1" class="w-full bg-[#1c1d24] border border-white/15 rounded-xl px-3.5 py-3 text-xs text-white font-semibold uppercase focus:outline-none focus:border-[#22c55e]" />
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">Seat No &amp; Berth</label>
+            <input type="text" id="modal-seat-input" value="45" placeholder="e.g. 45" class="w-full bg-[#1c1d24] border border-white/15 rounded-xl px-3.5 py-3 text-xs text-white font-semibold focus:outline-none focus:border-[#22c55e]" />
+          </div>
+        </div>
+
+        <!-- Berth Preference Chips -->
+        <div>
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">Berth Type</label>
+          <div class="flex gap-2 flex-wrap">
+            <button type="button" class="berth-chip px-3 py-1.5 rounded-lg text-[10px] font-bold border border-white/15 text-gray-300 bg-[#1c1d24] active:scale-95" onclick="setBerthType('Lower Berth', this)">Lower (LB)</button>
+            <button type="button" class="berth-chip px-3 py-1.5 rounded-lg text-[10px] font-bold border border-white/15 text-gray-300 bg-[#1c1d24] active:scale-95" onclick="setBerthType('Middle Berth', this)">Middle (MB)</button>
+            <button type="button" class="berth-chip px-3 py-1.5 rounded-lg text-[10px] font-bold border border-[#22c55e] text-[#22c55e] bg-[#22c55e]/10 active:scale-95" onclick="setBerthType('Upper Berth', this)">Upper (UB)</button>
+            <button type="button" class="berth-chip px-3 py-1.5 rounded-lg text-[10px] font-bold border border-white/15 text-gray-300 bg-[#1c1d24] active:scale-95" onclick="setBerthType('Side Lower', this)">Side Lower (SL)</button>
+          </div>
+        </div>
+
+        <!-- Next Station Stop -->
+        <div>
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">Delivery Station Halt</label>
+          <select id="modal-station-select" class="w-full bg-[#1c1d24] border border-white/15 rounded-xl px-3.5 py-3 text-xs text-white font-semibold focus:outline-none focus:border-[#22c55e]">
+            <option value="Kanpur Central (CNB)">Kanpur Central (CNB) - Halt in 15 mins</option>
+            <option value="Prayagraj Junction (PRYJ)">Prayagraj Junction (PRYJ) - Halt in 45 mins</option>
+            <option value="New Delhi (NDLS)">New Delhi (NDLS) - Origin</option>
+            <option value="Patna Junction (PNBE)">Patna Junction (PNBE) - Halt in 2.5 hrs</option>
+            <option value="Howrah Junction (HWH)">Howrah Junction (HWH) - Destination</option>
+          </select>
+        </div>
+
+        <button onclick="saveTrainSeatDetails()" class="w-full bg-[#16a34a] hover:bg-[#15803d] text-white font-bold py-3.5 rounded-xl transition-all active:scale-95 text-xs uppercase tracking-wider shadow-lg mt-2">
+          Save &amp; Update Delivery Details
+        </button>
       </div>
     </div>
   </div>

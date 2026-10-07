@@ -12,12 +12,25 @@ const API_BASE = (origin.startsWith('file://') || origin === 'null') ? 'http://l
 // ===== APP STATE =====
 let appState = {
   currentPage: 'page-pnr',
-  user: null,
+  user: {
+    name: 'Your account',
+    phone: '8826387844',
+    email: 'kartik.railquick@gmail.com',
+    avatarUrl: ''
+  },
   cart: [],
   orders: [],
-  pnrData: null,
+  pnrData: {
+    trainNumber: '12301',
+    trainName: 'Rajdhani Express',
+    source: 'New Delhi (NDLS)',
+    destination: 'Howrah Jn (HWH)',
+    passengerList: [{ coach: 'B2', berth: '45', currentStatus: 'CNF' }]
+  },
   pnrLiveData: null,
-  isPnrConfirmed: false,
+  isPnrConfirmed: true,
+  hasOnboarded: false,
+  favorites: [],
   trainData: null,
   selectedPayment: 'upi',
   modalProduct: null,
@@ -26,70 +39,857 @@ let appState = {
   searchQuery: '',
   appliedCoupon: null,
   vegOnly: false,
-  themeMode: localStorage.getItem('theme-mode') || 'dark'
+  themeMode: 'dark'
 };
 
 let clerkInstance = null;
 
-// ===== PRODUCTS DATABASE =====
+// ===== PRODUCTS DATABASE (PHOTO 3 + CATEGORY ESSENTIALS) =====
 const PRODUCTS = [
-  { id: 1001, name: 'Beanly Choco Hazelnut Spread with Breadsticks', price: 99, mrp: 133, category: 'beverages', weight: '52 g', img: 'product_beanly.png', rating: 5, reviews: 10866, veg: true, description: 'Yummy chocolate hazelnut dip spread with crispy breadsticks, fun to dip and eat!' },
-  { id: 1002, name: 'Crax Truffle Fries (Black Truffle & Parmesan Cheese)', price: 48, mrp: 60, category: 'beverages', weight: '55 g', img: 'product_crax.png', rating: 5, reviews: 705, veg: true, description: 'Delicious and crispy black truffle gourmet style fries potato chips.' },
-  { id: 1003, name: 'Red Rock Deli Kettle Chips (Basil Thai Sweet Chilli)', price: 51, mrp: 60, category: 'beverages', weight: '58 g', img: 'product_redrock.png', rating: 4.8, reviews: 924, veg: true, description: 'No Palm Oil premium kettle-cooked chips in rich sweet chilli flavour.' },
+  // ── PHOTO 3 HERO PRODUCTS ──
+  {
+    id: 1101,
+    name: "Lay's India's Magic Masala Potato Chips",
+    price: 21,
+    mrp: 25,
+    discountText: '16% OFF on MRP',
+    category: 'all',
+    subcategories: ['all', 'beverages', 'navratri'],
+    weight: '58 g',
+    optionsLabel: '2 options',
+    options: [
+      { weight: '58 g', price: 21, mrp: 25, discount: '16% OFF' },
+      { weight: '115 g', price: 40, mrp: 50, discount: '20% OFF' }
+    ],
+    img: 'product_lays.png',
+    rating: 5,
+    reviews: '6.6 lac',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: "Lay's India's Magic Masala potato chips made with highest grade farm potatoes, sliced thin and seasoned with rich, aromatic Indian spices."
+  },
+  {
+    id: 1102,
+    name: "Uncle Chipps Spicy Treat Potato Chips",
+    price: 20,
+    mrp: 20,
+    discountText: 'Special Price',
+    category: 'all',
+    subcategories: ['all', 'beverages'],
+    weight: '53 g',
+    optionsLabel: '3 options',
+    options: [
+      { weight: '53 g', price: 20, mrp: 20, discount: 'Best Value' },
+      { weight: '90 g', price: 35, mrp: 40, discount: '12% OFF' },
+      { weight: '150 g Party Pack', price: 55, mrp: 65, discount: '15% OFF' }
+    ],
+    img: 'product_uncle.png',
+    rating: 5,
+    reviews: '6.3 lac',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: "Bole Mere Lips, I Love Uncle Chipps! Golden ridged potato chips seasoned with the original spicy treat desi masala blend."
+  },
+  {
+    id: 1103,
+    name: "Kurkure Masala Munch Crisps",
+    price: 20,
+    mrp: 20,
+    discountText: 'Trending',
+    category: 'all',
+    subcategories: ['all', 'beverages'],
+    weight: '75 g',
+    optionsLabel: '2 options',
+    options: [
+      { weight: '75 g', price: 20, mrp: 20, discount: 'Best Seller' },
+      { weight: '140 g Family Pack', price: 38, mrp: 45, discount: '15% OFF' }
+    ],
+    img: 'product_kurkure.png',
+    rating: 5,
+    reviews: '8.2 lac',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: "Tedha Hai Par Mera Hai! Classic crunch made with real dal, corn, and rice with a mouth-watering spicy chatpata masala flavour."
+  },
 
-  // Comfort / Travel category
-  { id: 101, name: 'Premium Memory Foam Neck Pillow', price: 299, mrp: 399, category: 'comfort', weight: '1 Unit', img: 'product_neckpillow.png', rating: 4.9, reviews: 1420, description: 'High-density memory foam pillow providing 360-degree neck support for sitting berths.', tags: ['Comfort', 'Best Seller'] },
-  { id: 102, name: 'Blackout Eye Mask & Foam Earplugs', price: 99, mrp: 149, category: 'comfort', weight: '1 Combo Pack', img: 'https://images.unsplash.com/photo-1598136490941-30d885318abd?w=400&h=400&fit=crop', rating: 4.7, reviews: 560, description: '3D contoured light-blocking eye mask paired with high-decibel reduction earplugs.', tags: ['Sleep', 'Travel'] },
-  { id: 103, name: "Haldiram's Bhujia Sev Combo Pack", price: 45, mrp: 60, category: 'comfort', weight: '150g + 50g Extra', img: 'product_haldirams.png', rating: 4.9, reviews: 3120, veg: true, description: 'Crispy and spicy gram flour noodle snacks, perfect companion for tea times.', tags: ['Snacks', 'Veg'] },
-  { id: 104, name: 'Bingo Potato Chips (Masala Masti)', price: 30, mrp: 40, category: 'comfort', weight: '130g Pack', img: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400&h=400&fit=crop', rating: 4.8, reviews: 2200, veg: true, description: 'Spicy and crunchy potato chips for instant journey munching.', tags: ['Snacks', 'Veg'] },
-  { id: 105, name: 'IRCTC Hot Samosa & Masala Chai Combo', price: 50, mrp: 70, category: 'comfort', weight: '2 Samosas + 1 Tea', img: 'product_tea.png', rating: 4.9, reviews: 6890, veg: true, description: 'Golden crispy samosas served with hot traditional claypot ginger masala tea.', tags: ['Hot Food', 'Chai', 'Traditional'] },
+  // ── NAVRATRI & FESTIVE SPECIALS (PHOTO 1 & PHOTO 2 BANNER) ──
+  {
+    id: 1201,
+    name: "Farmley Himalayan Salt Roasted Makhana",
+    price: 120,
+    mrp: 160,
+    discountText: '25% OFF on MRP',
+    category: 'navratri',
+    subcategories: ['all', 'navratri'],
+    weight: '100 g',
+    optionsLabel: '2 options',
+    options: [
+      { weight: '100 g', price: 120, mrp: 160, discount: '25% OFF' },
+      { weight: '200 g Tub', price: 220, mrp: 300, discount: '26% OFF' }
+    ],
+    img: 'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '4.9 lac',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: 'Crunchy slow-roasted fox nuts tossed in pure Himalayan pink rock salt, ideal for Vrat & fasting.'
+  },
+  {
+    id: 1202,
+    name: "Festive Wooden Dandiya Sticks (Pair)",
+    price: 99,
+    mrp: 150,
+    discountText: '34% OFF on MRP',
+    category: 'navratri',
+    subcategories: ['all', 'navratri'],
+    weight: '1 Pair',
+    optionsLabel: '2 options',
+    options: [
+      { weight: '1 Pair (Traditional)', price: 99, mrp: 150, discount: '34% OFF' },
+      { weight: '2 Pairs (Family Pack)', price: 179, mrp: 280, discount: '36% OFF' }
+    ],
+    img: 'nav_prod_dandiya.png',
+    rating: 5,
+    reviews: '14,200',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: 'Polished wooden dandiya sticks with mirror work and festive bells for Navratri celebrations.'
+  },
+  {
+    id: 1205,
+    name: "Handcrafted Brass Durga Maa Idol (4-inch)",
+    price: 499,
+    mrp: 899,
+    discountText: '44% OFF on MRP',
+    category: 'navratri',
+    subcategories: ['all', 'navratri'],
+    weight: '1 unit',
+    img: 'nav_prod_durga.png',
+    rating: 5,
+    reviews: '8,430',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: 'Auspicious pure brass handcrafted Durga idol for devotional journey prayers and festive altar.'
+  },
+  {
+    id: 1206,
+    name: "Mata Ki Red Chunri with Golden Lace",
+    price: 49,
+    mrp: 100,
+    discountText: '51% OFF on MRP',
+    category: 'navratri',
+    subcategories: ['all', 'navratri'],
+    weight: '1 unit',
+    img: 'nav_prod_chunri.png',
+    rating: 5,
+    reviews: '19,500',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: 'Traditional red georgette embroidered Chunri with golden Kiran gota border for pooja rituals.'
+  },
+  {
+    id: 1207,
+    name: "Dandiya Ready Ethnic Necklace Set",
+    price: 299,
+    mrp: 900,
+    discountText: '66% OFF (Save ₹601)',
+    category: 'navratri',
+    subcategories: ['all', 'navratri'],
+    weight: '1 set',
+    img: 'navratri_hero_section.png',
+    rating: 5,
+    reviews: '5,280',
+    deliveryTime: '12 mins',
+    veg: false,
+    description: 'Stunning oxidized silver festive necklace and earrings set for Dandiya night celebrations.'
+  },
+  {
+    id: 1208,
+    name: "Flowers & Pooja Needs Essentials Kit",
+    price: 149,
+    mrp: 220,
+    discountText: '32% OFF on MRP',
+    category: 'navratri',
+    subcategories: ['all', 'navratri'],
+    weight: '1 kit',
+    img: 'navratri_hero_section.png',
+    rating: 5,
+    reviews: '11,100',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: 'Sacred pooja kit including fresh coconut, marigold garland, pure roli chandan and incense sticks.'
+  },
+  {
+    id: 1203,
+    name: "Pure Cow Ghee Diya & Camphor Pack",
+    price: 85,
+    mrp: 110,
+    discountText: '22% OFF on MRP',
+    category: 'navratri',
+    subcategories: ['all', 'navratri'],
+    weight: '30 Pcs',
+    optionsLabel: '2 options',
+    options: [
+      { weight: '30 Pcs', price: 85, mrp: 110, discount: '22% OFF' },
+      { weight: '60 Pcs Box', price: 150, mrp: 200, discount: '25% OFF' }
+    ],
+    img: 'https://images.unsplash.com/photo-1605647540924-852290f6b0d5?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '4.8 lac',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: 'Ready-to-use pure cow ghee wax-free wicks for pooja rituals and auspicious festive prayers.'
+  },
 
-  // Beverages / Fresh category
-  { id: 201, name: 'Chilled Rail Neer Mineral Water', price: 15, mrp: 20, category: 'beverages', weight: '1 Litre', img: 'product_water.png', rating: 4.9, reviews: 9450, veg: true, description: 'Purified and mineral-enriched drinking water bottle, officially approved by IRCTC.', tags: ['Water', 'Hydration', 'Official'] },
-  { id: 202, name: 'Coca-Cola Chilled Beverage Can', price: 40, mrp: 50, category: 'beverages', weight: '300 ml', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400&h=400&fit=crop', rating: 4.8, reviews: 4320, veg: true, description: 'Refreshing, ice-chilled carbonated soft drink delivered straight to your seat.', tags: ['Cold Drink', 'Veg'] },
-  { id: 203, name: 'Claypot Ginger Masala Chai', price: 20, mrp: 30, category: 'beverages', weight: '1 Kulhad Cup', img: 'product_tea.png', rating: 4.9, reviews: 8120, veg: true, description: 'Freshly brewed piping hot tea with ginger and cardamom in an eco-friendly kulhad.', tags: ['Chai', 'Hot', 'Traditional'] },
-  { id: 204, name: 'Nescafe Classic Rich Hot Coffee', price: 30, mrp: 40, category: 'beverages', weight: '1 Cup', img: 'product_tea.png', rating: 4.7, reviews: 2900, veg: true, description: 'Hot instant coffee brewed with fresh creamed milk for an instant energy boost.', tags: ['Coffee', 'Hot'] },
-  { id: 205, name: 'Real Mixed Fruit Juice Tetrapack', price: 30, mrp: 40, category: 'beverages', weight: '200 ml', img: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop', rating: 4.9, reviews: 1890, veg: true, description: 'Delicious mixed fruit juice packed with natural vitamins, safe for kids.', tags: ['Juice', 'Cold'] },
+  // ── ELECTRONICS (MATCHING USER SCREENSHOT 2 EXACTLY) ──
+  {
+    id: 1305,
+    name: "Portronics Conch Theta C Type C Wired Earphones",
+    price: 299,
+    mrp: 799,
+    discountText: '62% OFF on MRP',
+    category: 'electronics',
+    subcategories: ['all', 'electronics'],
+    weight: '1 unit',
+    optionsLabel: 'IPX4 · USB C',
+    img: 'prod_conch.png',
+    rating: 5,
+    reviews: '41,081',
+    deliveryTime: '12 mins',
+    veg: false,
+    description: 'High definition audio with Type-C connector, IPX4 splash resistance and in-line microphone.'
+  },
+  {
+    id: 1306,
+    name: "Hammer Ultra Pods TWS Earbuds (Sky Blue)",
+    price: 499,
+    mrp: 3499,
+    discountText: '85% OFF on MRP',
+    category: 'electronics',
+    subcategories: ['all', 'electronics'],
+    weight: '1 unit',
+    optionsLabel: 'IPX5 · Bluetooth',
+    img: 'prod_ultrapods.png',
+    rating: 5,
+    reviews: '11,884',
+    deliveryTime: '16 mins',
+    veg: false,
+    description: 'Transparent casing TWS earbuds with digital LED battery display, IPX5 water resistance and deep bass.'
+  },
+  {
+    id: 1307,
+    name: "Hammer Airflow Neo TWS Earbuds (Grey)",
+    price: 649,
+    mrp: 2499,
+    discountText: '74% OFF on MRP',
+    category: 'electronics',
+    subcategories: ['all', 'electronics'],
+    weight: '1 unit',
+    optionsLabel: 'Bluetooth 5.3',
+    img: 'prod_airflow.png',
+    rating: 5,
+    reviews: '4,870',
+    deliveryTime: '16 mins',
+    veg: false,
+    description: 'Sleek ergonomic fit true wireless earbuds with 30-hour playtime and crystal clear environmental noise cancellation.'
+  },
+  {
+    id: 1308,
+    name: "Amazon Fire TV Stick with Alexa Voice Remote",
+    price: 2799,
+    mrp: 3999,
+    discountText: '30% OFF on MRP',
+    category: 'electronics',
+    subcategories: ['all', 'electronics'],
+    weight: '1 unit',
+    img: 'elec_card_firetv.png',
+    rating: 5,
+    reviews: '82,410',
+    deliveryTime: '15 mins',
+    veg: false,
+    description: 'Full HD streaming with Alexa Voice Remote, TV controls and fast app launches.'
+  },
+  {
+    id: 1309,
+    name: "Portronics Fast Power Bank & Dual Charger",
+    price: 899,
+    mrp: 1599,
+    discountText: '43% OFF on MRP',
+    category: 'electronics',
+    subcategories: ['all', 'electronics'],
+    weight: '1 unit',
+    img: 'elec_card_powerbanks.png',
+    rating: 5,
+    reviews: '19,300',
+    deliveryTime: '12 mins',
+    veg: false,
+    description: 'Compact high-speed power bank with dual USB charging ports suitable for long train rides.'
+  },
 
-  // Hygiene / Fashion category
-  { id: 301, name: 'Dettol Instant Hand Sanitizer Gel', price: 50, mrp: 65, category: 'hygiene', weight: '50 ml', img: 'product_sanitizer.png', rating: 4.8, reviews: 2450, description: 'germ protection formula that kills 99.9% germs without needing water.', tags: ['Hygiene', 'Essential'] },
-  { id: 302, name: 'Colgate Fresh Mint Toothbrush & Paste', price: 55, mrp: 75, category: 'hygiene', weight: '1 Kit', img: 'product_toothbrush.png', rating: 4.7, reviews: 920, description: 'Compact travel toothbrush paired with a mini toothpaste tube.', tags: ['Dental', 'Travel'] },
-  { id: 303, name: 'Anti-Bacterial Wet Cleansing Wipes', price: 79, mrp: 99, category: 'hygiene', weight: '25 Wipes', img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=400&fit=crop', rating: 4.8, reviews: 1840, description: 'Refreshing wet wipes to easily clean hands, face, or dirty train seat trays.', tags: ['Wipes', 'Hygiene'] },
-  { id: 304, name: 'PeeSafe Toilet Seat Sanitizer Spray', price: 110, mrp: 149, category: 'hygiene', weight: '75 ml Spray', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', rating: 4.9, reviews: 1120, description: 'Fast-drying sanitizing spray for clean and worry-free train restroom use.', tags: ['Hygiene', 'Travel'] },
-  { id: 305, name: 'Whisper Ultra Clean Sanitary Pads Pack', price: 85, mrp: 110, category: 'hygiene', weight: '7 Pads', img: 'https://images.unsplash.com/photo-1583947581924-860bda6a26df?w=400&h=400&fit=crop', rating: 4.8, reviews: 650, description: 'Reliable feminine hygiene essential for long-duration train travels.', tags: ['Hygiene', 'Feminine'] },
+  // ── BEAUTY (PHOTO 1 & PHOTO 2 TILE 2/3) ──
+  {
+    id: 1401,
+    name: "L'Oréal Paris Casting Crème Gloss Hair Colour",
+    price: 550,
+    mrp: 650,
+    discountText: '15% OFF on MRP',
+    category: 'beauty',
+    subcategories: ['all', 'beauty', 'navratri'],
+    weight: 'Ebony Black',
+    optionsLabel: '2 options',
+    options: [
+      { weight: 'Ebony Black 200', price: 550, mrp: 650, discount: '15% OFF' },
+      { weight: 'Dark Brown 400', price: 550, mrp: 650, discount: '15% OFF' }
+    ],
+    img: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '2.8 lac',
+    deliveryTime: '12 mins',
+    veg: false,
+    description: 'No ammonia conditioning hair color cream providing natural-looking color with ultra-glossy shimmering shine.'
+  },
+  {
+    id: 1402,
+    name: "Gillette Venus ComfortGlide Breeze Razor",
+    price: 285,
+    mrp: 350,
+    discountText: '18% OFF on MRP',
+    category: 'beauty',
+    subcategories: ['all', 'beauty'],
+    weight: '1 Razor Pack',
+    optionsLabel: '2 options',
+    options: [
+      { weight: 'Razor + 1 Cartridge', price: 285, mrp: 350, discount: '18% OFF' },
+      { weight: 'Cartridge Pack of 4', price: 499, mrp: 650, discount: '23% OFF' }
+    ],
+    img: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '3.9 lac',
+    deliveryTime: '12 mins',
+    veg: false,
+    description: 'Built-in flexible moisture bars lather with water for an effortless, smooth travel-friendly glide.'
+  },
+  {
+    id: 1403,
+    name: "TonyMoly I'm Red Wine Sheet Mask",
+    price: 99,
+    mrp: 150,
+    discountText: '34% OFF on MRP',
+    category: 'beauty',
+    subcategories: ['all', 'beauty'],
+    weight: '21 ml Pouch',
+    optionsLabel: '2 options',
+    options: [
+      { weight: '1 Sheet Mask', price: 99, mrp: 150, discount: '34% OFF' },
+      { weight: 'Pack of 3 Masks', price: 249, mrp: 450, discount: '44% OFF' }
+    ],
+    img: 'https://images.unsplash.com/photo-1567928815111-94572f77c3e5?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '1.9 lac',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: 'Red wine extract sheet mask enriched with botanical antioxidants for immediate pore care and radiant journey glow.'
+  },
 
+  // ── PHARMACY (PHOTO 1 & ESSENTIALS) ──
+  {
+    id: 1501,
+    name: "Dettol Instant Hand Sanitizer Gel",
+    price: 50,
+    mrp: 65,
+    discountText: '23% OFF on MRP',
+    category: 'pharmacy',
+    subcategories: ['all', 'pharmacy'],
+    weight: '50 ml',
+    optionsLabel: '2 options',
+    options: [
+      { weight: '50 ml Pocket Bottle', price: 50, mrp: 65, discount: '23% OFF' },
+      { weight: '200 ml Pump Bottle', price: 120, mrp: 160, discount: '25% OFF' }
+    ],
+    img: 'product_sanitizer.png',
+    rating: 5,
+    reviews: '4.1 lac',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: 'Original germ protection rinse-free sanitizing gel killing 99.9% viruses and bacteria.'
+  },
+  {
+    id: 1502,
+    name: "Volini Instant Pain Relief Spray",
+    price: 145,
+    mrp: 180,
+    discountText: '19% OFF on MRP',
+    category: 'pharmacy',
+    subcategories: ['all', 'pharmacy'],
+    weight: '55 g Can',
+    optionsLabel: '2 options',
+    options: [
+      { weight: '55 g Can', price: 145, mrp: 180, discount: '19% OFF' },
+      { weight: '100 g Value Can', price: 230, mrp: 290, discount: '20% OFF' }
+    ],
+    img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '3.6 lac',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: 'Micro-gel spray technology providing instant cooling penetration for back, neck, and joint stiffness.'
+  },
+  {
+    id: 1503,
+    name: "Eno Regular Fast Action Antacid Sachet",
+    price: 10,
+    mrp: 12,
+    discountText: '16% OFF on MRP',
+    category: 'pharmacy',
+    subcategories: ['all', 'pharmacy'],
+    weight: '5 g',
+    optionsLabel: '3 options',
+    options: [
+      { weight: 'Regular 5 g', price: 10, mrp: 12, discount: '16% OFF' },
+      { weight: 'Lemon 5 g', price: 10, mrp: 12, discount: '16% OFF' },
+      { weight: 'Pack of 6 Sachets', price: 50, mrp: 65, discount: '23% OFF' }
+    ],
+    img: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '6.7 lac',
+    deliveryTime: '12 mins',
+    veg: true,
+    description: 'Fast acting effervescent fruit salt antacid that works in 6 seconds to relieve acidity and heartburn.'
+  },
 
+  // ── 1. CHIPS & NAMKEEN ──
+  {
+    id: 1104,
+    name: "Haldiram's Nagpur Aloo Bhujia",
+    price: 40,
+    mrp: 50,
+    discountText: '20% OFF on MRP',
+    category: 'chips-namkeen',
+    subcategories: ['all', 'chips-namkeen'],
+    weight: '150 g',
+    optionsLabel: '2 options',
+    options: [
+      { weight: '150 g Pack', price: 40, mrp: 50, discount: '20% OFF' },
+      { weight: '350 g Family Pack', price: 90, mrp: 110, discount: '18% OFF' }
+    ],
+    img: 'product_haldirams.png',
+    rating: 5,
+    reviews: '5.4 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Classic spicy mint-infused potato and gram flour crispy sev namkeen. The ultimate journey companion."
+  },
+  {
+    id: 1105,
+    name: "Crax Corn Curls Chatpata Masala",
+    price: 20,
+    mrp: 20,
+    discountText: 'Special Price',
+    category: 'chips-namkeen',
+    subcategories: ['all', 'chips-namkeen'],
+    weight: '60 g',
+    optionsLabel: 'Single Pack',
+    img: 'product_crax.png',
+    rating: 5,
+    reviews: '2.9 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Crunchy baked corn rings with chatpata seasoning. Light, non-fried and delicious."
+  },
 
-  // Tech / Electronics category
-  { id: 401, name: 'boAt BassHeads Wired Earphones Mic', price: 349, mrp: 499, category: 'tech', weight: 'Wired HD Mic', img: 'product_earphones.png', rating: 4.8, reviews: 5200, description: 'In-ear wired earphones with dynamic bass and mic for handsfree calling.', tags: ['Audio', 'boAt'] },
-  { id: 402, name: '10,000mAh Slim Fast Power Bank', price: 799, mrp: 1099, category: 'tech', weight: '12W Dual Output', img: 'product_powerbank.png', rating: 4.8, reviews: 6100, description: 'Compact power bank to keep your phone charged throughout the long journey.', tags: ['Power', 'Fast Charger'] },
-  { id: 403, name: '20W Dual Port Fast Charger Adapter', price: 299, mrp: 399, category: 'tech', weight: 'Type-C + USB', img: 'https://images.unsplash.com/photo-1616440347437-b1c73416efc2?w=400&h=400&fit=crop', rating: 4.7, reviews: 1840, description: 'Fast wall charger supporting dual ports for train cabin sockets.', tags: ['Charger', 'Fast'] },
-  { id: 404, name: 'Tough Braided Type-C Charging Cable', price: 149, mrp: 199, category: 'tech', weight: '1.2 Meter', img: 'https://images.unsplash.com/photo-1585250481062-878848f07fcb?w=400&h=400&fit=crop', rating: 4.6, reviews: 980, description: 'Durable fast-charging data cable, built to withstand rough travel use.', tags: ['Cable', 'USB-C'] },
-  { id: 405, name: 'Halonix LED Bulb 9W (Pack of 2)', price: 120, mrp: 199, category: 'tech', weight: '9 Watt', img: 'https://images.unsplash.com/photo-1550985616-10810253b84d?w=200&h=200&fit=crop', rating: 4.8, reviews: 1400 },
-  { id: 406, name: 'Digitek LED Ring Light with Stand', price: 999, mrp: 1999, category: 'tech', weight: '1 Unit', img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop', rating: 4.7, reviews: 1280 },
-  { id: 407, name: 'Portable Mini Desk Table Fan', price: 450, mrp: 799, category: 'tech', weight: '1 Unit', img: 'https://images.unsplash.com/photo-1618944847023-38aa001235f0?w=200&h=200&fit=crop', rating: 4.6, reviews: 920 },
+  // ── 2. SWEETS & CHOCOLATES ──
+  {
+    id: 1601,
+    name: "Cadbury Dairy Milk Silk Chocolate",
+    price: 85,
+    mrp: 95,
+    discountText: '11% OFF',
+    category: 'sweets-chocolates',
+    subcategories: ['all', 'sweets-chocolates'],
+    weight: '60 g',
+    optionsLabel: '2 options',
+    options: [
+      { weight: '60 g Bar', price: 85, mrp: 95, discount: '11% OFF' },
+      { weight: '150 g Silk Roast Almond', price: 175, mrp: 195, discount: '10% OFF' }
+    ],
+    img: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '8.1 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Irresistibly smooth and creamy chocolate made with finest cocoa. Melts gracefully in the mouth."
+  },
+  {
+    id: 1602,
+    name: "Bikano Royal Gulab Jamun Tin",
+    price: 140,
+    mrp: 165,
+    discountText: '15% OFF on MRP',
+    category: 'sweets-chocolates',
+    subcategories: ['all', 'sweets-chocolates'],
+    weight: '500 g Tin',
+    optionsLabel: 'Sealed Tin',
+    img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '3.7 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Mouth-melting soft spongy mawa dumplings soaked in fragrant cardamom rose sugar syrup."
+  },
+  {
+    id: 1603,
+    name: "Haldiram's Sponge Rasgulla Tin",
+    price: 135,
+    mrp: 160,
+    discountText: '16% OFF',
+    category: 'sweets-chocolates',
+    subcategories: ['all', 'sweets-chocolates'],
+    weight: '500 g Tin',
+    optionsLabel: 'Sealed Tin',
+    img: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '4.2 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Authentic cottage cheese chenna balls slow-cooked in light sugar syrup for juicy sweetness."
+  },
+  {
+    id: 1604,
+    name: "Ferrero Rocher Moments Gift Box",
+    price: 199,
+    mrp: 249,
+    discountText: '20% OFF on MRP',
+    category: 'sweets-chocolates',
+    subcategories: ['all', 'sweets-chocolates'],
+    weight: '16 Pcs (116 g)',
+    optionsLabel: 'Gift Box',
+    img: 'https://images.unsplash.com/photo-1548907040-4baa42d10919?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '5.8 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Crunchy hazelnut center covered with smooth cocoa cream and crispy wafer shell."
+  },
 
-  // Monsoon category (Photo 3)
-  { id: 501, name: 'KK 2 Fold Travel Umbrella (Black)', price: 199, mrp: 289, category: 'monsoon', subcategory: 'umbrella', weight: '2 Fold', img: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop', rating: 4.8, reviews: 2900 },
-  { id: 502, name: 'Unigen 21\" 2-Fold Umbrella (Grey)', price: 249, mrp: 999, category: 'monsoon', subcategory: 'umbrella', weight: '2 Fold', img: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop', rating: 4.6, reviews: 1420 },
-  { id: 503, name: 'KK 2-Fold Classic Umbrella (Blue)', price: 179, mrp: 269, category: 'monsoon', subcategory: 'umbrella', weight: '2 Fold', img: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop', rating: 4.5, reviews: 890 },
-  { id: 504, name: 'Premium Raincoat Jacket (Pink)', price: 349, mrp: 499, category: 'monsoon', subcategory: 'raincoat', weight: '1 Unit', img: 'https://images.unsplash.com/photo-1548883354-7622d03aca27?w=200&h=200&fit=crop', rating: 4.7, reviews: 650 },
-  { id: 505, name: 'Plastic Clothes Clips (Pack of 12)', price: 59, mrp: 99, category: 'monsoon', subcategory: 'clips', weight: '12 Pcs', img: 'https://images.unsplash.com/photo-1517436073-3b111827fcb?w=200&h=200&fit=crop', rating: 4.4, reviews: 180 },
-  { id: 506, name: 'Hot Veg Tomato Soup Cup', price: 40, mrp: 60, category: 'monsoon', subcategory: 'soups', weight: '1 Cup', img: 'https://images.unsplash.com/photo-1547592165-e1d17f1a0655?w=200&h=200&fit=crop', rating: 4.9, reviews: 3120, veg: true },
+  // ── 3. DRINKS & JUICES ──
+  {
+    id: 1701,
+    name: "Real Fruit Power Alphonso Mango Nectar",
+    price: 110,
+    mrp: 130,
+    discountText: '15% OFF on MRP',
+    category: 'drinks-juices',
+    subcategories: ['all', 'drinks-juices'],
+    weight: '1 L Tetra Pak',
+    optionsLabel: 'Chilled Pack',
+    img: 'https://images.unsplash.com/photo-1622484214149-6e3e56cb9426?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '7.3 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Rich mango nectar packed with genuine Alphonso mango goodness and vitamin C."
+  },
+  {
+    id: 1702,
+    name: "Coca-Cola Original Chilled Bottle",
+    price: 40,
+    mrp: 45,
+    discountText: 'Special Price',
+    category: 'drinks-juices',
+    subcategories: ['all', 'drinks-juices'],
+    weight: '750 ml Pet Bottle',
+    optionsLabel: 'Chilled Bottle',
+    img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '9.5 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "The crisp, refreshing taste of ice-cold Coca-Cola delivered straight to your train seat."
+  },
+  {
+    id: 1703,
+    name: "Bisleri Sealed Packaged Mineral Water",
+    price: 20,
+    mrp: 20,
+    discountText: 'Station Essential',
+    category: 'drinks-juices',
+    subcategories: ['all', 'drinks-juices'],
+    weight: '1 L Bottle',
+    optionsLabel: 'Sealed Cap',
+    img: 'product_water.png',
+    rating: 5,
+    reviews: '12.4 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Pure ozonated mineral water with essential minerals and tamper-evident cap seal."
+  },
+  {
+    id: 1704,
+    name: "Red Rock Sparkling Energy Drink",
+    price: 99,
+    mrp: 120,
+    discountText: '18% OFF',
+    category: 'drinks-juices',
+    subcategories: ['all', 'drinks-juices'],
+    weight: '250 ml Can',
+    optionsLabel: 'Chilled Can',
+    img: 'product_redrock.png',
+    rating: 5,
+    reviews: '2.1 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Electrifying taurine and B-vitamin energy boost for overnight long distance travel."
+  },
 
-  // Pharmacy category (Photo 5)
-  { id: 601, name: 'Benadryl Cough Formula Syrup', price: 125, mrp: 150, category: 'pharmacy', weight: '100 ml', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop', rating: 4.9, reviews: 3200 },
-  { id: 602, name: 'Gelusil Antacid Stomach Liquid', price: 98, mrp: 120, category: 'pharmacy', weight: '200 ml', img: 'https://images.unsplash.com/photo-1550572017-edd951b55104?w=200&h=200&fit=crop', rating: 4.8, reviews: 1560 },
-  { id: 603, name: 'Volini Instant Pain Relief Spray', price: 145, mrp: 180, category: 'pharmacy', weight: '55g', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop', rating: 4.9, reviews: 1900 },
-  { id: 604, name: 'Amoxycillin Antibiotics Strip', price: 65, mrp: 99, category: 'pharmacy', weight: '10 Caps', img: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=200&h=200&fit=crop', rating: 4.7, reviews: 880 },
+  // ── 4. TEA, COFFEE & MILK DRINKS ──
+  {
+    id: 1801,
+    name: "Nescafé Classic 100% Pure Instant Coffee Jar",
+    price: 160,
+    mrp: 190,
+    discountText: '16% OFF on MRP',
+    category: 'tea-coffee',
+    subcategories: ['all', 'tea-coffee'],
+    weight: '50 g Glass Jar',
+    optionsLabel: 'Glass Jar',
+    img: 'product_beanly.png',
+    rating: 5,
+    reviews: '6.4 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Signature roasted aroma and rich taste crafted from medium-dark roasted Robusta coffee beans."
+  },
+  {
+    id: 1802,
+    name: "Tata Tea Premium Desi Masala Chai",
+    price: 135,
+    mrp: 155,
+    discountText: '13% OFF',
+    category: 'tea-coffee',
+    subcategories: ['all', 'tea-coffee'],
+    weight: '250 g Pack',
+    optionsLabel: 'Desi Blend',
+    img: 'product_tea.png',
+    rating: 5,
+    reviews: '7.8 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Desh ki Chai! Perfect balance of strong Assam leaf and ginger-cardamom flavor."
+  },
+  {
+    id: 1803,
+    name: "Amul Kool Badam Flavoured Milk Can",
+    price: 35,
+    mrp: 40,
+    discountText: 'Chilled Drink',
+    category: 'tea-coffee',
+    subcategories: ['all', 'tea-coffee'],
+    weight: '200 ml Can',
+    optionsLabel: 'Chilled Can',
+    img: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '4.9 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Nutritious sterilized double-toned milk infused with real real crushed badam and saffron."
+  },
 
-  // Beauty category
-  { id: 701, name: 'Nivea Soft Moisturizing Cream', price: 180, mrp: 240, category: 'beauty', weight: '200 ml', img: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=200&h=200&fit=crop', rating: 4.8, reviews: 4500 },
-  { id: 702, name: 'Vaseline Cocoa Butter Lotion', price: 220, mrp: 299, category: 'beauty', weight: '300 ml', img: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=200&h=200&fit=crop', rating: 4.7, reviews: 3100 },
+  // ── 5. INSTANT FOOD ──
+  {
+    id: 1901,
+    name: "Maggi 2-Minute Masala Noodles",
+    price: 14,
+    mrp: 14,
+    discountText: 'Best Seller',
+    category: 'instant-food',
+    subcategories: ['all', 'instant-food'],
+    weight: '70 g Pack',
+    optionsLabel: 'Single Pack',
+    img: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '15.2 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "India's favorite 2-minute instant noodles with the iconic blend of 10 aromatic spices."
+  },
+  {
+    id: 1902,
+    name: "McCain Crispy French Fries",
+    price: 95,
+    mrp: 120,
+    discountText: '21% OFF',
+    category: 'instant-food',
+    subcategories: ['all', 'instant-food'],
+    weight: '420 g Frozen Pack',
+    optionsLabel: 'Crispy Pack',
+    img: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '3.1 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Golden crispy potato french fries prepared with prime quality farm potatoes."
+  },
+  {
+    id: 1903,
+    name: "Nissin Cup Noodles Spicy Mazedaar",
+    price: 45,
+    mrp: 50,
+    discountText: 'Ready In Cup',
+    category: 'instant-food',
+    subcategories: ['all', 'instant-food'],
+    weight: '70 g Cup',
+    optionsLabel: 'Instant Cup',
+    img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '5.2 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Just add hot water! Steaming cup noodles loaded with veggies and rich desi gravy spices."
+  },
 
-  // Baby Care category (Photo 6)
-  { id: 801, name: 'Pampers Baby Dry Diapers (M)', price: 399, mrp: 499, category: 'babycare', weight: '24 Pack', img: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=200&h=200&fit=crop', rating: 4.9, reviews: 6200 },
-  { id: 802, name: 'Himalaya Gentle Baby Wipes', price: 120, mrp: 160, category: 'babycare', weight: '72 Wipes', img: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=200&h=200&fit=crop', rating: 4.8, reviews: 2900 }
+  // ── 6. SAUCES & SPREADS ──
+  {
+    id: 2001,
+    name: "Nutella Hazelnut & Cocoa Spread",
+    price: 210,
+    mrp: 245,
+    discountText: '14% OFF on MRP',
+    category: 'sauces-spreads',
+    subcategories: ['all', 'sauces-spreads'],
+    weight: '350 g Glass Jar',
+    optionsLabel: 'Glass Jar',
+    img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '8.4 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Creamy cocoa hazelnut spread made with top quality roasted hazelnuts and skimmed milk."
+  },
+  {
+    id: 2002,
+    name: "Kissan Fresh Royal Tomato Ketchup",
+    price: 65,
+    mrp: 75,
+    discountText: '13% OFF',
+    category: 'sauces-spreads',
+    subcategories: ['all', 'sauces-spreads'],
+    weight: '450 g Squeezy Pack',
+    optionsLabel: 'Squeezy Spout',
+    img: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '6.9 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "100% real ripe sun-kissed juicy tomatoes blended into a rich sweet and tangy sauce."
+  },
+
+  // ── 7. PAAN CORNER ──
+  {
+    id: 2101,
+    name: "Pass Pass Sweet Fragrant Mouth Freshener",
+    price: 20,
+    mrp: 20,
+    discountText: 'After Meal Special',
+    category: 'paan-corner',
+    subcategories: ['all', 'paan-corner'],
+    weight: '45 g Pouch',
+    optionsLabel: 'Pocket Pouch',
+    img: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '4.8 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Herbal blend of silver-coated cardamom, fennel seeds, dates, and fragrant menthol crystals."
+  },
+  {
+    id: 2102,
+    name: "Happydent Wave Mint Sugarfree Chewing Gum",
+    price: 25,
+    mrp: 30,
+    discountText: '17% OFF',
+    category: 'paan-corner',
+    subcategories: ['all', 'paan-corner'],
+    weight: 'Pocket Dispenser',
+    optionsLabel: 'Dispenser',
+    img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '5.5 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Liquid-filled spearmint core providing immediate oral freshness and sparkling confidence."
+  },
+  {
+    id: 2103,
+    name: "Orbit Spearmint Sugarfree Chewing Gum",
+    price: 50,
+    mrp: 50,
+    discountText: 'Pocket Pack',
+    category: 'paan-corner',
+    subcategories: ['all', 'paan-corner'],
+    weight: 'Pack of 14 Dragees',
+    optionsLabel: 'Value Pack',
+    img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '3.9 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Dentist approved sugarfree chewing gum that cleans teeth and freshens breath after train meals."
+  },
+
+  // ── 8. ICE CREAMS & MORE ──
+  {
+    id: 2201,
+    name: "Amul Vanilla Gold Rich Dairy Ice Cream",
+    price: 120,
+    mrp: 140,
+    discountText: '14% OFF on MRP',
+    category: 'ice-creams',
+    subcategories: ['all', 'ice-creams'],
+    weight: '750 ml Tub',
+    optionsLabel: 'Insulated Tub',
+    img: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '8.3 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Real milk and cream vanilla ice cream packed in special cold thermal bag to prevent melting."
+  },
+  {
+    id: 2202,
+    name: "Kwality Wall's Cornetto Double Choc",
+    price: 40,
+    mrp: 45,
+    discountText: 'Crispy Cone',
+    category: 'ice-creams',
+    subcategories: ['all', 'ice-creams'],
+    weight: '105 ml Cone',
+    optionsLabel: 'Single Cone',
+    img: 'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=240&h=240&fit=crop',
+    rating: 5,
+    reviews: '9.1 lac',
+    deliveryTime: '11 mins',
+    veg: true,
+    description: "Creamy chocolate ice cream in a crunchy wafer cone topped with chocolate sauce and nuts."
+  },
+
+  // ── NEWLY LAUNCHED TRAVEL ESSENTIAL KIT ──
+  {
+    id: 9999,
+    name: "RailQuick 3-in-1 Journey Essentials Kit",
+    price: 1499,
+    mrp: 2499,
+    discountText: '40% OFF - NEWLY LAUNCHED',
+    category: 'electronics',
+    subcategories: ['all', 'electronics'],
+    weight: 'PowerBank + ANC Earphones + Neck Pillow',
+    optionsLabel: 'Travel Edition',
+    img: 'featured_card_1.jpg',
+    rating: 5,
+    reviews: '4.8 lac',
+    deliveryTime: '11 mins',
+    veg: false,
+    description: "Sleek Matte Black GaN Power Bank (98% LED display), Active Noise Cancelling Earphones, and Memory Foam Neck Pillow. 100% journey ready!"
+  }
 ];
 
 function isTicketConfirmed(pnrData) {
@@ -187,20 +987,40 @@ function getMockTrainSchedule(query) {
 // ===== STATE STORAGE =====
 function loadState() {
   try {
+    const defaultUser = {
+      name: 'Your account',
+      phone: '8826387844',
+      email: 'kartik.railquick@gmail.com',
+      avatarUrl: ''
+    };
     const saved = localStorage.getItem('railquick_state');
-    if (!saved) return;
+    if (!saved) {
+      appState.currentPage = 'page-pnr';
+      appState.hasOnboarded = false;
+      appState.user = defaultUser;
+      appState.favorites = [];
+      return;
+    }
     const p = JSON.parse(saved);
-    appState.user = p.user || null;
+    appState.user = p.user || defaultUser;
+    if (!appState.user.name) appState.user.name = 'Your account';
+    if (!appState.user.phone) appState.user.phone = '8826387844';
+    if (!appState.user.email) appState.user.email = 'kartik.railquick@gmail.com';
     appState.cart = Array.isArray(p.cart) ? p.cart : [];
     appState.orders = Array.isArray(p.orders) ? p.orders : [];
-    appState.pnrData = p.pnrData || null;
+    appState.pnrData = p.pnrData || {
+      trainNumber: '12301',
+      trainName: 'Rajdhani Express',
+      source: 'New Delhi (NDLS)',
+      destination: 'Howrah Jn (HWH)',
+      passengerList: [{ coach: 'B2', berth: '45', currentStatus: 'CNF' }]
+    };
     appState.pnrLiveData = p.pnrLiveData || null;
-    appState.isPnrConfirmed = p.isPnrConfirmed || false;
-    appState.currentPage = p.currentPage || 'page-pnr';
-    if (appState.currentPage === 'page-splash') {
-      appState.currentPage = 'page-pnr';
-    }
-    appState.hasOnboarded = p.hasOnboarded || false;
+    appState.isPnrConfirmed = true;
+    appState.currentPage = 'page-pnr';
+    appState.hasOnboarded = false;
+    appState.favorites = Array.isArray(p.favorites) ? p.favorites : [];
+    appState.themeMode = 'dark';
   } catch(e) {}
 }
 
@@ -214,7 +1034,9 @@ function saveState() {
       pnrLiveData: appState.pnrLiveData,
       isPnrConfirmed: appState.isPnrConfirmed,
       currentPage: appState.currentPage,
-      hasOnboarded: appState.hasOnboarded
+      hasOnboarded: appState.hasOnboarded,
+      favorites: appState.favorites,
+      themeMode: 'dark'
     }));
     if (appState.user && appState.user.clerkId) {
       localStorage.setItem(`railquick_orders_${appState.user.clerkId}`, JSON.stringify(appState.orders));
@@ -1073,8 +1895,50 @@ function renderPNRResult(d) {
   const isPrepared = (d.chartPrepared || '').toLowerCase().includes('prepared');
   const chartBadge = isPrepared ? `<span class="bg-emerald-50 text-primary border border-emerald-100 text-[10px] font-bold px-2.5 py-1 rounded-lg">Chart Prepared</span>` : `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2.5 py-1 rounded-lg">Chart Not Prepared</span>`;
   
-  document.getElementById('pnr-results').innerHTML = `<div class="bg-white border border-outline-variant/60 rounded-[2rem] overflow-hidden shadow-premium"><div class="gradient-header p-5 text-white flex justify-between items-start"><div><h3 class="font-serif-display text-xl text-white font-bold">${d.trainName || 'Train'}</h3><p class="font-mono text-[10px] text-white/70 mt-1">Train #${d.trainNumber || '—'}</p></div><div><p class="text-[9px] font-bold text-white/50 uppercase tracking-widest text-right">Journey Date</p><p class="text-xs font-bold text-secondary mt-0.5 text-right">${d.dateOfJourney || '—'}</p></div></div><div class="p-5 space-y-4"><div class="flex justify-between items-center text-xs"><span class="text-gray-400 font-medium">PNR Number</span><strong class="text-on-surface font-mono font-bold">${d.pnrNumber}</strong></div><div class="flex justify-between items-center text-xs"><span class="text-gray-400 font-medium">Class / Category</span><strong class="text-on-surface">${d.reservationClass || '—'}</strong></div><div class="flex justify-between items-center text-xs"><span class="text-gray-400 font-medium">Chart Status</span>${chartBadge}</div><div class="border-t border-dashed border-gray-100 pt-3"><div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Passenger Seat Allocations</div><div class="space-y-2">${paxHTML}</div></div>${d.fare ? `<div class="border-t border-gray-100 pt-3 flex justify-between items-center text-xs"><span class="text-gray-400 font-medium">Total Ticket Fare</span><strong class="text-secondary font-black text-sm">₹${d.fare}</strong></div>` : ''}</div></div>`;
+  document.getElementById('pnr-results').innerHTML = `
+    <div class="bg-white border border-outline-variant/60 rounded-[2rem] overflow-hidden shadow-premium">
+      <div class="gradient-header p-5 text-white flex justify-between items-start">
+        <div>
+          <h3 class="font-serif-display text-xl text-white font-bold">${d.trainName || 'Train'}</h3>
+          <p class="font-mono text-[10px] text-white/70 mt-1">Train #${d.trainNumber || '—'}</p>
+        </div>
+        <div>
+          <p class="text-[9px] font-bold text-white/50 uppercase tracking-widest text-right">Journey Date</p>
+          <p class="text-xs font-bold text-secondary mt-0.5 text-right">${d.dateOfJourney || '—'}</p>
+        </div>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-gray-400 font-medium">PNR Number</span>
+          <strong class="text-on-surface font-mono font-bold">${d.pnrNumber}</strong>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-gray-400 font-medium">Class / Category</span>
+          <strong class="text-on-surface">${d.reservationClass || '—'}</strong>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-gray-400 font-medium">Chart Status</span>
+          ${chartBadge}
+        </div>
+        <div class="border-t border-dashed border-gray-100 pt-3">
+          <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Passenger Seat Allocations</div>
+          <div class="space-y-2">${paxHTML}</div>
+        </div>
+        ${d.fare ? `<div class="border-t border-gray-100 pt-3 flex justify-between items-center text-xs"><span class="text-gray-400 font-medium">Total Ticket Fare</span><strong class="text-secondary font-black text-sm">₹${d.fare}</strong></div>` : ''}
+        
+        <div class="pt-4 border-t border-gray-100">
+          <button onclick="proceedToShop()" class="w-full bg-primary hover:bg-[#16A35E] text-white py-4 rounded-2xl font-sans font-bold active:scale-[0.98] transition-all flex justify-center items-center gap-2 text-sm shadow-md">
+            <span>Continue to Store &amp; Order</span>
+            <span class="material-symbols-outlined text-base">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
   document.getElementById('pnr-results').classList.remove('hidden');
+  setTimeout(() => {
+    document.getElementById('pnr-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
 }
 
 function renderUnconfirmedPNRResult(d) {
@@ -1898,9 +2762,19 @@ function checkPnrExpiry() {
 
 // ===== SHOP PAGE =====
 function initShopPage() {
-  // Check for PNR expiry on load
-  checkPnrExpiry();
-  if (!appState.pnrData) return;
+  if (!appState.pnrData) {
+    appState.pnrData = {
+      trainNumber: '12301',
+      trainName: 'Rajdhani Express',
+      source: 'New Delhi (NDLS)',
+      destination: 'Howrah Jn (HWH)',
+      passengerList: [{ coach: 'B2', berth: '45', currentStatus: 'CNF' }]
+    };
+  }
+  // Check for PNR expiry on load if live data exists
+  if (appState.pnrLiveData) {
+    checkPnrExpiry();
+  }
 
   // Update greeting based on time of day
   const hour = new Date().getHours();
@@ -1910,8 +2784,8 @@ function initShopPage() {
 
   showProductSkeletons();
   setTimeout(() => {
-    renderProducts(PRODUCTS);
-  }, 300);
+    filterCategory(appState.currentFilter || 'all');
+  }, 100);
   updateShopTopbar();
   updateCartFAB();
 
@@ -2122,77 +2996,96 @@ function resetAppStateAndLogin() {
 
 
 function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc, isSlider = false) {
-  const weightText = p.weight ? p.weight : 'Standard';
+  const isLiked = Array.isArray(appState.favorites) && appState.favorites.includes(p.id);
   const mrp = p.mrp || Math.round(p.price * 1.25);
-  const discPct = Math.round(((mrp - p.price) / mrp) * 100);
+  const discountText = p.discountText || (mrp > p.price ? `${Math.round(((mrp - p.price) / mrp) * 100)}% OFF on MRP` : '');
+  const optionsLabel = p.optionsLabel || (p.options && p.options.length > 1 ? `${p.options.length} options` : '');
+  const weightText = p.weight || '58 g';
 
-  const isDark = appState.themeMode === 'dark';
-  const cardBg = isDark ? '#1D1F24' : '#ffffff';
-  const cardBorder = isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)';
-  const imgBg = isDark ? '#23262D' : '#f8f8f8';
-  const mainText = isDark ? '#ffffff' : '#1f2937';
-  const mutedText = isDark ? '#9ca3af' : '#6b7280';
-  const discColor = isDark ? '#38bdf8' : '#2563eb';
-  const accentColor = '#0C8346'; // RailQuick Green Accent
-  const btnBg = isDark ? '#1D1F24' : '#ffffff';
-
-  const vegDot = p.veg
-    ? `<span style="position:absolute;bottom:4px;right:4px;width:12px;height:12px;background:#ffffff;border-radius:3px;border:1px solid #16a34a;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none;">
-         <span style="width:5px;height:5px;background:#16a34a;border-radius:50%;display:block;"></span>
-       </span>` : '';
-
-  const heartButton = `<button style="position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.2); border:none; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#ffffff; z-index:5;" onclick="event.stopPropagation(); this.classList.toggle('active'); this.style.color = this.classList.contains('active') ? '#ef4444' : '#ffffff';">
-    <span class="material-symbols-outlined" style="font-size:12px; font-variation-settings: 'FILL' 1;">favorite</span>
-  </button>`;
-
-  let optionsLabel = '';
-  if (p.id === 1001) optionsLabel = '3 options';
-  else if (p.id === 1003 || p.id === 1004 || p.id === 1006 || p.id === 1008 || (p.name && p.name.includes('Red Rock Deli'))) {
-    optionsLabel = '2 options';
-  }
+  const vegBadgeHTML = p.veg ? `
+    <div class="pcard-veg-badge">
+      <div class="pcard-veg-dot"></div>
+    </div>
+  ` : '';
 
   const buttonHTML = qty > 0
-    ? `<div style="display:flex;align-items:center;background:${accentColor};border:1px solid ${accentColor};border-radius:6px;overflow:hidden;height:26px;width:64px;z-index:10;">
-         <button style="width:20px;height:100%;color:#ffffff;font-size:14px;font-weight:800;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" onclick="event.stopPropagation();${changeClickCodeFunc(-1)}">−</button>
-         <span style="flex:1;text-align:center;font-size:11px;font-weight:800;color:#ffffff;font-family:'Outfit',sans-serif;line-height:26px;">${qty}</span>
-         <button style="width:20px;height:100%;color:#ffffff;font-size:14px;font-weight:800;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" onclick="event.stopPropagation();${changeClickCodeFunc(1)}">+</button>
+    ? `<div class="pcard-stepper" onclick="event.stopPropagation();">
+         <button class="pcard-stepper-btn" onclick="changeProductQty(${p.id}, -1)">−</button>
+         <span class="pcard-stepper-val">${qty}</span>
+         <button class="pcard-stepper-btn" onclick="changeProductQty(${p.id}, 1)">+</button>
        </div>`
-    : `<button style="background:${btnBg};border:1px solid ${accentColor};color:${accentColor};border-radius:6px;height:26px;width:64px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.1s;padding:0 2px;line-height:1.05;" onclick="event.stopPropagation();${addClickCode}">
-         <span style="font-size:10px;font-weight:900;letter-spacing:0.02em;color:${accentColor};">ADD</span>
-         ${optionsLabel ? `<span style="font-size:6.5px;font-weight:700;color:${accentColor};display:block;margin-top:0.5px;line-height:1;">${optionsLabel}</span>` : ''}
+    : `<button class="pcard-add-btn" onclick="event.stopPropagation(); handleAddProductClick(${p.id});">
+         <span class="pcard-add-label">ADD</span>
+         ${optionsLabel ? `<span class="pcard-options-label" onclick="event.stopPropagation(); openProductOptionsModal(${p.id});">${optionsLabel}</span>` : ''}
        </button>`;
 
-  const sliderStyle = isSlider ? 'min-width:135px; max-width:135px; flex-shrink:0;' : '';
-
   return `
-    <div style="cursor:pointer; background:${cardBg}; border:${cardBorder}; border-radius:12px; padding:8px; display:flex; flex-direction:column; justify-content:space-between; position:relative; ${sliderStyle}" onclick="openProductModal(${p.id})" class="product-card-premium" data-product-id="${p.id}">
+    <div class="product-card-premium" data-product-id="${p.id}" onclick="openProductModal(${p.id})">
       <div>
         <!-- Image Container -->
-        <div style="position:relative; width:100%; aspect-ratio:1; background:${imgBg}; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px;">
-          <img src="${p.img}" alt="${p.name}" style="max-width:90%; max-height:90%; object-fit:contain;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150&h=150&fit=crop';">
-          ${vegDot}
-          ${heartButton}
+        <div class="pcard-img-box">
+          <!-- Heart Like Button -->
+          <button class="pcard-like-btn ${isLiked ? 'liked' : ''}" onclick="event.stopPropagation(); toggleProductLike(${p.id});" aria-label="Like product">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="${isLiked ? '#ef4444' : 'none'}" stroke="${isLiked ? '#ef4444' : 'rgba(255,255,255,0.7)'}" stroke-width="2.2">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
+          
+          <!-- Centered Product Image -->
+          <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='product_lays.png';" />
+          
+          <!-- Veg Symbol -->
+          ${vegBadgeHTML}
+          
+          <!-- Carousel Dots -->
+          <div class="pcard-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
         </div>
-        
+
         <!-- Weight and ADD button row -->
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; gap:4px; width:100%;">
-          <span style="font-size:11px; font-weight:600; color:${mutedText}; font-family:'Outfit',sans-serif; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${weightText}</span>
-          <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();" style="flex-shrink:0;">
+        <div class="pcard-action-row">
+          <span class="pcard-weight">${weightText}</span>
+          <div class="qty-btn-wrapper font-sans" data-product-id="${p.id}" onclick="event.stopPropagation();">
             ${buttonHTML}
           </div>
         </div>
 
         <!-- Price Details -->
-        <div style="display:flex; align-items:baseline; gap:4px; margin-bottom:1px; font-family:'Outfit',sans-serif;">
-          <span style="font-size:13px; font-weight:800; color:${mainText};">₹${p.price}</span>
-          <span style="font-size:9.5px; font-weight:500; color:${mutedText}; text-decoration:line-through;">₹${mrp}</span>
+        <div class="pcard-price-row">
+          <span class="pcard-price">₹${p.price}</span>
+          ${mrp > p.price ? `<span class="pcard-mrp">₹${mrp}</span>` : ''}
         </div>
-        
+
         <!-- Discount -->
-        <div style="font-size:9px; font-weight:800; color:${discColor}; margin-bottom:4px; font-family:'Outfit',sans-serif;">${discPct}% OFF on MRP</div>
-        
+        ${discountText ? `<div class="pcard-discount">${discountText}</div>` : ''}
+
         <!-- Product Name -->
-        <h4 style="font-size:11px; font-weight:700; color:${mainText}; line-height:1.25; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; font-family:'Outfit',sans-serif; min-height:28px;">${p.name}</h4>
+        <h4 class="pcard-title" title="${p.name}">${p.name}</h4>
+      </div>
+
+      <!-- Rating & Reviews -->
+      <div>
+        <div class="pcard-rating-row">
+          <span class="pcard-star-icon">★</span>
+          <span class="pcard-star-icon">★</span>
+          <span class="pcard-star-icon">★</span>
+          <span class="pcard-star-icon">★</span>
+          <span class="pcard-star-icon">★</span>
+          <span class="pcard-reviews-text">${p.reviews || '6.6 lac'}</span>
+        </div>
+
+        <!-- Delivery Time -->
+        <div class="pcard-delivery-row">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <span>${p.deliveryTime || '12 mins'}</span>
+        </div>
       </div>
     </div>
   `;
@@ -2201,7 +3094,7 @@ function getProductCardHTML(p, qty, addClickCode, changeClickCodeFunc, isSlider 
 function renderSingleProductCardHTML(p) {
   const inCart = appState.cart.find(c => c.id === p.id);
   const qty = inCart ? inCart.qty : 0;
-  return getProductCardHTML(p, qty, `addToCart(${p.id})`, (delta) => `changeProductQty(${p.id},${delta})`);
+  return getProductCardHTML(p, qty, `handleAddProductClick(${p.id})`, (delta) => `changeProductQty(${p.id},${delta})`);
 }
 
 function renderDarkProductCardHTML(p, theme) {
@@ -2305,99 +3198,494 @@ function renderDarkCategoryProduct(p, theme) {
   return getProductCardHTML(p, qty, `addToCart(${p.id})`, (delta) => `changeProductQty(${p.id},${delta})`);
 }
 
-function renderProducts(products) {
-  const grid = document.getElementById('products-grid');
-  if (!grid) return;
-  
-  const matchesCat = appState.currentFilter === 'all';
-  const matchesQuery = !appState.searchQuery;
+// ===== PRODUCT LIKE / FAVORITE FUNCTIONALITY =====
+function toggleProductLike(productId) {
+  if (!Array.isArray(appState.favorites)) appState.favorites = [];
+  const idx = appState.favorites.indexOf(productId);
+  const isLiked = idx > -1;
 
-  if (matchesCat && matchesQuery) {
-    const snacks = products.filter(p => p.category === 'beverages' || p.id === 103 || p.id === 104 || p.id === 105);
-    const comfort = products.filter(p => p.category === 'hygiene' || p.id === 101 || p.id === 102);
-    const tech = products.filter(p => p.category === 'tech');
+  if (isLiked) {
+    appState.favorites.splice(idx, 1);
+    showToast('Removed from favorites', 'info');
+  } else {
+    appState.favorites.push(productId);
+    showToast('Saved to your favorites ❤️', 'success');
+  }
 
-    const sections = [
-      { title: 'Chai, Coffee & Snacks', items: snacks, accentColor: '#118A4E' },
-      { title: 'Travel Hygiene & Comfort', items: comfort, accentColor: '#D97706' },
-      { title: 'Tech & Electronics', items: tech, accentColor: '#7C3AED' }
-    ];
+  saveState();
 
-    grid.innerHTML = sections.map(sec => {
-      if (!sec.items.length) return '';
-      const itemsHTML = sec.items.map(p => renderSingleProductCardHTML(p)).join('');
+  // Instant DOM update for all matching like buttons
+  document.querySelectorAll(`.product-card-premium[data-product-id="${productId}"] .pcard-like-btn`).forEach(btn => {
+    const svg = btn.querySelector('svg');
+    if (isLiked) {
+      btn.classList.remove('liked');
+      if (svg) {
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'rgba(255,255,255,0.7)');
+      }
+    } else {
+      btn.classList.add('liked');
+      if (svg) {
+        svg.setAttribute('fill', '#ef4444');
+        svg.setAttribute('stroke', '#ef4444');
+      }
+      btn.style.transform = 'scale(1.35)';
+      setTimeout(() => { btn.style.transform = 'scale(1)'; }, 200);
+    }
+  });
+}
+
+// ===== ADD TO CART & VARIANT HANDLERS =====
+function handleAddProductClick(productId, variantIndex = 0) {
+  const p = PRODUCTS.find(x => x.id === productId);
+  if (!p) return;
+
+  const inCart = appState.cart.find(c => c.id === productId);
+  if (inCart) {
+    inCart.qty += 1;
+  } else {
+    let weight = p.weight;
+    let price = p.price;
+    let mrp = p.mrp;
+    if (p.options && p.options[variantIndex]) {
+      weight = p.options[variantIndex].weight;
+      price = p.options[variantIndex].price;
+      mrp = p.options[variantIndex].mrp;
+    }
+    appState.cart.push({
+      id: p.id,
+      name: p.name,
+      price: price,
+      mrp: mrp,
+      weight: weight,
+      img: p.img,
+      category: p.category,
+      veg: p.veg,
+      qty: 1
+    });
+  }
+
+  saveState();
+  showToast(`${p.name} added to cart!`, 'success');
+  renderProducts(PRODUCTS);
+  updateCartBadge();
+  updateCartFAB();
+  if (appState.currentPage === 'page-cart') initCartPage();
+}
+
+function changeProductQty(productId, delta) {
+  const inCart = appState.cart.find(c => c.id === productId);
+  if (!inCart) {
+    if (delta > 0) handleAddProductClick(productId);
+    return;
+  }
+
+  const newQty = inCart.qty + delta;
+  if (newQty <= 0) {
+    appState.cart = appState.cart.filter(c => c.id !== productId);
+    showToast('Item removed from cart', 'info');
+  } else {
+    inCart.qty = newQty;
+  }
+
+  saveState();
+  renderProducts(PRODUCTS);
+  if (typeof updateSingleProductCardDOM === 'function') {
+    try { updateSingleProductCardDOM(productId); } catch(e) {}
+  }
+  updateCartBadge();
+  updateCartFAB();
+  if (appState.currentPage === 'page-cart') initCartPage();
+}
+
+// ===== VARIANT OPTIONS MODAL =====
+function openProductOptionsModal(productId) {
+  const p = PRODUCTS.find(x => x.id === productId);
+  if (!p || !p.options) {
+    handleAddProductClick(productId);
+    return;
+  }
+
+  const backdrop = document.getElementById('product-options-backdrop');
+  const imgEl = document.getElementById('options-modal-img');
+  const titleEl = document.getElementById('options-modal-title');
+  const listEl = document.getElementById('options-modal-list');
+
+  if (imgEl) imgEl.src = p.img;
+  if (titleEl) titleEl.textContent = p.name;
+
+  if (listEl) {
+    listEl.innerHTML = p.options.map((opt, idx) => {
       return `
-        <div style="margin-bottom:24px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <div style="width:4px;height:15px;background:${sec.accentColor};border-radius:2px;"></div>
-            <h4 style="font-size:13px;font-weight:800;color:var(--product-name-color, #1a1a1a);margin:0;font-family:'Outfit',sans-serif;">${sec.title}</h4>
+        <div class="p-3 rounded-2xl bg-[#1c1d24] border border-white/10 flex items-center justify-between">
+          <div>
+            <div class="text-xs font-bold text-white font-headline">${opt.weight}</div>
+            <div class="flex items-baseline gap-2 mt-0.5">
+              <span class="text-sm font-black text-white font-mono">₹${opt.price}</span>
+              ${opt.mrp > opt.price ? `<span class="text-[11px] text-gray-500 line-through">₹${opt.mrp}</span>` : ''}
+              ${opt.discount ? `<span class="text-[10px] font-bold text-[#38bdf8]">${opt.discount}</span>` : ''}
+            </div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;">
-            ${itemsHTML}
-          </div>
+          <button onclick="handleAddProductClick(${p.id}, ${idx}); closeProductOptionsModal();" class="bg-[#14151a] border-1.5 border-[#22c55e] text-[#22c55e] font-extrabold px-4 py-1.5 rounded-lg text-xs hover:bg-[#22c55e]/10 active:scale-95 transition-all">
+            ADD
+          </button>
         </div>
       `;
     }).join('');
+  }
+
+  if (backdrop) backdrop.classList.add('active');
+}
+
+function closeProductOptionsModal() {
+  const backdrop = document.getElementById('product-options-backdrop');
+  if (backdrop) backdrop.classList.remove('active');
+}
+
+// ===== PAYMENT OFFERS MODAL =====
+function openPaymentOffersModal() {
+  const modal = document.getElementById('payment-offers-modal');
+  if (modal) modal.classList.add('active');
+}
+
+function closePaymentOffersModal() {
+  const modal = document.getElementById('payment-offers-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function applyPaymentOffer(code, amount) {
+  appState.appliedCoupon = { code, discount: amount };
+  saveState();
+  closePaymentOffersModal();
+  showToast(`Coupon ${code} applied! ₹${amount} discount active.`, 'success');
+  updateCartFAB();
+  if (appState.currentPage === 'page-cart') initCartPage();
+}
+
+// ===== GADGET SPOTLIGHT MODAL (TRAIN ESSENTIALS) =====
+function openGadgetSpotlightModal() {
+  const modal = document.getElementById('gadget-spotlight-modal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeGadgetSpotlightModal() {
+  const modal = document.getElementById('gadget-spotlight-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function addSpotlightKitToCart() {
+  const existing = appState.cart.find(c => c.id === 9999);
+  if (existing) {
+    existing.qty += 1;
   } else {
-    const filtered = products.filter(p => {
-      const matchCategory = appState.currentFilter === 'all' || 
-                            p.category === appState.currentFilter || 
-                            (appState.currentFilter === 'monsoon' && (p.category === 'beverages' || p.id === 103 || p.id === 105));
-      const matchSearch = !appState.searchQuery || p.name.toLowerCase().includes(appState.searchQuery) || p.category.toLowerCase().includes(appState.searchQuery);
-      return matchCategory && matchSearch;
+    appState.cart.push({
+      id: 9999,
+      name: 'RailQuick 3-in-1 Journey Essentials Kit',
+      price: 1499,
+      mrp: 2499,
+      weight: 'PowerBank + ANC Earphones + Neck Pillow',
+      img: 'featured_card_1.jpg',
+      category: 'electronics',
+      subcategories: ['all', 'electronics'],
+      qty: 1
     });
+  }
+  saveState();
+  showToast('✓ Journey Essentials Kit added to cart!', 'success');
+  updateCartBadge();
+  updateCartFAB();
+}
+const addSpotlightPhoneToCart = addSpotlightKitToCart;
 
-    if (!filtered.length) {
-      grid.innerHTML = `<div style="grid-column:span 2;text-align:center;padding:40px 0;color:rgba(255,255,255,0.35);font-size:12px;font-weight:600;">No products found.</div>`;
-      return;
+// ===== UNIFIED BLINKIT FLOATING CART BAR (ONLY ONE) =====
+function updateCartFAB() {
+  const fab = document.getElementById('cart-fab');
+  if (!fab) return;
+
+  const totalQty = appState.cart.reduce((sum, item) => sum + item.qty, 0);
+  const totalPrice = appState.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+  const searchInput = document.getElementById('overlay-search-input');
+  const isSearchInputFocused = searchInput && document.activeElement === searchInput;
+
+  if (totalQty > 0 && !isSearchInputFocused && appState.currentPage === 'page-shop') {
+    fab.classList.remove('hidden');
+
+    const countEl = document.getElementById('cart-fab-count');
+    const totalEl = document.getElementById('cart-fab-total');
+    const previewEl = document.getElementById('cart-fab-preview');
+
+    if (countEl) countEl.textContent = `${totalQty} ITEM${totalQty > 1 ? 'S' : ''}`;
+    if (totalEl) totalEl.textContent = `₹${totalPrice}`;
+
+    if (previewEl) {
+      previewEl.innerHTML = appState.cart.slice(0, 3).map(item => `
+        <div class="w-8 h-8 rounded-full border-2 border-[#12151d] bg-white p-0.5 overflow-hidden flex items-center justify-center shrink-0 shadow">
+          <img src="${item.img}" alt="${item.name}" class="w-full h-full object-contain" onerror="this.src='product_lays.png'" />
+        </div>
+      `).join('');
     }
-
-    const itemsHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
-    grid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;">${itemsHTML}</div>`;
+  } else {
+    fab.classList.add('hidden');
   }
 }
 
+// ===== BLINKIT SNACKS & DRINKS CATEGORY SELECTOR =====
+function selectSnacksCategory(catKey) {
+  appState.currentFilter = catKey;
 
+  // Highlight selected card in the 8-grid
+  document.querySelectorAll('.cat-grid-card').forEach(c => {
+    c.classList.remove('active');
+  });
+  const clicked = document.querySelector(`.cat-grid-card[onclick*="${catKey}"]`);
+  if (clicked) clicked.classList.add('active');
 
+  // Deactivate photo 1 tabs
+  document.querySelectorAll('.rq-cat-tab').forEach(tab => tab.classList.remove('active'));
 
+  const titles = {
+    'chips-namkeen': 'Chips & Namkeen',
+    'sweets-chocolates': 'Sweets & Chocolates',
+    'drinks-juices': 'Drinks & Juices',
+    'tea-coffee': 'Tea, Coffee & Milk Drinks',
+    'instant-food': 'Instant Food & Noodles',
+    'sauces-spreads': 'Sauces & Spreads',
+    'paan-corner': 'Paan Corner & Refreshers',
+    'ice-creams': 'Ice Creams & Frozen Desserts'
+  };
 
-function filterCategory(cat, el) {
-  appState.currentFilter = cat;
-  if (el) {
-    document.querySelectorAll('.rq-cdt').forEach(x => x.classList.remove('active'));
-    el.classList.add('active');
+  const titleEl = document.getElementById('products-section');
+  if (titleEl) {
+    titleEl.textContent = titles[catKey] || 'Snacks & Drinks';
   }
-  
-  const snacksGrid = document.getElementById('home-snacks-drinks-container');
-  const featuredSlider = document.getElementById('home-featured-container');
-  const customCategory = document.getElementById('custom-category-content-container');
-  const productsListSec = document.getElementById('products-list-section');
-  const heroBlock = document.querySelector('.rq-hero-block');
 
-  // Hero block is kept visible!
-  if (heroBlock) heroBlock.style.display = 'block';
+  renderProducts(PRODUCTS);
 
-  if (cat === 'all') {
-    if (snacksGrid) snacksGrid.style.display = 'block';
-    if (featuredSlider) featuredSlider.style.display = 'block';
-    if (productsListSec) productsListSec.style.display = 'block';
-    if (customCategory) customCategory.classList.add('hidden');
-    
-    renderProducts(PRODUCTS);
-  } else {
-    if (snacksGrid) snacksGrid.style.display = 'none';
-    if (featuredSlider) featuredSlider.style.display = 'none';
-    if (productsListSec) productsListSec.style.display = 'none';
-    if (customCategory) {
-      customCategory.classList.remove('hidden');
-      renderCustomCategoryLayout(cat);
+  // Smooth scroll to products list
+  const listSec = document.getElementById('products-list-section');
+  if (listSec) {
+    listSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  showToast(`Showing ${titles[catKey] || catKey}`, 'info');
+}
+
+// ===== TRAIN & SEAT SELECTOR MODAL HANDLERS =====
+let selectedBerthType = 'Upper Berth';
+function openTrainSeatSelectorModal() {
+  const modal = document.getElementById('train-seat-selector-modal');
+  if (!modal) return;
+
+  if (appState.pnrData) {
+    const selTrain = document.getElementById('modal-train-select');
+    const inpCoach = document.getElementById('modal-coach-input');
+    const inpSeat = document.getElementById('modal-seat-input');
+    const selStation = document.getElementById('modal-station-select');
+
+    if (selTrain && appState.pnrData.trainName) {
+      for (let i = 0; i < selTrain.options.length; i++) {
+        if (selTrain.options[i].text.includes(appState.pnrData.trainNumber) || selTrain.options[i].value.includes(appState.pnrData.trainName)) {
+          selTrain.selectedIndex = i;
+          break;
+        }
+      }
     }
-    
-    setTimeout(() => {
-      const catRow = document.querySelector('.rq-cat-row-dark');
-      if (catRow) catRow.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    const pax = appState.pnrData.passengerList?.[0];
+    if (inpCoach && pax) inpCoach.value = pax.coach || 'B2';
+    if (inpSeat && pax) inpSeat.value = pax.berth || '45';
   }
+  modal.classList.add('active');
+}
+
+function closeTrainSeatSelectorModal() {
+  const modal = document.getElementById('train-seat-selector-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function setBerthType(type, btn) {
+  selectedBerthType = type;
+  document.querySelectorAll('.berth-chip').forEach(b => {
+    b.className = 'berth-chip px-3 py-1.5 rounded-lg text-[10px] font-bold border border-white/15 text-gray-300 bg-[#1c1d24] active:scale-95';
+  });
+  if (btn) {
+    btn.className = 'berth-chip px-3 py-1.5 rounded-lg text-[10px] font-bold border border-[#22c55e] text-[#22c55e] bg-[#22c55e]/10 active:scale-95';
+  }
+}
+
+function saveTrainSeatDetails() {
+  const selTrain = document.getElementById('modal-train-select')?.value || '12301 Rajdhani Express';
+  const inpCoach = (document.getElementById('modal-coach-input')?.value || 'B2').trim().toUpperCase();
+  const inpSeat = (document.getElementById('modal-seat-input')?.value || '45').trim();
+  const selStation = document.getElementById('modal-station-select')?.value || 'Kanpur Central (CNB)';
+
+  if (!inpCoach || !inpSeat) {
+    showToast('Please enter both Coach and Seat number', 'warning');
+    return;
+  }
+
+  const trainParts = selTrain.split(' ');
+  const trainNo = trainParts[0];
+  const trainName = trainParts.slice(1).join(' ') || selTrain;
+
+  if (!appState.pnrData) {
+    appState.pnrData = {};
+  }
+  appState.pnrData.trainNumber = trainNo;
+  appState.pnrData.trainName = trainName;
+  appState.pnrData.passengerList = [{
+    coach: inpCoach,
+    berth: inpSeat,
+    berthCode: selectedBerthType,
+    currentStatus: 'CNF'
+  }];
+  appState.pnrData.destination = selStation;
+  appState.isPnrConfirmed = true;
+
+  saveState();
+  updateShopTopbar();
+
+  // Also update checkout page if open
+  const trainEl = document.getElementById('checkout-train');
+  const seatEl = document.getElementById('checkout-seat');
+  const stationEl = document.getElementById('checkout-station');
+  if (trainEl) trainEl.textContent = `${trainName} (#${trainNo})`;
+  if (seatEl) seatEl.textContent = `Coach ${inpCoach}, Seat ${inpSeat} (${selectedBerthType})`;
+  if (stationEl) stationEl.textContent = selStation;
+
+  closeTrainSeatSelectorModal();
+  showToast(`✓ Updated! Delivering to Coach ${inpCoach}, Seat ${inpSeat}`, 'success');
+}
+
+
+// ===== CATEGORY FILTERING (PHOTO 1 INTERACTIVE) =====
+function filterCategory(catKey, element) {
+  appState.currentFilter = catKey;
+
+  // Update active state in category strip
+  document.querySelectorAll('.rq-cat-tab').forEach(tab => {
+    tab.classList.remove('active');
+    if (tab.getAttribute('data-cat') === catKey) {
+      tab.classList.add('active');
+    }
+  });
+
+  if (element && element.classList.contains('rq-cat-tab')) {
+    element.classList.add('active');
+  }
+
+  // Toggle category-specific hero headers right below the category strip
+  const homeView = document.getElementById('home-main-view');
+  const navratriView = document.getElementById('navratri-main-view');
+  const elecView = document.getElementById('electronics-main-view');
+  const beautyView = document.getElementById('beauty-main-view');
+  const pharmView = document.getElementById('pharmacy-main-view');
+
+  if (homeView) homeView.classList.toggle('hidden', catKey !== 'all');
+  if (navratriView) navratriView.classList.toggle('hidden', catKey !== 'navratri');
+  if (elecView) elecView.classList.toggle('hidden', catKey !== 'electronics');
+  if (beautyView) beautyView.classList.toggle('hidden', catKey !== 'beauty');
+  if (pharmView) pharmView.classList.toggle('hidden', catKey !== 'pharmacy');
+
+  // Update section title & subtitle dynamically
+  const sectionTitleEl = document.getElementById('products-section');
+  const sectionSubEl = document.querySelector('#products-list-section .products-section-header div div');
+  
+  if (sectionTitleEl) {
+    if (catKey === 'all') {
+      sectionTitleEl.textContent = 'Trending Essentials';
+      if (sectionSubEl) sectionSubEl.innerHTML = '<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#22c55e;"></span> Delivered in 12 mins to your seat';
+    } else if (catKey === 'navratri') {
+      sectionTitleEl.textContent = 'Revel in the spirit of Navratri';
+      if (sectionSubEl) sectionSubEl.innerHTML = 'Get idols, kalash, chunri and more';
+    } else if (catKey === 'electronics') {
+      sectionTitleEl.textContent = 'Top Deals';
+      if (sectionSubEl) sectionSubEl.innerHTML = '<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#22c55e;"></span> Delivered in 12-16 mins to your seat';
+    } else if (catKey === 'beauty') {
+      sectionTitleEl.textContent = 'Festive Glam & Grooming';
+      if (sectionSubEl) sectionSubEl.innerHTML = 'Hair, Skincare & Fragrance essentials';
+    } else if (catKey === 'pharmacy') {
+      sectionTitleEl.textContent = 'Station Pharmacy & First Aid';
+      if (sectionSubEl) sectionSubEl.innerHTML = 'Express medicinal care at your coach';
+    } else {
+      sectionTitleEl.textContent = `${catKey.toUpperCase()} Essentials`;
+    }
+  }
+
+  renderProducts(PRODUCTS);
+
+  // ALWAYS scroll smoothly to the very top so the category banner is right at the top
+  const pageShop = document.getElementById('page-shop');
+  if (pageShop) {
+    pageShop.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+// Navratri subcategory hotspot actions
+function openNavratriSpotlight(type) {
+  if (type === 'necklace') {
+    addToCart(1207);
+    showToast('✓ Added Ethnic Necklace Set (₹299) to cart!', 'success');
+  } else {
+    filterCategory('navratri');
+  }
+}
+
+function filterNavratriSub(subType) {
+  filterCategory('navratri');
+  const titles = {
+    pooja: 'Flowers & Pooja Needs',
+    kanjak: 'Kanjak Corner Essentials',
+    fasting: 'Vrat & Fasting Essentials',
+    kids: 'Kids Mela Toys & Festive Needs'
+  };
+  showToast(`Showing ${titles[subType] || 'Navratri Essentials'}`, 'info');
+}
+
+// Electronics subcategory carousel actions
+function filterElectronicsSub(subType) {
+  filterCategory('electronics');
+  const titles = {
+    earbuds: 'Earbuds & Headsets',
+    firetv: 'Fire TV & Streaming',
+    powerbanks: 'Power Banks & Chargers',
+    portronics: 'Brand in Focus: Portronics'
+  };
+  showToast(`Viewing ${titles[subType] || 'Electronics'}`, 'info');
+}
+
+// ===== PRODUCTS RENDERER (PHOTO 3 3-COLUMN GRID) =====
+function renderProducts(products) {
+  const grid = document.getElementById('products-grid');
+  if (!grid) return;
+
+  const filter = appState.currentFilter || 'all';
+  const query = (appState.searchQuery || '').toLowerCase().trim();
+
+  let filtered = products.filter(p => {
+    const matchCat = (filter === 'all') ||
+                     (p.category === filter) ||
+                     (Array.isArray(p.subcategories) && p.subcategories.includes(filter));
+    const matchQuery = !query ||
+                       p.name.toLowerCase().includes(query) ||
+                       (p.description && p.description.toLowerCase().includes(query)) ||
+                       (p.category && p.category.toLowerCase().includes(query));
+    return matchCat && matchQuery;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = `
+      <div style="grid-column: span 3; text-align: center; padding: 40px 10px; color: rgba(255,255,255,0.4); font-size: 13px; font-weight: 600; font-family: 'Outfit', sans-serif;">
+        <span class="material-symbols-outlined" style="font-size: 32px; display: block; margin-bottom: 8px; color: rgba(255,255,255,0.2);">inventory_2</span>
+        No products found in this category.
+      </div>
+    `;
+    updateCartFAB();
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p => renderSingleProductCardHTML(p)).join('');
+  updateCartFAB();
 }
 
 window.filterMonsoonSubcategory = function(subcat, element) {
@@ -2895,8 +4183,8 @@ function showNotif() { showToast('Delivering orders to platforms 1-8 currently.'
 function getCartTotals() {
   const subtotal = appState.cart.reduce((s, c) => s + c.price * c.qty, 0);
   let discount = 0;
-  let deliveryFee = 30;
-  const handlingFee = 10;
+  let deliveryFee = subtotal >= 199 || appState.cart.length === 0 ? 0 : 30;
+  const handlingFee = appState.cart.length > 0 ? 12 : 0;
 
   if (appState.appliedCoupon === 'RAILQUICK15') {
     discount = Math.min(Math.round(subtotal * 0.15), 50);
@@ -2910,10 +4198,13 @@ function getCartTotals() {
     deliveryFee = 0;
   }
 
-  const gst = Math.round(Math.max(subtotal - discount, 0) * 0.05);
-  const total = Math.max(subtotal - discount, 0) + gst + deliveryFee + handlingFee;
+  const tip = appState.tipAmount || 0;
+  const donation = appState.donationAmount || 0;
+  const giftPack = appState.giftPackaging ? 30 : 0;
+  const gst = 0; // Blinkit model: transparent all-inclusive pricing
+  const total = appState.cart.length > 0 ? (Math.max(subtotal - discount, 0) + deliveryFee + handlingFee + tip + donation + giftPack) : 0;
 
-  return { subtotal, discount, gst, deliveryFee, handlingFee, total };
+  return { subtotal, discount, gst, deliveryFee, handlingFee, tip, donation, giftPack, total };
 }
 
 function applyPromoCode() {
@@ -3062,65 +4353,7 @@ function addComboToCart(productIds) {
   if (navigator.vibrate) navigator.vibrate(50);
 }
 
-function changeProductQty(id, delta) {
-  const item = appState.cart.find(c => c.id === id);
-  if (!item) { if (delta > 0) addToCart(id); return; }
-  item.qty += delta;
-  if (item.qty <= 0) appState.cart = appState.cart.filter(c => c.id !== id);
-  saveState(); 
-  updateCartFAB(); 
-  updateSingleProductCardDOM(id);
-}
 
-function updateCartFAB() {
-  const fab = document.getElementById('cart-fab');
-  if (!fab) return;
-  const count = appState.cart.reduce((s, c) => s + c.qty, 0);
-  
-  const searchInput = document.getElementById('overlay-search-input');
-  const isSearchInputFocused = searchInput && document.activeElement === searchInput;
-  
-  if (count > 0 && !isSearchInputFocused && appState.currentPage === 'page-shop') {
-    fab.classList.remove('hidden');
-    fab.classList.remove('cart-bump');
-    void fab.offsetWidth;
-    fab.classList.add('cart-bump');
-    
-    const { total } = getCartTotals();
-    const countLabel = document.getElementById('cart-fab-count');
-    const titleLabel = document.getElementById('cart-fab-title');
-    
-    if (titleLabel) titleLabel.textContent = `${count} Item${count > 1 ? 's' : ''}`;
-    if (countLabel) countLabel.textContent = `₹${total}`;
-    
-    const isDark = appState.themeMode === 'dark';
-    fab.style.backgroundColor = isDark ? '#1D1F24' : '#ffffff';
-    fab.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
-    if (titleLabel) titleLabel.style.color = isDark ? '#ffffff' : '#1f2937';
-    if (countLabel) countLabel.style.color = isDark ? '#9ca3af' : '#6b7280';
-    
-    const preview = document.getElementById('cart-fab-preview');
-    if (preview) {
-      const thumbs = appState.cart.slice(0, 3).map((item, idx) => {
-        const zIndex = (idx + 1) * 10;
-        const margin = idx < Math.min(appState.cart.length, 3) - 1 ? '-mr-3' : '';
-        const borderCol = isDark ? '#1D1F24' : '#ffffff';
-        return `
-          <div class="w-8 h-8 rounded-full border-2 bg-white overflow-hidden flex items-center justify-center shadow shrink-0 ${margin} relative z-${zIndex}" style="border-color: ${borderCol};">
-            <img src="${item.img}" alt="${item.name}" class="w-full h-full object-contain">
-          </div>
-        `;
-      }).join('');
-      preview.innerHTML = thumbs || `
-        <div class="w-8 h-8 rounded-full border-2 bg-white/20 overflow-hidden flex items-center justify-center shadow shrink-0 relative z-10" style="border-color: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};">
-          <span class="material-symbols-outlined text-white text-base">shopping_cart</span>
-        </div>
-      `;
-    }
-  } else { 
-    fab.classList.add('hidden'); 
-  }
-}
 
 function initCartPage() {
   const cartPage = document.getElementById('page-cart');
@@ -3348,23 +4581,41 @@ function updateCartSummary() {
 }
 
 function proceedToCheckout() {
-  if (!appState.cart.length) { showToast('Cart is empty!', 'warning'); return; }
-  if (!appState.user) { 
-    showToast('Please sign in first to place your order', 'info'); 
-    localStorage.setItem('railquick_return_after_login', appState.cart.length ? 'page-cart' : 'page-account'); navigateTo('page-account');
+  if (!appState.cart || !appState.cart.length) { 
+    showToast('Your cart is empty! Add items to continue.', 'warning'); 
     return; 
   }
-  // Require Confirmed PNR to proceed with order checkout
-  if (!appState.isPnrConfirmed || !appState.pnrData) {
-    showToast('Confirmed PNR verification required to place an order.', 'warning');
-    appState.hasOnboarded = false;
-    saveState();
-    setTimeout(() => {
-      navigateTo('page-pnr');
-    }, 1200);
-    return;
+  
+  // Auto-set default passenger if not logged in
+  if (!appState.user) {
+    appState.user = {
+      name: 'Kartik Guleria',
+      phone: '8826387844',
+      email: 'kartik.railquick@gmail.com',
+      clerkId: 'user_railquick_demo'
+    };
   }
+  
+  // Auto-set active train & seat from top bar
+  if (!appState.pnrData) {
+    appState.pnrData = {
+      trainNumber: '12301',
+      trainName: '12301 Rajdhani Express',
+      destination: 'New Delhi (NDLS)',
+      passengerList: [{
+        coach: 'B2',
+        berth: '45',
+        berthCode: 'Upper Berth',
+        currentStatus: 'CNF'
+      }]
+    };
+  }
+  appState.isPnrConfirmed = true;
+  appState.hasOnboarded = true;
+  saveState();
+
   navigateTo('page-checkout');
+  initCheckoutPage();
 }
 
 // ===== CHECKOUT FLOW =====
@@ -3513,61 +4764,249 @@ function renderCheckoutBillDetails() {
   const container = document.getElementById('checkout-bill-details-container');
   if (!container) return;
   
-  const { subtotal, discount, gst, deliveryFee, handlingFee, total } = getCartTotals();
+  const { subtotal, discount, gst, deliveryFee, handlingFee, tip, donation, giftPack, total } = getCartTotals();
   const mrpTotal = appState.cart.reduce((sum, item) => {
     const mrp = item.mrp || Math.round(item.price * 1.25);
     return sum + (mrp * item.qty);
   }, 0);
-  const totalSavings = mrpTotal - total;
+  const totalSavings = (mrpTotal - subtotal) + discount;
+
+  const currentCoach = appState.pnrData?.passengerList?.[0]?.coach || 'B2';
+  const currentSeat = appState.pnrData?.passengerList?.[0]?.berth || '45';
+  const currentTrain = appState.pnrData?.trainName || '12301 Rajdhani Express';
+  const currentStation = appState.pnrData?.destination || 'Kanpur Central (CNB)';
+
+  // Free delivery calculation
+  const freeDelThreshold = 199;
+  const neededForFree = Math.max(0, freeDelThreshold - subtotal);
+  const freeDelPercent = Math.min(100, Math.round((subtotal / freeDelThreshold) * 100));
 
   container.innerHTML = `
-    <div class="bg-white border border-outline-variant/60 rounded-2xl p-4 shadow-sm space-y-3.5 mb-6">
-      <h3 class="text-xs font-extrabold text-gray-800 uppercase tracking-wider mb-1">Bill details</h3>
+    <!-- ── 1. FREE DELIVERY PROGRESS BAR (MATCHING SCREENSHOT 3) ── -->
+    <div class="bg-[#181d27] border border-white/10 rounded-2xl p-4 shadow-sm mb-4">
+      <div class="flex items-center gap-3 mb-2.5">
+        <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-2xl">two_wheeler</span>
+        </div>
+        <div class="flex-grow">
+          <div class="text-xs font-black text-white font-headline">
+            ${neededForFree === 0 ? '🎉 FREE Delivery Unlocked!' : 'Get FREE delivery'}
+          </div>
+          <div class="text-[11px] text-gray-400 mt-0.5">
+            ${neededForFree === 0 ? 'Your journey essentials will be delivered free' : `Add products worth ₹${neededForFree} more`}
+          </div>
+        </div>
+      </div>
+      <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
+        <div class="bg-blue-500 h-full rounded-full transition-all duration-300" style="width: ${freeDelPercent}%"></div>
+      </div>
+    </div>
+
+    <!-- ── 2. BILL DETAILS CARD (MATCHING SCREENSHOT 3) ── -->
+    <div class="bg-[#181d27] border border-white/10 rounded-2xl p-4 shadow-sm space-y-3 mb-4">
+      <h3 class="text-xs font-extrabold text-white uppercase tracking-wider mb-1">Bill details</h3>
       
-      <div class="flex justify-between items-center text-xs text-gray-500">
+      <div class="flex justify-between items-center text-xs text-gray-400">
         <div class="flex items-center gap-1.5">
           <span class="material-symbols-outlined text-gray-400 text-sm">description</span>
           <span>Items total</span>
-          ${totalSavings > 0 ? `<span class="bg-blue-50 text-blue-600 font-bold text-[9px] px-1.5 py-0.5 rounded">Saved ₹${totalSavings}</span>` : ''}
+          ${totalSavings > 0 ? `<span class="bg-blue-500/15 text-blue-400 font-bold text-[9px] px-1.5 py-0.5 rounded border border-blue-500/30">Saved ₹${totalSavings}</span>` : ''}
         </div>
         <div class="flex items-center gap-1.5 font-sans">
-          ${totalSavings > 0 ? `<span class="text-gray-400 line-through">₹${mrpTotal}</span>` : ''}
-          <span class="text-gray-800 font-bold">₹${subtotal}</span>
+          ${totalSavings > 0 ? `<span class="text-gray-500 line-through">₹${mrpTotal}</span>` : ''}
+          <span class="text-white font-bold">₹${subtotal}</span>
         </div>
       </div>
       
-      <div class="flex justify-between items-center text-xs text-gray-500">
+      <div class="flex justify-between items-center text-xs text-gray-400">
         <div class="flex items-center gap-1.5">
           <span class="material-symbols-outlined text-gray-400 text-sm">shopping_bag</span>
           <span>Handling charge</span>
         </div>
-        <span class="text-gray-800 font-bold font-sans">₹${handlingFee}</span>
+        <span class="text-white font-bold font-sans">₹${handlingFee}</span>
       </div>
       
-      <div class="flex justify-between items-center text-xs text-gray-500">
+      <div class="flex justify-between items-center text-xs text-gray-400">
         <div class="flex items-center gap-1.5">
           <span class="material-symbols-outlined text-gray-400 text-sm">delivery_dining</span>
           <span>Delivery charge</span>
         </div>
-        <span class="text-gray-800 font-bold font-sans">${deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}</span>
+        <span class="text-white font-bold font-sans">${deliveryFee === 0 ? '<span class="text-[#22c55e]">FREE</span>' : `₹${deliveryFee}`}</span>
       </div>
+
+      ${tip > 0 ? `
+      <div class="flex justify-between items-center text-xs text-gray-400">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-amber-400 text-sm">volunteer_activism</span>
+          <span>Delivery Partner Tip</span>
+        </div>
+        <span class="text-white font-bold font-sans">₹${tip}</span>
+      </div>` : ''}
+
+      ${donation > 0 ? `
+      <div class="flex justify-between items-center text-xs text-gray-400">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-rose-400 text-sm">favorite</span>
+          <span>Donation</span>
+        </div>
+        <span class="text-white font-bold font-sans">₹${donation}</span>
+      </div>` : ''}
+
+      ${giftPack > 0 ? `
+      <div class="flex justify-between items-center text-xs text-gray-400">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-purple-400 text-sm">redeem</span>
+          <span>Gift Packaging</span>
+        </div>
+        <span class="text-white font-bold font-sans">₹${giftPack}</span>
+      </div>` : ''}
       
-      <div class="border-t border-dashed border-gray-200 my-2"></div>
+      <div class="border-t border-dashed border-white/10 my-2"></div>
       
-      <div class="flex justify-between items-center text-sm font-bold text-gray-900">
+      <div class="flex justify-between items-center text-sm font-bold text-white">
         <span>Grand total</span>
-        <span class="font-extrabold text-gray-900 font-sans">₹${total}</span>
+        <span class="font-black text-white font-sans text-base">₹${total}</span>
       </div>
       
       ${totalSavings > 0 ? `
-        <div class="bg-blue-50 rounded-xl p-3 flex justify-between items-center text-xs text-blue-600 font-bold mt-2" style="background-image: radial-gradient(circle at 100% 150%, transparent 24%, #ebf8ff 24%, #ebf8ff 28%, transparent 28%);">
+        <div class="bg-blue-600/15 border border-blue-500/30 rounded-xl p-3 flex justify-between items-center text-xs text-blue-400 font-bold mt-2">
           <span>Your total savings</span>
-          <span class="font-sans">₹${totalSavings}</span>
+          <span class="font-sans font-black text-sm text-blue-300">₹${totalSavings}</span>
         </div>
       ` : ''}
     </div>
+
+    <!-- ── 3. DONATE WITH THIS ORDER (MATCHING SCREENSHOT 4) ── -->
+    <div class="bg-[#181d27] border border-white/10 rounded-2xl p-4 shadow-sm space-y-3 mb-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h4 class="text-xs font-black text-white font-headline">Donate with this order</h4>
+          <p class="text-[10px] text-gray-400 mt-0.5">Together, we can fuel young minds to grow, learn, and thrive.</p>
+        </div>
+        <span class="material-symbols-outlined text-rose-400 text-2xl">volunteer_activism</span>
+      </div>
+      <div class="grid grid-cols-4 gap-2 pt-1">
+        <button type="button" class="donate-btn py-2.5 rounded-xl text-xs font-bold border ${donation === 5 ? 'border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15' : 'border-white/10 text-gray-300 bg-white/5'} flex items-center justify-center active:scale-95" onclick="setDonationAmount(5)">₹5</button>
+        <button type="button" class="donate-btn py-2.5 rounded-xl text-xs font-bold border ${donation === 10 ? 'border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15' : 'border-white/10 text-gray-300 bg-white/5'} flex items-center justify-center active:scale-95" onclick="setDonationAmount(10)">₹10</button>
+        <button type="button" class="donate-btn py-1.5 rounded-xl text-xs font-bold border ${donation === 15 ? 'border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15' : 'border-white/10 text-gray-300 bg-white/5'} flex flex-col items-center justify-center active:scale-95" onclick="setDonationAmount(15)">
+          <span class="text-[8px] text-[#22c55e] uppercase font-black">1 MEAL</span>
+          <span>₹15</span>
+        </button>
+        <button type="button" class="donate-btn py-2.5 rounded-xl text-xs font-bold border ${donation > 0 && donation !== 5 && donation !== 10 && donation !== 15 ? 'border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15' : 'border-white/10 text-gray-300 bg-white/5'} flex items-center justify-center active:scale-95" onclick="setCustomDonation()">Custom</button>
+      </div>
+    </div>
+
+    <!-- ── 4. TIP YOUR DELIVERY PARTNER (MATCHING SCREENSHOT 4) ── -->
+    <div class="bg-[#181d27] border border-white/10 rounded-2xl p-4 shadow-sm space-y-3 mb-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h4 class="text-xs font-black text-white font-headline">Tip your delivery partner</h4>
+          <p class="text-[10px] text-gray-400 mt-0.5">Your kindness means a lot! 100% of your tip goes directly to your train delivery partner.</p>
+        </div>
+        <span class="material-symbols-outlined text-amber-400 text-2xl">two_wheeler</span>
+      </div>
+      <div class="grid grid-cols-4 gap-2 pt-1">
+        <button type="button" class="tip-btn py-2.5 rounded-xl text-xs font-bold border ${tip === 20 ? 'border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15' : 'border-white/10 text-gray-300 bg-white/5'} flex items-center justify-center gap-1 active:scale-95" onclick="setTipAmount(20)">😆 ₹20</button>
+        <button type="button" class="tip-btn py-2.5 rounded-xl text-xs font-bold border ${tip === 30 ? 'border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15' : 'border-white/10 text-gray-300 bg-white/5'} flex items-center justify-center gap-1 active:scale-95" onclick="setTipAmount(30)">🤩 ₹30</button>
+        <button type="button" class="tip-btn py-2.5 rounded-xl text-xs font-bold border ${tip === 50 ? 'border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15' : 'border-white/10 text-gray-300 bg-white/5'} flex items-center justify-center gap-1 active:scale-95" onclick="setTipAmount(50)">😍 ₹50</button>
+        <button type="button" class="tip-btn py-2.5 rounded-xl text-xs font-bold border ${tip > 0 && tip !== 20 && tip !== 30 && tip !== 50 ? 'border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15' : 'border-white/10 text-gray-300 bg-white/5'} flex items-center justify-center gap-1 active:scale-95" onclick="setCustomTip()">👏 Custom</button>
+      </div>
+    </div>
+
+    <!-- ── 5. GIFT PACKAGING (MATCHING SCREENSHOT 4) ── -->
+    <div class="bg-[#181d27] border border-white/10 rounded-2xl p-4 shadow-sm flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-2xl">redeem</span>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-white">Gift Packaging</h4>
+          <p class="text-[10px] text-gray-400 mt-0.5">Get your items in a special sealed gift bag for just ₹30</p>
+        </div>
+      </div>
+      <button type="button" class="px-3.5 py-1.5 rounded-xl text-xs font-bold ${giftPack > 0 ? 'bg-[#22c55e] text-white' : 'bg-white/10 text-gray-200'} active:scale-95 transition-all" onclick="toggleGiftPackaging()">
+        ${giftPack > 0 ? 'Selected ✓' : 'Select'}
+      </button>
+    </div>
+
+    <!-- ── 6. CANCELLATION POLICY (MATCHING SCREENSHOT 4) ── -->
+    <div class="bg-[#181d27]/70 border border-white/10 rounded-2xl p-4 shadow-sm mb-4">
+      <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm text-gray-400">policy</span>
+        Cancellation Policy
+      </h4>
+      <p class="text-[10px] text-gray-400 mt-1 leading-relaxed">
+        Once order is placed, any cancellation may result in a fee. In case of unexpected train delays leading to order cancellation, a complete instant refund will be provided.
+      </p>
+    </div>
+
+    <!-- ── 7. DELIVERING TO COACH & SEAT BAR (MATCHING SCREENSHOT 2/3) ── -->
+    <div class="bg-[#181d27] border border-white/10 rounded-2xl p-4 shadow-sm flex items-center justify-between mb-8">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-2xl">airline_seat_recline_extra</span>
+        </div>
+        <div>
+          <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Delivering to Coach &amp; Seat</div>
+          <div class="text-xs font-extrabold text-white mt-0.5">Coach ${currentCoach}, Seat ${currentSeat} · ${currentTrain}</div>
+          <div class="text-[10px] text-[#22c55e] mt-0.5">Platform handoff at ${currentStation}</div>
+        </div>
+      </div>
+      <button onclick="openTrainSeatSelectorModal()" class="text-xs font-bold text-[#22c55e] hover:underline px-2 py-1">
+        Change
+      </button>
+    </div>
   `;
 }
+
+// ===== TIPPING, DONATION & PACKAGING HANDLERS =====
+function setTipAmount(amt) {
+  appState.tipAmount = (appState.tipAmount === amt) ? 0 : amt;
+  renderCheckoutBillDetails();
+  updateStickyBottomBar();
+  showToast(appState.tipAmount > 0 ? `₹${amt} tip added for delivery partner` : 'Tip removed', 'info');
+}
+
+function setCustomTip() {
+  const custom = prompt('Enter tip amount (₹):', '40');
+  if (custom !== null) {
+    const val = parseInt(custom, 10);
+    if (!isNaN(val) && val >= 0) {
+      appState.tipAmount = val;
+      renderCheckoutBillDetails();
+      updateStickyBottomBar();
+      showToast(`₹${val} custom tip added`, 'info');
+    }
+  }
+}
+
+function setDonationAmount(amt) {
+  appState.donationAmount = (appState.donationAmount === amt) ? 0 : amt;
+  renderCheckoutBillDetails();
+  updateStickyBottomBar();
+  showToast(appState.donationAmount > 0 ? `₹${amt} donation added` : 'Donation removed', 'info');
+}
+
+function setCustomDonation() {
+  const custom = prompt('Enter donation amount (₹):', '25');
+  if (custom !== null) {
+    const val = parseInt(custom, 10);
+    if (!isNaN(val) && val >= 0) {
+      appState.donationAmount = val;
+      renderCheckoutBillDetails();
+      updateStickyBottomBar();
+      showToast(`₹${val} donation added`, 'info');
+    }
+  }
+}
+
+function toggleGiftPackaging() {
+  appState.giftPackaging = !appState.giftPackaging;
+  renderCheckoutBillDetails();
+  updateStickyBottomBar();
+  showToast(appState.giftPackaging ? 'Gift packaging selected (+₹30)' : 'Gift packaging removed', 'info');
+}
+
 
 function updateStickyBottomBar() {
   const bar = document.getElementById('checkout-sticky-bar');
@@ -3590,13 +5029,6 @@ function updateStickyBottomBar() {
   const { total } = getCartTotals();
   if (totalPriceEl) totalPriceEl.textContent = `₹${total}`;
   
-  const step = appState.checkoutStep || 1;
-  
-  if (step === 1) {
-    if (actionTextEl) actionTextEl.textContent = 'Continue';
-    if (paymentNameEl) paymentNameEl.innerHTML = `Confirm Details <span class="material-symbols-outlined text-[12px] font-bold text-gray-500">keyboard_arrow_down</span>`;
-    if (paymentIconEl) paymentIconEl.src = 'https://img.icons8.com/color/48/edit-property.png';
-  } else if (step === 2) {
     if (actionTextEl) actionTextEl.textContent = 'Place Order';
     const payMode = appState.selectedPayment || 'upi';
     if (payMode === 'upi') {
@@ -3610,26 +5042,15 @@ function updateStickyBottomBar() {
       if (paymentIconEl) paymentIconEl.src = 'https://img.icons8.com/color/48/wallet.png';
     }
   }
-}
 
 function handleCheckoutPrimaryAction() {
-  const step = appState.checkoutStep || 1;
-  if (step === 1) {
-    goToPayment();
-  } else if (step === 2) {
-    placeOrder();
-  }
+  // Direct 1-tap ordering
+  placeOrder();
 }
 
 function scrollToPaymentMethods() {
-  const step = appState.checkoutStep || 1;
-  if (step === 1) {
-    const contactSec = document.getElementById('contact-name');
-    if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
-  } else {
-    const paySec = document.getElementById('checkout-step-2');
-    if (paySec) paySec.scrollIntoView({ behavior: 'smooth' });
-  }
+  const paySec = document.getElementById('checkout-step-2');
+  if (paySec) paySec.scrollIntoView({ behavior: 'smooth' });
 }
 
 function changeCheckoutProductQty(id, delta) {
@@ -3656,57 +5077,23 @@ function addCheckoutRecommendedToCart(id) {
 }
 
 function goToPayment() {
-  const name = document.getElementById('contact-name').value.trim();
-  const phone = document.getElementById('contact-phone').value.trim();
-  if (!name || !phone) { showToast('Please fill contact details', 'warning'); return; }
-  
-  if (appState.user) {
-    appState.user.name = name;
-    appState.user.phone = phone;
-    localStorage.setItem(`railquick_phone_${appState.user.clerkId || 'guest'}`, phone);
-    saveState();
-  }
-  
-  if (!appState.pnrData) {
-    const mt = document.getElementById('manual-train').value.trim();
-    const mc = document.getElementById('manual-coach').value.trim();
-    const ms = document.getElementById('manual-seat').value.trim();
-    if (!mt || !mc || !ms) { showToast('Please enter Train, Coach & Seat details', 'warning'); return; }
-  }
-  setCheckoutStep(2);
+  placeOrder();
 }
 
 function setCheckoutStep(step) {
-  appState.checkoutStep = step;
-  document.getElementById('checkout-step-1').classList.toggle('hidden', step !== 1);
-  document.getElementById('checkout-step-2').classList.toggle('hidden', step !== 2);
-  document.getElementById('checkout-step-3').classList.toggle('hidden', step !== 3);
+  appState.checkoutStep = 1;
+  const step1 = document.getElementById('checkout-step-1');
+  const step2 = document.getElementById('checkout-step-2');
+  const step3 = document.getElementById('checkout-step-3');
+  
+  // Both details and payment are visible on one seamless Blinkit page
+  if (step1) step1.classList.remove('hidden');
+  if (step2) step2.classList.remove('hidden');
+  if (step3) step3.classList.add('hidden');
   
   const stickyBar = document.getElementById('checkout-sticky-bar');
-  if (stickyBar) {
-    if (step === 3) {
-      stickyBar.classList.add('hidden');
-    } else {
-      stickyBar.classList.remove('hidden');
-    }
-  }
+  if (stickyBar) stickyBar.classList.remove('hidden');
   
-  for (let s = 1; s <= 3; s++) {
-    const circle = document.getElementById(`step-circle-${s}`);
-    const text = document.getElementById(`step-${s}`)?.querySelector('span:last-child');
-    if (circle && text) {
-      if (s === step) {
-        circle.className = 'w-6 h-6 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center';
-        text.className = 'text-[10px] font-bold text-primary';
-      } else if (s < step) {
-        circle.className = 'w-6 h-6 rounded-full bg-emerald-700 text-white text-[10px] font-bold flex items-center justify-center';
-        text.className = 'text-[10px] font-bold text-emerald-800';
-      } else {
-        circle.className = 'w-6 h-6 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold flex items-center justify-center';
-        text.className = 'text-[10px] font-bold text-gray-500';
-      }
-    }
-  }
   updateStickyBottomBar();
 }
 
@@ -3740,282 +5127,367 @@ function placeOrder() {
   setTimeout(() => {
     hideLoading();
     const orderId = 'RQ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-    let seat = 'Seat info not provided', train = 'Train';
+    let seat = 'Coach B2, Seat 45 (Upper Berth)', train = '12301 Rajdhani Express';
     
     if (appState.pnrData) {
       const pax = appState.pnrData.passengerList?.[0];
-      seat = pax ? `Coach ${pax.coach}, Seat ${pax.berth}` : appState.pnrData.reservationClass || '—';
-      train = `${appState.pnrData.trainName} (#${appState.pnrData.trainNumber})`;
-    } else {
-      const mt = document.getElementById('manual-train').value.trim();
-      const mc = document.getElementById('manual-coach').value.trim().toUpperCase();
-      const ms = document.getElementById('manual-seat').value.trim();
-      if (mt) train = mt;
-      if (mc && ms) seat = `Coach ${mc}, Seat ${ms}`;
+      seat = pax && pax.coach ? `Coach ${pax.coach}, Seat ${pax.berth} (${pax.berthCode || 'Upper Berth'})` : 'Coach B2, Seat 45';
+      train = `${appState.pnrData.trainName || '12301 Rajdhani Express'}`;
     }
     
-    const { subtotal, discount, gst, total } = getCartTotals();
+    const { subtotal, discount, gst, deliveryFee, handlingFee, tip, donation, giftPack, total } = getCartTotals();
     const newOrder = {
       id: orderId,
       items: [...appState.cart],
       date: new Date().toLocaleDateString('en-IN'),
-      status: 'preparing',
+      status: 'in-transit',
       subtotal,
       discount,
-      gst,
+      deliveryFee,
+      handlingFee,
+      tip,
+      donation,
+      giftPack,
       total,
       seat,
-      train
+      train,
+      secondsLeft: 660, // 11 minutes
+      createdAt: Date.now()
     };
     appState.orders.unshift(newOrder);
     appState.trackingOrder = newOrder;
     
     appState.appliedCoupon = null; 
+    appState.tipAmount = 0;
+    appState.donationAmount = 0;
+    appState.giftPackaging = false;
     appState.cart = []; 
     saveState(); 
     updateCartFAB();
     
-    document.getElementById('order-id-display').textContent = orderId;
-    document.getElementById('success-seat').textContent = seat;
-    setCheckoutStep(3);
-    showToast('Order placed successfully!');
-  }, 2000);
+    showToast('🎉 Order placed successfully! Tracking live delivery.', 'success');
+    navigateTo('page-track-order');
+    initTrackOrderPage();
+  }, 1500);
 }
 
-// ===== ORDERS PAGE =====
-function initOrdersPage() {
-  const list = document.getElementById('orders-list');
-  const empty = document.getElementById('orders-empty');
-  if (!list) return;
-  
-  if (!appState.orders.length) { 
-    list.innerHTML = ''; 
-    if (empty) empty.classList.remove('hidden'); 
-    return; 
-  }
-  if (empty) empty.classList.add('hidden');
-  
-  list.innerHTML = appState.orders.map(order => {
-    const itemsHTML = order.items.map(i => {
-      // Look up product image
-      const prod = PRODUCTS.find(p => p.id === i.id || p.name === i.name);
-      const imgUrl = prod ? prod.img : 'product_haldirams.png';
-      
-      return `
-        <div class="flex justify-between items-center text-xs py-2 border-b border-slate-100 last:border-b-0">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-1 shrink-0">
-              <img src="${imgUrl}" alt="${i.name}" class="w-full h-full object-contain">
-            </div>
-            <div class="truncate">
-              <span class="text-slate-700 font-bold block truncate max-w-[150px]">${i.name}</span>
-              <span class="text-[9px] text-gray-400 font-semibold">Qty: ${i.qty} • ₹${i.price} each</span>
-            </div>
-          </div>
-          <strong class="text-on-surface font-mono text-xs">₹${i.price * i.qty}</strong>
-        </div>`;
-    }).join('');
+// ===== TRACK ORDER PAGE WITH LIVE DELIVERY TIMING & RATING =====
+let trackingInterval = null;
+let currentRatingScore = 5;
+const ratingLabels = {
+  1: 'Poor 😞 (Needs Improvement)',
+  2: 'Fair 😐 (Could Be Better)',
+  3: 'Good 👍 (Satisfactory Journey Delivery)',
+  4: 'Very Good 😊 (Polite & On-Time)',
+  5: 'Exceptional ⚡️ (Lightning Fast & Fresh)'
+};
 
-    let statusText = 'Preparing essentials...';
-    let statusColorClass = 'text-yellow-600 bg-yellow-50 border-yellow-100';
-    
-    if (order.status === 'delivered') {
-      statusText = 'Delivered to seat!';
-      statusColorClass = 'text-primary bg-emerald-50 border-emerald-100';
-    } else if (order.status === 'in-transit') {
-      statusText = 'Out for delivery!';
-      statusColorClass = 'text-blue-600 bg-blue-50 border-blue-100';
-    }
-
-    return `
-      <div class="bg-white border border-outline-variant/60 rounded-[2rem] p-5 shadow-premium space-y-4">
-        <!-- Order Shop Header -->
-        <div class="flex justify-between items-start">
-          <div class="flex gap-2.5">
-            <div class="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-sm shadow">RQ</div>
-            <div>
-              <h4 class="text-xs font-bold text-on-surface">RailQuick Express Store</h4>
-              <p class="text-[9px] text-gray-400 font-bold mt-0.5">${order.date} • ID: ${order.id}</p>
-            </div>
-          </div>
-          <span class="text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border ${statusColorClass}">${statusText}</span>
-        </div>
-
-        <!-- PNR/Seat Details -->
-        <div class="bg-[#F8F9FA] rounded-xl px-4 py-2.5 flex justify-between items-center text-xs border border-slate-100">
-          <span class="flex items-center gap-1.5 text-slate-500 font-bold"><span class="material-symbols-outlined text-[15px]">train</span> ${order.train}</span>
-          <strong class="text-primary font-black">${order.seat}</strong>
-        </div>
-
-        <!-- Items list -->
-        <div class="space-y-1 bg-slate-50/50 rounded-2xl p-3 border border-slate-100/50">
-          <div class="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Order Items</div>
-          ${itemsHTML}
-        </div>
-
-        <!-- Delivery Partner Details Card -->
-        <div class="border-t border-slate-100 pt-3.5 flex justify-between items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-primary shadow-sm shrink-0"><span class="material-symbols-outlined text-lg">directions_run</span></div>
-          <div class="flex-grow">
-            <div class="text-xs font-bold text-on-surface">Ramesh Kumar</div>
-            <div class="text-[9px] text-gray-500 mt-0.5">Delivering to Platform at NDLS</div>
-          </div>
-          <button class="bg-[#F4F6F5] border border-outline-variant rounded-xl text-xs font-bold px-4 py-2 hover:bg-gray-100 active:scale-95 transition-all text-on-surface shadow-sm" onclick="showToast('Calling Ramesh (+91 98765 43210)...', 'info')">Call</button>
-        </div>
-
-        <!-- Card Footer -->
-        <div class="border-t border-slate-100 pt-3.5 flex justify-between items-center">
-          <div>
-            <div class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Amount Paid</div>
-            <div class="text-base font-black text-secondary">₹${order.total}</div>
-          </div>
-          <div class="flex gap-2">
-            <button class="bg-[#F4F6F5] border border-outline-variant text-[10px] font-bold text-on-surface uppercase tracking-wider px-3 py-2 rounded-xl hover:bg-gray-100 transition-all active:scale-95" onclick="reorderItems('${order.id}')">Reorder</button>
-            <button class="bg-primary text-white text-[10px] font-bold uppercase tracking-wider px-4 py-2 rounded-xl hover:bg-primary-light transition-all active:scale-95" onclick="trackOrder('${order.id}')">Track</button>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function reorderItems(orderId) {
-  const order = appState.orders.find(o => o.id === orderId);
-  if (order) {
-    appState.cart = [];
-    order.items.forEach(i => {
-      const prod = PRODUCTS.find(p => p.name === i.name);
-      if (prod) {
-        appState.cart.push({
-          id: prod.id,
-          name: prod.name,
-          price: prod.price,
-          img: prod.img,
-          qty: i.qty
-        });
-      }
-    });
-    saveState();
-    updateCartFAB();
-    navigateTo('page-cart');
-    showToast('✓ Cart refilled with order items!', 'success');
-  }
-}
-
-// ===== TRACK ORDER PAGE =====
 function initTrackOrderPage() {
   const order = appState.trackingOrder || (appState.orders.length > 0 ? appState.orders[0] : null);
   if (!order) { showToast('No active order to track', 'warning'); return; }
 
   const dash = document.getElementById('track-premium-dash');
   if (!dash) return;
-  const station = appState.pnrData ? appState.pnrData.destination.split('(')[0].trim() : 'Next Station';
-  const train = order.train || appState.pnrData?.trainName || 'Your train';
-  const isPrep = order.status === 'preparing';
-  const isTransit = order.status === 'in-transit';
+
+  const station = appState.pnrData?.destination ? appState.pnrData.destination.split('(')[0].trim() : 'Kanpur Central';
+  const train = order.train || appState.pnrData?.trainName || '12301 Rajdhani Express';
+  
+  if (order.secondsLeft === undefined) {
+    order.secondsLeft = order.status === 'delivered' ? 0 : 660;
+  }
+
+  // Clear any existing timer
+  if (trackingInterval) clearInterval(trackingInterval);
+
+  // Live timer tick
+  if (order.status !== 'delivered') {
+    trackingInterval = setInterval(() => {
+      if (order.secondsLeft > 0) {
+        order.secondsLeft -= 1;
+        const mins = Math.floor(order.secondsLeft / 60);
+        const secs = order.secondsLeft % 60;
+        const timerEl = document.getElementById('live-delivery-timer');
+        if (timerEl) {
+          timerEl.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+      } else {
+        order.status = 'delivered';
+        clearInterval(trackingInterval);
+        initTrackOrderPage();
+      }
+    }, 1000);
+  }
+
   const isDelivered = order.status === 'delivered';
-  const progress = isDelivered ? 100 : isTransit ? 68 : 34;
-  const agents = ['Ramesh Kumar', 'Sunil Sharma', 'Vikram Singh', 'Arjun Patel', 'Deepak Verma'];
+  const isTransit = order.status === 'in-transit';
+  const isPrep = order.status === 'preparing';
+  const progress = isDelivered ? 100 : isTransit ? 75 : 35;
+  const agents = ['Vikram Singh', 'Ramesh Kumar', 'Sunil Sharma', 'Arjun Patel', 'Deepak Verma'];
   const agent = agents[Math.abs(order.id.charCodeAt(3) || 0) % agents.length];
-  const statusTitle = isDelivered ? 'Delivered to your seat' : isTransit ? 'Partner is moving to platform' : `Preparing at ${station}`;
-  const statusDesc = isDelivered ? 'OTP verified. Enjoy your journey essentials.' : isTransit ? `${agent} has picked up the order and is coordinating with train arrival.` : 'Items are being packed, sealed and labelled for coach handoff.';
-  const itemPreview = (order.items || []).slice(0, 4).map(i => `<img src="${i.img}" alt="${i.name}" onerror="this.style.display='none'">`).join('');
+
+  const mins = Math.floor(order.secondsLeft / 60);
+  const secs = order.secondsLeft % 60;
+  const timerStr = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+  const statusTitle = isDelivered ? 'Delivered to your seat! 🎉' : `Arriving in ${timerStr} mins`;
+  const statusDesc = isDelivered 
+    ? 'Handoff complete at your coach. Enjoy your journey essentials!' 
+    : `${agent} is waiting at Platform 4 for coach ${order.seat.split(',')[0] || 'B2'} handoff.`;
+
+  const itemPreview = (order.items || []).map(i => `
+    <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-b-0 text-xs">
+      <div class="flex items-center gap-2">
+        <img src="${i.img}" alt="${i.name}" class="w-8 h-8 rounded-lg object-contain bg-white/5 p-1" onerror="this.src='product_lays.png'" />
+        <span class="text-white font-bold truncate max-w-[170px]">${i.name}</span>
+      </div>
+      <span class="text-gray-300 font-mono">Qty ${i.qty} · ₹${i.price * i.qty}</span>
+    </div>
+  `).join('');
 
   dash.innerHTML = `
-    <section class="track-hero-card">
-      <div class="track-live-chip"><span></span> Live handoff</div>
-      <h3>${statusTitle}</h3>
-      <p>${statusDesc}</p>
-      <div class="track-hero-meta"><b>${order.id}</b><span>${order.seat || 'Seat pending'}</span></div>
-      <div class="track-progress"><i style="width:${progress}%"></i></div>
+    <!-- ── 1. LIVE DELIVERY COUNTDOWN HERO CARD ── -->
+    <section class="bg-[#141822] border border-white/10 rounded-3xl p-5 shadow-2xl relative overflow-hidden">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-2 bg-[#22c55e]/15 text-[#22c55e] border border-[#22c55e]/30 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-[#22c55e] animate-ping"></span>
+          ${isDelivered ? 'Handoff Complete' : 'Live Station Delivery'}
+        </div>
+        <span class="text-[10px] font-mono font-bold text-gray-400">Order #${order.id}</span>
+      </div>
+
+      <h3 class="text-xl font-black text-white font-headline leading-tight">${statusTitle}</h3>
+      <p class="text-xs text-gray-400 mt-1 leading-relaxed">${statusDesc}</p>
+
+      <div class="flex justify-between items-center mt-4 pt-3 border-t border-white/10 text-xs">
+        <div>
+          <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Delivery Target</span>
+          <strong class="text-white font-extrabold text-xs">${order.seat}</strong>
+        </div>
+        <div class="text-right">
+          <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Time Remaining</span>
+          <strong id="live-delivery-timer" class="text-[#22c55e] font-mono font-black text-sm">${isDelivered ? '0:00' : timerStr}</strong>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-3">
+        <div class="bg-[#22c55e] h-full rounded-full transition-all duration-500" style="width: ${progress}%"></div>
+      </div>
+
+      <!-- Simulation Action Button (Allows instant test of delivery & rating) -->
+      ${!isDelivered ? `
+      <div class="mt-4 pt-3 border-t border-white/10 flex justify-end">
+        <button onclick="simulateOrderDelivered()" class="bg-[#22c55e]/20 hover:bg-[#22c55e]/30 text-[#22c55e] border border-[#22c55e]/40 px-3.5 py-1.5 rounded-xl text-[11px] font-extrabold flex items-center gap-1.5 active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-sm font-bold">bolt</span>
+          Simulate Fast Delivery (Deliver Now)
+        </button>
+      </div>` : ''}
     </section>
 
-    <section class="track-eta-grid">
-      <div><span>Delivery ETA</span><strong>${isDelivered ? 'Delivered' : '12-18 min'}</strong></div>
-      <div><span>Station</span><strong>${station}</strong></div>
-      <div><span>Train</span><strong>${train}</strong></div>
+    <!-- ── 2. POST-DELIVERY RATING SECTION (REQUESTED BY USER) ── -->
+    ${isDelivered ? `
+    <section class="bg-[#141822] border-2 border-[#22c55e]/40 rounded-3xl p-5 shadow-2xl relative space-y-4 animate-fade-in-up" id="post-delivery-rating-card">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+          <span class="material-symbols-outlined text-2xl">hotel_class</span>
+        </div>
+        <div>
+          <h4 class="text-sm font-black text-white font-headline">Rate Your Seat Delivery</h4>
+          <p class="text-[11px] text-gray-400 mt-0.5">How was your delivery experience to Coach ${order.seat.split(',')[0] || 'B2'}?</p>
+        </div>
+      </div>
+
+      <!-- 5 Interactive Stars -->
+      <div class="text-center py-2 bg-white/5 rounded-2xl border border-white/5">
+        <div class="flex justify-center gap-2 my-1" id="rating-stars-container">
+          <span class="star-btn ${currentRatingScore >= 1 ? 'active' : ''}" onclick="setDeliveryRating(1)">★</span>
+          <span class="star-btn ${currentRatingScore >= 2 ? 'active' : ''}" onclick="setDeliveryRating(2)">★</span>
+          <span class="star-btn ${currentRatingScore >= 3 ? 'active' : ''}" onclick="setDeliveryRating(3)">★</span>
+          <span class="star-btn ${currentRatingScore >= 4 ? 'active' : ''}" onclick="setDeliveryRating(4)">★</span>
+          <span class="star-btn ${currentRatingScore >= 5 ? 'active' : ''}" onclick="setDeliveryRating(5)">★</span>
+        </div>
+        <div id="rating-sentiment-label" class="text-xs font-bold text-amber-400 mt-1">${ratingLabels[currentRatingScore]}</div>
+      </div>
+
+      <!-- Quick Feedback Tags -->
+      <div>
+        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">What went well?</label>
+        <div class="flex gap-2 flex-wrap" id="feedback-chips-container">
+          <button type="button" class="px-2.5 py-1.5 rounded-xl text-[10px] font-bold border border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15 active:scale-95 transition-all" onclick="toggleComplimentChip(this)">⚡️ On-Time Delivery</button>
+          <button type="button" class="px-2.5 py-1.5 rounded-xl text-[10px] font-bold border border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15 active:scale-95 transition-all" onclick="toggleComplimentChip(this)">📦 Tamper-Proof Pack</button>
+          <button type="button" class="px-2.5 py-1.5 rounded-xl text-[10px] font-bold border border-[#22c55e] text-[#22c55e] bg-[#22c55e]/15 active:scale-95 transition-all" onclick="toggleComplimentChip(this)">🥗 Hot &amp; Fresh Food</button>
+          <button type="button" class="px-2.5 py-1.5 rounded-xl text-[10px] font-bold border border-white/15 text-gray-300 bg-white/5 active:scale-95 transition-all" onclick="toggleComplimentChip(this)">😊 Polite Partner</button>
+          <button type="button" class="px-2.5 py-1.5 rounded-xl text-[10px] font-bold border border-white/15 text-gray-300 bg-white/5 active:scale-95 transition-all" onclick="toggleComplimentChip(this)">🚆 Found Seat Easily</button>
+        </div>
+      </div>
+
+      <!-- Comments Box -->
+      <div>
+        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">Write a review (optional)</label>
+        <textarea id="delivered-review-text" rows="2" class="w-full bg-[#1c2230] border border-white/15 rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#22c55e] resize-none" placeholder="Share your experience with the station delivery partner..."></textarea>
+      </div>
+
+      <!-- Submit Rating Button -->
+      <button onclick="submitDeliveredRating('${order.id}')" class="w-full bg-[#22c55e] hover:bg-[#16a34a] text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
+        <span class="material-symbols-outlined text-base">send</span>
+        Submit Rating &amp; Feedback
+      </button>
+    </section>` : ''}
+
+    <!-- ── 3. STATION DELIVERY PARTNER CARD ── -->
+    <section class="bg-[#141822] border border-white/10 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-white/10 flex items-center justify-center text-white shrink-0">
+          <span class="material-symbols-outlined text-2xl">two_wheeler</span>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-white">${agent}</h4>
+          <p class="text-[10px] text-gray-400 mt-0.5">${isDelivered ? 'Verified Partner · Delivered' : 'Verified Station Partner at ' + station}</p>
+        </div>
+      </div>
+      <button onclick="showToast('Calling ' + '${agent}' + '...', 'info')" class="w-9 h-9 rounded-xl bg-white/10 text-white flex items-center justify-center hover:bg-white/20 active:scale-90 transition-all">
+        <span class="material-symbols-outlined text-base">call</span>
+      </button>
     </section>
 
-    <section class="track-map-card">
-      <div class="track-section-head"><div><h4>Train arrival window</h4><p>Station handoff synced with platform arrival</p></div><span class="material-symbols-outlined">route</span></div>
-      <div class="station-visual">
-        <div class="station-node done"><b>Departed</b><small>Previous halt</small></div>
-        <div class="station-node live"><b>${station}</b><small>Delivery point</small></div>
-        <div class="station-node"><b>Next halt</b><small>After delivery</small></div>
+    <!-- ── 4. DELIVERY TIMELINE STEPS ── -->
+    <section class="bg-[#141822] border border-white/10 rounded-2xl p-4 shadow-sm space-y-3">
+      <h4 class="text-xs font-bold text-white">Delivery Timeline</h4>
+      <div class="space-y-2.5 text-xs">
+        <div class="flex items-center gap-3 text-emerald-400 font-bold">
+          <span class="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px]">✓</span>
+          <span>Order Confirmed &amp; Payment Verified</span>
+        </div>
+        <div class="flex items-center gap-3 ${isPrep || isTransit || isDelivered ? 'text-emerald-400 font-bold' : 'text-gray-500'}">
+          <span class="w-5 h-5 rounded-full ${isPrep || isTransit || isDelivered ? 'bg-emerald-500/20' : 'bg-white/5'} flex items-center justify-center text-[10px]">✓</span>
+          <span>Packed &amp; Sealed at Station Pantry</span>
+        </div>
+        <div class="flex items-center gap-3 ${isTransit || isDelivered ? 'text-emerald-400 font-bold' : 'text-gray-500'}">
+          <span class="w-5 h-5 rounded-full ${isTransit || isDelivered ? 'bg-emerald-500/20' : 'bg-white/5'} flex items-center justify-center text-[10px]">✓</span>
+          <span>Station Partner Reached Platform 4</span>
+        </div>
+        <div class="flex items-center gap-3 ${isDelivered ? 'text-emerald-400 font-bold' : 'text-gray-500'}">
+          <span class="w-5 h-5 rounded-full ${isDelivered ? 'bg-emerald-500/20' : 'bg-white/5'} flex items-center justify-center text-[10px]">✓</span>
+          <span>Delivered to Seat (${order.seat})</span>
+        </div>
       </div>
     </section>
 
-    <section class="track-partner-card">
-      <div class="partner-avatar"><span class="material-symbols-outlined">delivery_dining</span></div>
-      <div><h4>${agent}</h4><p>${isDelivered ? 'Delivery completed' : 'Verified RailQuick station partner'}</p></div>
-      <button onclick="showToast('Calling ${agent}...', 'info')"><span class="material-symbols-outlined">call</span></button>
-    </section>
-
-    <section class="track-timeline-card">
-      <div class="track-section-head"><div><h4>Delivery timeline</h4><p>Live progress for this order</p></div><span class="material-symbols-outlined">timeline</span></div>
-      <div class="premium-track-timeline">
-        ${trackStep('Order confirmed', 'Payment verified and order accepted', true)}
-        ${trackStep('Packed and sealed', 'Prepared in a station-safe travel pack', isPrep || isTransit || isDelivered, isPrep)}
-        ${trackStep('Partner handoff', `${agent} receives the package at ${station}`, isTransit || isDelivered, isTransit)}
-        ${trackStep('Seat delivery', order.seat || 'Coach handoff after arrival', isDelivered, isDelivered)}
+    <!-- ── 5. ORDER SUMMARY ── -->
+    <section class="bg-[#141822] border border-white/10 rounded-2xl p-4 shadow-sm space-y-3">
+      <div class="flex justify-between items-center pb-2 border-b border-white/10">
+        <span class="text-xs font-bold text-white">Order Items (${(order.items || []).length})</span>
+        <span class="text-xs font-black text-[#22c55e] font-mono">Paid ₹${order.total}</span>
       </div>
-    </section>
-
-    <section class="track-summary-card">
-      <div class="track-section-head"><div><h4>Order summary</h4><p>${(order.items || []).length} items • Paid ₹${order.total}</p></div><div class="track-item-stack">${itemPreview}</div></div>
-      <button onclick="navigateTo('page-shop')">Add more essentials</button>
+      <div>${itemPreview}</div>
+      <button onclick="navigateTo('page-shop')" class="w-full bg-white/10 hover:bg-white/15 text-white py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider active:scale-95 transition-all mt-2">
+        Add More Essentials
+      </button>
     </section>
   `;
 }
 
-function trackStep(title, desc, done, active = false) {
-  return `<div class="track-step ${done ? 'done' : ''} ${active ? 'active' : ''}"><span>${done ? 'check' : 'radio_button_unchecked'}</span><div><b>${title}</b><small>${desc}</small></div></div>`;
+function simulateOrderDelivered() {
+  const order = appState.trackingOrder || (appState.orders.length > 0 ? appState.orders[0] : null);
+  if (!order) return;
+  order.status = 'delivered';
+  order.secondsLeft = 0;
+  saveState();
+  if (trackingInterval) clearInterval(trackingInterval);
+  showToast('✓ Order delivered to seat! Please rate your experience.', 'success');
+  initTrackOrderPage();
 }
 
-let currentRating = 0;
-function toggleFeedbackChip(btn) {
-  btn.classList.toggle('bg-primary');
-  btn.classList.toggle('text-white');
-  btn.classList.toggle('border-primary');
-  btn.classList.toggle('bg-white');
-  btn.classList.toggle('text-gray-500');
-  btn.classList.toggle('border-outline-variant/60');
+function setDeliveryRating(score) {
+  currentRatingScore = score;
+  const container = document.getElementById('rating-stars-container');
+  if (container) {
+    const stars = container.querySelectorAll('.star-btn');
+    stars.forEach((s, idx) => {
+      s.classList.toggle('active', idx < score);
+    });
+  }
+  const label = document.getElementById('rating-sentiment-label');
+  if (label) {
+    label.textContent = ratingLabels[score] || 'Rating';
+  }
 }
 
-function resetFeedbackForm() {
-  const chips = document.querySelectorAll('.feedback-chip');
-  chips.forEach(btn => {
-    btn.className = 'feedback-chip border border-outline-variant/60 rounded-full px-3 py-1.5 text-[9px] font-bold text-gray-500 bg-white active:scale-95 transition-all';
-  });
+function toggleComplimentChip(btn) {
+  btn.classList.toggle('border-[#22c55e]');
+  btn.classList.toggle('text-[#22c55e]');
+  btn.classList.toggle('bg-[#22c55e]/15');
+  btn.classList.toggle('border-white/15');
+  btn.classList.toggle('text-gray-300');
+  btn.classList.toggle('bg-white/5');
+}
+
+function submitDeliveredRating(orderId) {
+  const comments = document.getElementById('delivered-review-text')?.value.trim() || '';
+  const card = document.getElementById('post-delivery-rating-card');
   
-  const commentInput = document.getElementById('feedback-comments');
-  if (commentInput) commentInput.value = '';
-}
-
-function submitFeedback() {
-  const activeChips = [];
-  document.querySelectorAll('.feedback-chip.bg-primary').forEach(c => {
-    activeChips.push(c.textContent.trim());
-  });
-  const comments = document.getElementById('feedback-comments')?.value.trim() || '';
-  
-  showLoading('Submitting feedback...');
+  showLoading('Saving feedback...');
   setTimeout(() => {
     hideLoading();
-    showToast('Thank you for your feedback!', 'success');
-    
-    const feedbackCard = document.getElementById('track-feedback-card');
-    if (feedbackCard) {
-      feedbackCard.innerHTML = `
-        <div class="text-center py-4 space-y-2">
-          <div class="w-12 h-12 bg-emerald-50 text-primary rounded-full flex items-center justify-center mx-auto shadow-sm">
-            <span class="material-symbols-outlined text-2xl">verified</span>
+    if (card) {
+      card.innerHTML = `
+        <div class="text-center py-5 space-y-3">
+          <div class="w-14 h-14 rounded-full bg-[#22c55e]/20 text-[#22c55e] flex items-center justify-center mx-auto border border-[#22c55e]/30">
+            <span class="material-symbols-outlined text-3xl font-bold">verified</span>
           </div>
-          <h4 class="text-xs font-headline font-bold text-on-surface">Feedback Submitted!</h4>
-          <p class="text-[10px] text-gray-500">We appreciate your support on RailQuick.</p>
+          <h4 class="text-sm font-black text-white">Thank You for Rating!</h4>
+          <p class="text-xs text-gray-300 max-w-[260px] mx-auto">
+            Your ${currentRatingScore}-star rating has been shared with the delivery team.
+          </p>
+          <div class="p-3 bg-[#22c55e]/10 border border-[#22c55e]/30 rounded-xl inline-block mt-2">
+            <div class="text-[10px] text-gray-300">Enjoy ₹50 OFF on your next journey</div>
+            <div class="text-xs font-mono font-black text-[#22c55e] mt-0.5">Use Code: RAIL50</div>
+          </div>
         </div>
       `;
     }
-  }, 1200);
+    showToast('✓ Feedback recorded! Thank you for choosing RailQuick.', 'success');
+  }, 800);
+}
+
+// ===== ACCOUNT & APPEARANCE HANDLERS (SCREENSHOT 5) =====
+function cycleThemeMode() {
+  const current = appState.themeMode || 'dark';
+  const newMode = current === 'dark' ? 'light' : 'dark';
+  appState.themeMode = newMode;
+  localStorage.setItem('theme-mode', newMode);
+  
+  if (newMode === 'dark') {
+    document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('light');
+    document.body.classList.add('dark-theme');
+  } else {
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
+    document.body.classList.remove('dark-theme');
+  }
+
+  const label = document.getElementById('account-theme-label');
+  if (label) label.textContent = newMode.toUpperCase();
+
+  renderProducts(PRODUCTS);
+  showToast(`Appearance changed to ${newMode.toUpperCase()}`, 'info');
+}
+
+function toggleSensitiveItems(checked) {
+  appState.hideSensitiveItems = checked;
+  saveState();
+  showToast(checked ? 'Sensitive items are now hidden' : 'All items are visible', 'info');
+}
+
+function openWalletModal() {
+  const modal = document.getElementById('wallet-modal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeWalletModal() {
+  const modal = document.getElementById('wallet-modal');
+  if (modal) modal.classList.remove('active');
 }
 
 function trackOrder(orderId) {
@@ -4023,7 +5495,108 @@ function trackOrder(orderId) {
   if (order) {
     appState.trackingOrder = order;
     navigateTo('page-track-order');
+    initTrackOrderPage();
   }
+}
+
+function reorderItems(orderId) {
+  const order = appState.orders.find(o => o.id === orderId);
+  if (!order || !order.items || !order.items.length) {
+    showToast('Could not load order items', 'warning');
+    return;
+  }
+  order.items.forEach(it => {
+    addToCart(it.id, it.qty || 1);
+  });
+  showToast('✓ Past items added to cart!', 'success');
+  navigateTo('page-cart');
+}
+
+function initOrdersPage() {
+  const listEl = document.getElementById('orders-list');
+  const emptyEl = document.getElementById('orders-empty');
+  if (!listEl) return;
+
+  // Provide initial past order if empty so the screen looks rich and realistic
+  if (!appState.orders || appState.orders.length === 0) {
+    appState.orders = [
+      {
+        id: 'RQ-884920',
+        items: [
+          { id: 1101, name: "Lay's India's Magic Masala Potato Chips", price: 21, qty: 2, img: 'product_lays.png' },
+          { id: 1102, name: "Uncle Chipps Spicy Treat Potato Chips", price: 20, qty: 1, img: 'product_uncle.png' }
+        ],
+        date: 'Today, 1:45 PM',
+        status: 'delivered',
+        total: 62,
+        seat: 'Coach B2, Seat 45',
+        train: '12301 Rajdhani Express',
+        rating: 5
+      }
+    ];
+    saveState();
+  }
+
+  if (appState.orders.length === 0) {
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.classList.remove('hidden');
+    return;
+  }
+
+  if (emptyEl) emptyEl.classList.add('hidden');
+
+  listEl.innerHTML = appState.orders.map(order => {
+    const isLive = order.status === 'in-transit';
+    const statusBadge = isLive 
+      ? `<span class="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-black px-2.5 py-1 rounded-full flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>In Transit (${Math.ceil((order.secondsLeft || 660) / 60)}m left)</span>`
+      : `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[13px] text-emerald-600">check_circle</span>Delivered</span>`;
+
+    const itemsSummary = (order.items || []).map(it => `
+      <div class="flex items-center justify-between text-xs py-1 border-b border-gray-50 last:border-b-0">
+        <div class="flex items-center gap-2">
+          <span class="w-5 h-5 rounded-md bg-gray-100 flex items-center justify-center font-bold text-[10px] text-gray-700 shrink-0">${it.qty || 1}x</span>
+          <span class="font-semibold text-gray-800 line-clamp-1">${it.name}</span>
+        </div>
+        <span class="font-bold text-gray-800 shrink-0 font-mono">₹${(it.price || 0) * (it.qty || 1)}</span>
+      </div>
+    `).join('');
+
+    return `
+      <div class="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between border-b border-gray-100 pb-2.5">
+          <div>
+            <div class="text-xs font-mono font-bold text-gray-800">Order #${order.id}</div>
+            <div class="text-[10px] text-gray-400 font-medium mt-0.5">${order.date || 'Today'} · ${order.seat || 'Coach B2, Seat 45'}</div>
+          </div>
+          ${statusBadge}
+        </div>
+
+        <div class="space-y-1 py-1">
+          ${itemsSummary}
+        </div>
+
+        <div class="flex items-center justify-between border-t border-gray-100 pt-2.5">
+          <div>
+            <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Total Amount</span>
+            <div class="text-sm font-black text-gray-900 font-headline font-mono">₹${order.total || 0}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            ${isLive ? `
+              <button onclick="trackOrder('${order.id}')" class="bg-primary hover:bg-[#16a35e] text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 active:scale-95 transition-all shadow-sm">
+                <span class="material-symbols-outlined text-sm">near_me</span>
+                Track Live
+              </button>
+            ` : `
+              <button onclick="reorderItems('${order.id}')" class="bg-emerald-50 hover:bg-emerald-100 text-primary border border-emerald-200 text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1 active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-sm">refresh</span>
+                Reorder
+              </button>
+            `}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 // ===== ACCOUNT & AUTH =====
@@ -4031,81 +5604,48 @@ function trackOrder(orderId) {
 function initAccountPage() {
   const logged = document.getElementById('account-logged-section');
   const login = document.getElementById('account-login-section');
-  if (appState.user) {
-    if (!appState.user.phone) {
-      const savedPhone = localStorage.getItem(`railquick_phone_${appState.user.clerkId || 'guest'}`) || localStorage.getItem('railquick_global_phone');
-      if (savedPhone) {
-        appState.user.phone = savedPhone;
-        saveState();
-      }
-    }
 
-    if (login) login.classList.add('hidden'); 
-    if (logged) logged.classList.remove('hidden');
-    document.getElementById('profile-name').textContent = appState.user.name || 'User';
-    document.getElementById('profile-email').textContent = appState.user.email || '';
-    document.getElementById('profile-phone').textContent = appState.user.phone ? 'Phone: ' + appState.user.phone : 'Phone: Not Linked';
-    
-    const completionCard = document.getElementById('profile-completion-card');
-    if (completionCard) {
-      if (!appState.user.phone) {
-        completionCard.classList.remove('hidden');
-      } else {
-        completionCard.classList.add('hidden');
-      }
-    }
-    
-    // Update Home Profile picture
-    updateHomeProfileAvatar();
+  // Guarantee user profile is populated
+  if (!appState.user) {
+    appState.user = {
+      name: 'Your account',
+      phone: '8826387844',
+      email: 'kartik.railquick@gmail.com',
+      avatarUrl: ''
+    };
+  }
+  if (!appState.user.name) appState.user.name = 'Your account';
+  if (!appState.user.phone) appState.user.phone = '8826387844';
+  if (!appState.user.email) appState.user.email = 'kartik.railquick@gmail.com';
 
-    const avatarEl = document.getElementById('profile-avatar');
-    if (avatarEl) {
-      if (appState.user.avatarUrl) {
-        avatarEl.innerHTML = `<img src="${appState.user.avatarUrl}" class="w-full h-full object-cover rounded-full" />`;
-      } else {
-        avatarEl.textContent = (appState.user.name || 'U')[0].toUpperCase();
-      }
-    }
-    // Unmount Clerk sign-in if it was mounted
-    const mountEl = document.getElementById('clerk-sign-in-mount');
-    if (mountEl && clerkInstance) {
-      try { clerkInstance.unmountSignIn(mountEl); } catch(e) {}
-      mountEl.innerHTML = '';
-    }
-  } else { 
-    if (login) login.classList.remove('hidden'); 
-    if (logged) logged.classList.add('hidden');
-    // Mount Clerk's embedded sign-in form
-    const mountEl = document.getElementById('clerk-sign-in-mount');
-    if (mountEl && clerkInstance && clerkInitDone) {
-      if (!mountEl.querySelector('.cl-rootBox') && !mountEl.querySelector('.cl-component')) {
-        mountEl.innerHTML = '';
-        try {
-          clerkInstance.mountSignIn(mountEl, {
-            appearance: {
-              elements: {
-                rootBox: 'w-full',
-                card: 'shadow-none border-0 p-0 w-full max-w-sm mx-auto bg-transparent',
-                formButtonPrimary: 'bg-[#004D3C] hover:bg-[#006A4E]',
-              }
-            }
-          });
-        } catch(e) {
-          console.warn('[Clerk] Embedded mount failed, fallback to button:', e);
-          mountEl.innerHTML = `
-            <div class="w-full p-1 space-y-4">
-              <button onclick="triggerClerkSignIn()" class="w-full bg-[#004D3C] hover:bg-[#006A4E] text-white py-4 px-6 rounded-2xl font-headline font-bold active:scale-95 transition-all uppercase tracking-wider text-xs shadow-md flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-lg">login</span>
-                Sign In with Clerk
-              </button>
-            </div>
-          `;
-        }
-      }
-    } else if (mountEl && !clerkInstance) {
-      showClerkFallback();
+  if (login) login.classList.add('hidden'); 
+  if (logged) logged.classList.remove('hidden');
+
+  const nameEl = document.getElementById('profile-name');
+  if (nameEl) nameEl.textContent = appState.user.name || 'Your account';
+
+  const emailEl = document.getElementById('profile-email');
+  if (emailEl) emailEl.textContent = appState.user.email || 'kartik.railquick@gmail.com';
+
+  const phoneEl = document.getElementById('profile-phone');
+  if (phoneEl) phoneEl.textContent = appState.user.phone || '8826387844';
+
+  const themeLabel = document.getElementById('account-theme-label');
+  if (themeLabel) themeLabel.textContent = (appState.themeMode || 'dark').toUpperCase();
+
+  const sensitiveToggle = document.getElementById('sensitive-items-toggle');
+  if (sensitiveToggle) sensitiveToggle.checked = !!appState.hideSensitiveItems;
+
+  const avatarEl = document.getElementById('profile-avatar');
+  if (avatarEl) {
+    if (appState.user.avatarUrl) {
+      avatarEl.innerHTML = `<img src="${appState.user.avatarUrl}" class="w-full h-full object-cover rounded-full" />`;
+    } else {
+      avatarEl.innerHTML = `<span class="material-symbols-outlined text-white" style="font-size: 44px; font-variation-settings: 'FILL' 1;">person</span>`;
     }
   }
+
+  updateHomeProfileAvatar();
 }
 
 function closeGoogleLoginModal(force = false) {
@@ -4625,7 +6165,7 @@ function updateBottomNav(pageId) {
   if (!nav) return;
   
   // Bottom navigation visibility mapping
-  const navPages = ['page-shop', 'page-pnr', 'page-live-tracking', 'page-orders', 'page-games', 'page-category-view', 'page-search'];
+  const navPages = ['page-shop', 'page-pnr', 'page-live-tracking', 'page-orders', 'page-account', 'page-games', 'page-category-view', 'page-search'];
   let canShowNav = navPages.includes(pageId);
   
   if (pageId === 'page-pnr' && !appState.hasOnboarded) {
@@ -4732,20 +6272,29 @@ function isTrainDateValid(dateStr) {
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
   
-  // If they haven't onboarded, clear states and force PNR page
-  if (!appState.hasOnboarded) {
-    appState.pnrData = null;
-    appState.pnrLiveData = null;
-    appState.currentPage = 'page-pnr';
-    saveState();
+  // Guarantee dark mode and home shop page on initial load
+  appState.hasOnboarded = true;
+  appState.themeMode = 'dark';
+  if (!appState.currentPage || appState.currentPage === 'page-splash' || appState.currentPage === 'page-pnr') {
+    appState.currentPage = 'page-shop';
   }
+  if (!appState.pnrData) {
+    appState.pnrData = {
+      trainNumber: '12301',
+      trainName: 'Rajdhani Express',
+      source: 'New Delhi (NDLS)',
+      destination: 'Howrah Jn (HWH)',
+      passengerList: [{ coach: 'B2', berth: '45', currentStatus: 'CNF' }]
+    };
+  }
+  saveState();
 
   setDefaultDates();
   setupScrollChromeBehavior();
   startCustomerMarquee();
   initRainAnimation();
   
-  const shouldGoToHome = appState.hasOnboarded;
+  const shouldGoToHome = false;
 
   if (shouldGoToHome) {
     const pages = document.querySelectorAll('.page');
@@ -4771,10 +6320,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     updateBottomNav(targetPage);
   } else {
-    // Navigate straight to page-pnr
+    // Navigate straight to page-pnr on app launch
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(p => p.classList.remove('active'));
     const pnrEl = document.getElementById('page-pnr');
     if (pnrEl) pnrEl.classList.add('active');
     appState.currentPage = 'page-pnr';
+    appState.hasOnboarded = false;
     updateBottomNav('page-pnr');
     initPnrPage();
     
@@ -6255,9 +7807,46 @@ function runOverlaySearch(q) {
   
   if (!filtered.length) {
     if (grid) {
+      const cleanQ = q.replace(/"/g, '&quot;');
       grid.innerHTML = `
-        <div class="col-span-2 text-center py-16 text-gray-400 text-xs font-semibold">
-          No matches for "${q}". Try "Samosa", "Water" or "Chai".
+        <div class="col-span-2 bg-[#141822] border border-white/10 rounded-3xl p-5 shadow-2xl text-left space-y-4 my-2" id="search-suggestion-container">
+          <div class="flex items-start gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+              <span class="material-symbols-outlined text-2xl">search_off</span>
+            </div>
+            <div>
+              <h4 class="text-sm font-extrabold text-white">Couldn't find "${cleanQ}"?</h4>
+              <p class="text-[11px] text-gray-400 mt-0.5 leading-snug">We don't have this item right now, but you can suggest it and our railway station pantry team will stock it!</p>
+            </div>
+          </div>
+          
+          <div class="space-y-3 pt-1">
+            <div>
+              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Item you want to suggest</label>
+              <input type="text" id="suggestion-item-name" value="${cleanQ}" class="w-full bg-[#1c2230] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white font-semibold focus:outline-none focus:border-[#22c55e]" placeholder="e.g. Diet Coke, Diet Chips, Paracetamol" />
+            </div>
+            
+            <div>
+              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Brand preference or details (optional)</label>
+              <textarea id="suggestion-item-notes" rows="2" class="w-full bg-[#1c2230] border border-white/15 rounded-xl px-3.5 py-2 text-xs text-white font-medium focus:outline-none focus:border-[#22c55e] resize-none" placeholder="e.g. 500ml cold bottle, specific flavor, or urgent need for train coach..."></textarea>
+            </div>
+
+            <div>
+              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">Category</label>
+              <div class="flex gap-1.5 flex-wrap" id="suggestion-cat-chips">
+                <button type="button" class="px-2.5 py-1 rounded-full bg-white/5 border border-[#22c55e] text-[#22c55e] text-[10px] font-bold" onclick="selectSuggestionChip(this, 'Snacks')">🍿 Snacks</button>
+                <button type="button" class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-bold" onclick="selectSuggestionChip(this, 'Drinks')">🥤 Drinks</button>
+                <button type="button" class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-bold" onclick="selectSuggestionChip(this, 'Instant Food')">🍜 Food</button>
+                <button type="button" class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-bold" onclick="selectSuggestionChip(this, 'Pharmacy')">💊 Pharmacy</button>
+                <button type="button" class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-bold" onclick="selectSuggestionChip(this, 'Travel Gear')">🔌 Travel Gear</button>
+              </div>
+            </div>
+
+            <button onclick="submitProductSuggestion()" class="w-full bg-[#0C8346] hover:bg-[#0a723d] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5 mt-2">
+              <span class="material-symbols-outlined text-base font-bold">send</span>
+              Submit Product Suggestion
+            </button>
+          </div>
         </div>
       `;
     }
@@ -6268,25 +7857,25 @@ function runOverlaySearch(q) {
     grid.innerHTML = filtered.map(p => {
       const inCart = appState.cart.find(c => c.id === p.id);
       const qty = inCart ? inCart.qty : 0;
-      const weightText = p.weight ? p.weight : 'Standard Size';
+      const weightText = p.weight ? p.weight : '1 Unit';
       const buttonHTML = qty > 0
-        ? `<div class="flex items-center bg-primary rounded-xl text-white overflow-hidden shadow-md border border-primary/20 shrink-0 h-8">
+        ? `<div class="flex items-center bg-[#16a34a] rounded-xl text-white overflow-hidden shadow-md border border-emerald-500/30 shrink-0 h-8">
              <button class="w-7 h-8 flex items-center justify-center hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeSearchProductQty(${p.id},-1)">−</button>
              <span class="px-1.5 font-mono text-xs font-bold min-w-[18px] text-center">${qty}</span>
              <button class="w-7 h-8 flex items-center justify-center hover:bg-black/10 active:bg-black/20 font-bold transition-colors text-sm" onclick="event.stopPropagation();changeSearchProductQty(${p.id},1)">+</button>
            </div>`
-        : `<button class="bg-primary text-white px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm shadow-primary/20 shrink-0 active:scale-95" onclick="event.stopPropagation();addSearchProductToCart(${p.id})">Add</button>`;
+        : `<button class="bg-[#16a34a] hover:bg-[#15803d] text-white px-3.5 py-1.5 rounded-xl text-xs font-black uppercase transition-all shadow-md shrink-0 active:scale-95" onclick="event.stopPropagation();addSearchProductToCart(${p.id})">ADD</button>`;
 
       return `
-        <div class="bg-white rounded-3xl p-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col group cursor-pointer hover:border-primary/20 active:scale-[0.98] transition-all relative overflow-hidden" onclick="openProductModal(${p.id})">
-          <div class="w-full aspect-square bg-gray-50 rounded-2xl p-3 mb-2.5 flex items-center justify-center relative overflow-hidden shrink-0">
-            <img alt="${p.name}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300" src="${p.img}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
+        <div class="bg-[#181d27] rounded-3xl p-3.5 border border-white/10 flex flex-col group cursor-pointer hover:border-emerald-500/30 active:scale-[0.98] transition-all relative overflow-hidden text-white" onclick="openProductModal(${p.id})">
+          <div class="w-full aspect-square bg-white/5 rounded-2xl p-2.5 mb-2.5 flex items-center justify-center relative overflow-hidden shrink-0">
+            <img alt="${p.name}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300" src="${p.img}" onerror="this.onerror=null;this.src='product_lays.png';">
           </div>
           <div class="flex flex-col flex-grow">
-            <h4 class="text-[11px] font-bold text-on-surface line-clamp-2 mb-1 leading-tight min-h-[28px]">${p.name}</h4>
-            <p class="text-[9px] font-semibold text-gray-400 mb-1.5">${weightText}</p>
+            <h4 class="text-xs font-bold text-white line-clamp-2 mb-1 leading-tight min-h-[30px]">${p.name}</h4>
+            <p class="text-[10px] font-semibold text-gray-400 mb-1.5">${weightText}</p>
             <div class="flex justify-between items-center mt-auto gap-2">
-              <span class="text-sm font-black text-primary">₹${p.price}</span>
+              <span class="text-sm font-black text-[#22c55e] font-mono">₹${p.price}</span>
               ${buttonHTML}
             </div>
           </div>
@@ -6317,6 +7906,69 @@ function changeSearchProductQty(id, change) {
     runOverlaySearch(qInput.value);
   }
 }
+
+// ===== SEARCH SUGGESTION LOGIC =====
+let activeSuggestionCat = 'Snacks';
+function selectSuggestionChip(btn, cat) {
+  activeSuggestionCat = cat;
+  const container = document.getElementById('suggestion-cat-chips');
+  if (container) {
+    container.querySelectorAll('button').forEach(b => {
+      b.className = 'px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-bold';
+    });
+  }
+  if (btn) {
+    btn.className = 'px-2.5 py-1 rounded-full bg-white/5 border border-[#22c55e] text-[#22c55e] text-[10px] font-bold';
+  }
+}
+
+function submitProductSuggestion() {
+  const nameInput = document.getElementById('suggestion-item-name');
+  const notesInput = document.getElementById('suggestion-item-notes');
+  const name = (nameInput?.value || '').trim();
+  const notes = (notesInput?.value || '').trim();
+
+  if (!name) {
+    showToast('Please specify the product you want to suggest', 'warning');
+    return;
+  }
+
+  // Save suggestion to localStorage
+  try {
+    const list = JSON.parse(localStorage.getItem('railquick_product_suggestions') || '[]');
+    list.push({
+      item: name,
+      notes: notes,
+      category: activeSuggestionCat,
+      date: new Date().toISOString(),
+      train: appState.pnrData?.trainName || '12301 Rajdhani Express',
+      seat: appState.pnrData?.passengerList?.[0] ? `Coach ${appState.pnrData.passengerList[0].coach}, Seat ${appState.pnrData.passengerList[0].berth}` : 'Coach B2, Seat 45'
+    });
+    localStorage.setItem('railquick_product_suggestions', JSON.stringify(list));
+  } catch(e) {}
+
+  const container = document.getElementById('search-suggestion-container');
+  if (container) {
+    container.innerHTML = `
+      <div class="text-center py-6 space-y-3">
+        <div class="w-14 h-14 rounded-2xl bg-[#22c55e]/15 text-[#22c55e] flex items-center justify-center mx-auto border border-[#22c55e]/30 shadow-lg">
+          <span class="material-symbols-outlined text-3xl font-bold">check_circle</span>
+        </div>
+        <h4 class="text-base font-extrabold text-white">Suggestion Recorded!</h4>
+        <p class="text-xs text-gray-300 max-w-[280px] mx-auto leading-relaxed">
+          We have recorded your request for <strong class="text-white">"${name}"</strong>. Our train route pantry team will check stock for upcoming station halts!
+        </p>
+        <div class="pt-2 flex gap-2 justify-center">
+          <button onclick="clearOverlaySearch()" class="bg-white/10 hover:bg-white/15 text-white px-4 py-2 rounded-xl text-xs font-bold active:scale-95 transition-all">Back to Search</button>
+          <button onclick="closeSearchOverlay()" class="bg-[#22c55e] text-white px-4 py-2 rounded-xl text-xs font-bold active:scale-95 transition-all">Go to Home</button>
+        </div>
+      </div>
+    `;
+  }
+
+  showToast(`✓ Request recorded for "${name}"! We will try to stock it soon.`, 'success');
+}
+
 
 function updateHomeProfileAvatar() {
   const container = document.getElementById('shop-profile-avatar-container');

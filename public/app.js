@@ -2742,21 +2742,9 @@ function checkPnrExpiry() {
     }
   }
   
+  // In demo / persistent mode, do not forcefully expire session to allow uninterrupted shopping
   if (reached) {
-    console.warn('[PNR Expiry] Destination station reached. Logging out PNR session.');
-    appState.pnrData = null;
-    appState.pnrLiveData = null;
-    appState.isPnrConfirmed = false;
-    appState.hasOnboarded = false;
-    saveState();
-    
-    // Reset home page variables
-    updateShopTopbar();
-    const strip = document.getElementById('train-strip');
-    if (strip) strip.classList.add('hidden');
-    
-    showToast('Your train has reached its destination! PNR session expired.', 'warning');
-    navigateTo('page-pnr');
+    console.log('[PNR Status] Train at destination station.');
   }
 }
 
@@ -3397,18 +3385,51 @@ function addSpotlightKitToCart() {
 }
 const addSpotlightPhoneToCart = addSpotlightKitToCart;
 
-// ===== UNIFIED BLINKIT FLOATING CART BAR (ONLY ONE) =====
+// ===== CART BADGES & FLOATING CART BAR =====
+function updateCartBadge() {
+  const totalQty = (appState.cart || []).reduce((sum, item) => sum + (item.qty || 1), 0);
+  
+  // 1. Top header cart badge
+  const topBadge = document.getElementById('top-cart-badge');
+  if (topBadge) {
+    if (totalQty > 0) {
+      topBadge.textContent = totalQty > 99 ? '99+' : totalQty;
+      topBadge.classList.remove('hidden');
+    } else {
+      topBadge.classList.add('hidden');
+    }
+  }
+
+  // 2. Bottom nav cart badge
+  const navBadge = document.getElementById('nav-cart-badge');
+  if (navBadge) {
+    if (totalQty > 0) {
+      navBadge.textContent = totalQty > 99 ? '99+' : totalQty;
+      navBadge.style.display = 'flex';
+    } else {
+      navBadge.style.display = 'none';
+    }
+  }
+
+  // 3. Floating cart bar
+  updateCartFAB();
+}
+
 function updateCartFAB() {
   const fab = document.getElementById('cart-fab');
   if (!fab) return;
 
-  const totalQty = appState.cart.reduce((sum, item) => sum + item.qty, 0);
-  const totalPrice = appState.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  const totalQty = (appState.cart || []).reduce((sum, item) => sum + (item.qty || 1), 0);
+  const totalPrice = (appState.cart || []).reduce((sum, item) => sum + ((item.price || 0) * (item.qty || 1)), 0);
 
   const searchInput = document.getElementById('overlay-search-input');
   const isSearchInputFocused = searchInput && document.activeElement === searchInput;
 
-  if (totalQty > 0 && !isSearchInputFocused && appState.currentPage === 'page-shop') {
+  // Show floating cart bar on shopping pages when cart has items
+  const allowedPages = ['page-shop', 'page-category-view', 'page-search'];
+  const canShowFab = totalQty > 0 && !isSearchInputFocused && allowedPages.includes(appState.currentPage);
+
+  if (canShowFab) {
     fab.classList.remove('hidden');
 
     const countEl = document.getElementById('cart-fab-count');
@@ -3419,7 +3440,7 @@ function updateCartFAB() {
     if (totalEl) totalEl.textContent = `₹${totalPrice}`;
 
     if (previewEl) {
-      previewEl.innerHTML = appState.cart.slice(0, 3).map(item => `
+      previewEl.innerHTML = (appState.cart || []).slice(0, 3).map(item => `
         <div class="w-8 h-8 rounded-full border-2 border-[#12151d] bg-white p-0.5 overflow-hidden flex items-center justify-center shrink-0 shadow">
           <img src="${item.img}" alt="${item.name}" class="w-full h-full object-contain" onerror="this.src='product_lays.png'" />
         </div>
@@ -5712,6 +5733,8 @@ function simulateDemoLogin() {
 }
 
 function showPhoneLogin() { showPhoneLoginPrompt(); }
+function showPhoneLoginPrompt() { showToast('Verified session active as Kartik Guleria', 'info'); }
+function setRQCatByLabel(label) { filterCategory((label || 'all').toLowerCase()); }
 
 
 
@@ -5791,12 +5814,12 @@ function openProductModal(productId) {
   const gallery = [p.img, ...similar.slice(0, 3).map(x => x.img)];
 
   document.getElementById('modal-img').src = p.img;
-  document.getElementById('modal-img').onerror = function() { this.onerror=null; this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop'; };
-  document.getElementById('modal-category').textContent = `${p.category.charAt(0).toUpperCase() + p.category.slice(1)} • ${productBadge(p)}`;
+  document.getElementById('modal-img').onerror = function() { this.onerror=null; this.src='product_lays.png'; };
+  document.getElementById('modal-category').textContent = `${(p.category || 'Essential').charAt(0).toUpperCase() + (p.category || 'Essential').slice(1)} • ${productBadge(p)}`;
   document.getElementById('modal-name').textContent = p.name;
   document.getElementById('modal-price').innerHTML = `₹${p.price}`;
-  document.getElementById('modal-desc').textContent = p.description;
-  document.getElementById('modal-tags').innerHTML = p.tags.map(t => `<span class="px-2.5 py-1 bg-gray-100 rounded-full text-[9px] text-gray-500 font-bold">${t}</span>`).join('');
+  document.getElementById('modal-desc').textContent = p.description || 'Verified journey essential delivered directly to your coach.';
+  document.getElementById('modal-tags').innerHTML = (p.tags || ['Verified Pack', 'Fresh Quality', 'Fast Seat Delivery']).map(t => `<span class="px-2.5 py-1 bg-gray-100 rounded-full text-[9px] text-gray-500 font-bold">${t}</span>`).join('');
 
   const tagsEl = document.getElementById('modal-tags');
   let extra = document.getElementById('modal-premium-extra');
@@ -5812,8 +5835,8 @@ function openProductModal(productId) {
       <div class="modal-info-card"><b>Included</b><span>Product, sealed bag, invoice</span></div>
       <div class="modal-info-card"><b>ETA</b><span>12-18 min after order</span></div>
     </div>
-    <div class="modal-section"><h4>Key features</h4><div class="modal-chip-row">${(p.tags || []).map(t => `<span class="px-3 py-2 bg-emerald-50 text-primary rounded-full text-[10px] font-black border border-emerald-100">${t}</span>`).join('')}</div></div>
-    <div class="modal-section"><h4>Specifications</h4><div class="modal-spec-list"><p><b>Weight</b><span>${p.weight || 'Standard'}</span></p><p><b>Category</b><span>${p.category}</span></p><p><b>Availability</b><span>Station partner verified</span></p></div></div>
+    <div class="modal-section"><h4>Key features</h4><div class="modal-chip-row">${(p.tags || ['Sealed Pack', 'Station Verified', 'Seat Delivery']).map(t => `<span class="px-3 py-2 bg-emerald-50 text-primary rounded-full text-[10px] font-black border border-emerald-100">${t}</span>`).join('')}</div></div>
+    <div class="modal-section"><h4>Specifications</h4><div class="modal-spec-list"><p><b>Weight</b><span>${p.weight || 'Standard'}</span></p><p><b>Category</b><span>${p.category || 'Travel'}</span></p><p><b>Availability</b><span>Station partner verified</span></p></div></div>
     <div class="modal-section"><h4>Frequently bought together</h4><div class="modal-chip-row">${similar.slice(0,3).map(x => `<button class="modal-mini-product" onclick="event.stopPropagation();addToCart(${x.id})"><img src="${x.img}" onerror="this.style.display='none'"><span>${x.name}</span><b class="text-primary text-[10px]">₹${x.price}</b></button>`).join('')}</div></div>
     <div class="modal-section"><h4>Related accessories</h4><div class="modal-chip-row">${PRODUCTS.filter(x => x.category === 'tech' && x.id !== p.id).slice(0,3).map(x => `<article class="modal-mini-product" onclick="openProductModal(${x.id})"><img src="${x.img}" onerror="this.style.display='none'"><span>${x.name}</span></article>`).join('')}</div></div>
     <div class="modal-section"><h4>Similar products</h4><div class="modal-chip-row">${similar.map(x => `<article class="modal-mini-product" onclick="openProductModal(${x.id})"><img src="${x.img}" onerror="this.style.display='none'"><span>${x.name}</span></article>`).join('')}</div></div>
@@ -5846,9 +5869,10 @@ function addToCartFromModal() {
   if (existing) existing.qty += qty; else appState.cart.push({ ...appState.modalProduct, qty });
   
   saveState(); 
+  updateCartBadge();
   updateCartFAB(); 
   closeProductModal();
-  // Quiet add — no toast message
+  showToast(`✓ Added ${qty}x ${appState.modalProduct.name} to cart!`, 'success');
   renderProducts(PRODUCTS);
   
   // Also sync search overlay results if open
@@ -6153,7 +6177,7 @@ function applyGameCoupon() {
 }
 
 // ===== BOTTOM NAVIGATION BAR =====
-const NAV_PAGES = ['page-shop', 'page-pnr', 'page-orders', 'page-account'];
+const NAV_PAGES = ['page-shop', 'page-cart', 'page-pnr', 'page-orders', 'page-account'];
 
 function navTo(pageId) {
   navigateTo(pageId);
@@ -6165,7 +6189,7 @@ function updateBottomNav(pageId) {
   if (!nav) return;
   
   // Bottom navigation visibility mapping
-  const navPages = ['page-shop', 'page-pnr', 'page-live-tracking', 'page-orders', 'page-account', 'page-games', 'page-category-view', 'page-search'];
+  const navPages = ['page-shop', 'page-cart', 'page-pnr', 'page-live-tracking', 'page-orders', 'page-account', 'page-games', 'page-category-view', 'page-search'];
   let canShowNav = navPages.includes(pageId);
   
   if (pageId === 'page-pnr' && !appState.hasOnboarded) {
